@@ -1,0 +1,2564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NEXUS ACADEMY</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@500;700;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-0:#0a0a14;
+  --bg-1:#12121f;
+  --bg-2:#1a1a2e;
+  --bg-card:#1e1e33;
+  --neon-pink:#ff2ec7;
+  --neon-cyan:#00f0ff;
+  --neon-purple:#a855f7;
+  --neon-green:#39ff7a;
+  --neon-yellow:#ffe600;
+  --neon-red:#ff3d5a;
+  --text:#e8e8ff;
+  --text-dim:#8a8ab0;
+  --border:#2a2a4a;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{overscroll-behavior:none;}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg-0);
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(255,46,199,0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 60%, rgba(0,240,255,0.12) 0%, transparent 40%),
+    radial-gradient(circle at 50% 100%, rgba(168,85,247,0.15) 0%, transparent 50%);
+  min-height:100vh;
+  color:var(--text);
+  padding-bottom:40px;
+}
+.screen{display:none;}
+.screen.active{display:block;animation:fadeIn .4s;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.hidden{display:none!important;}
+
+/* SCANLINES OVERLAY */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent 0,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);
+  pointer-events:none;z-index:1;
+}
+
+/* HEADER */
+header{
+  background:rgba(10,10,20,0.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+}
+.logo{
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
+  font-size:22px;
+  letter-spacing:3px;
+  background:linear-gradient(90deg,var(--neon-pink),var(--neon-cyan));
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:0 0 20px rgba(255,46,199,0.5);
+}
+.logo::before{content:'▸ ';color:var(--neon-cyan);-webkit-text-fill-color:var(--neon-cyan);}
+#user-chip{
+  background:linear-gradient(135deg,rgba(255,46,199,0.2),rgba(0,240,255,0.2));
+  border:1px solid var(--neon-cyan);
+  color:var(--text);
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:700;
+  display:flex;align-items:center;gap:6px;
+}
+#logout-btn{
+  background:transparent;
+  border:1px solid var(--neon-red);
+  color:var(--neon-red);
+  padding:6px 14px;
+  border-radius:8px;
+  font-weight:700;font-size:12px;
+  cursor:pointer;
+  font-family:'Orbitron',sans-serif;
+  letter-spacing:1px;
+}
+#logout-btn:hover{background:var(--neon-red);color:#fff;}
+
+/* BUTTONS */
+.btn{
+  padding:14px 28px;
+  border:none;border-radius:10px;
+  font-family:'Orbitron',sans-serif;
+  font-weight:700;font-size:14px;letter-spacing:2px;
+  cursor:pointer;transition:all .2s;
+  text-transform:uppercase;
+  position:relative;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));
+  color:#fff;
+  box-shadow:0 0 20px rgba(255,46,199,0.4),0 4px 20px rgba(0,0,0,0.5);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(255,46,199,0.7);}
+.btn-cyan{
+  background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
+  color:#000;
+  box-shadow:0 0 20px rgba(0,240,255,0.4);
+}
+.btn-green{
+  background:linear-gradient(135deg,var(--neon-green),#2ecc71);
+  color:#000;
+  box-shadow:0 0 20px rgba(57,255,122,0.4);
+}
+.btn-ghost{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text-dim);
+}
+
+/* =================== LOGIN =================== */
+#login{padding:30px 20px;min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.login-panel{
+  width:100%;max-width:480px;
+  background:linear-gradient(180deg,rgba(30,30,51,0.9),rgba(18,18,31,0.95));
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:32px 24px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 40px rgba(168,85,247,0.15);
+  position:relative;overflow:hidden;
+}
+.login-panel::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--neon-pink),var(--neon-cyan),transparent);
+}
+.login-title{
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
+  font-size:28px;
+  text-align:center;
+  letter-spacing:3px;
+  margin-bottom:4px;
+  background:linear-gradient(90deg,var(--neon-pink),var(--neon-cyan));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.login-sub{
+  text-align:center;
+  font-size:12px;
+  color:var(--text-dim);
+  letter-spacing:4px;
+  margin-bottom:28px;
+  font-family:'Orbitron',sans-serif;
+}
+
+.char-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
+  margin-bottom:20px;
+}
+.char-card{
+  background:var(--bg-2);
+  border:2px solid var(--border);
+  border-radius:14px;
+  padding:16px 12px;
+  cursor:pointer;
+  transition:all .25s;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.char-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent,transparent);
+  transition:all .3s;
+}
+.char-card:hover,.char-card.selected{
+  transform:translateY(-4px);
+  border-color:var(--neon-cyan);
+  box-shadow:0 0 20px rgba(0,240,255,0.4);
+}
+.char-card.selected::before{
+  background:linear-gradient(135deg,rgba(0,240,255,0.1),rgba(255,46,199,0.1));
+}
+.char-card[data-color="pink"].selected{border-color:var(--neon-pink);box-shadow:0 0 20px rgba(255,46,199,0.5);}
+.char-card[data-color="purple"].selected{border-color:var(--neon-purple);box-shadow:0 0 20px rgba(168,85,247,0.5);}
+.char-card[data-color="orange"].selected{border-color:#ff922b;box-shadow:0 0 20px rgba(255,146,43,0.5);}
+.char-card[data-color="green"].selected{border-color:var(--neon-green);box-shadow:0 0 20px rgba(57,255,122,0.5);}
+.char-emoji{font-size:44px;margin-bottom:8px;position:relative;z-index:1;}
+.char-name{
+  font-family:'Orbitron',sans-serif;
+  font-weight:700;
+  font-size:14px;
+  letter-spacing:2px;
+  position:relative;z-index:1;
+}
+.char-level{
+  font-size:10px;color:var(--text-dim);
+  letter-spacing:1.5px;
+  margin-top:4px;
+  position:relative;z-index:1;
+}
+
+.pin-row{display:flex;gap:10px;justify-content:center;margin:18px 0;}
+.pin-row input{
+  width:52px;height:56px;
+  background:var(--bg-2);
+  border:2px solid var(--border);
+  border-radius:10px;
+  color:var(--neon-cyan);
+  font-family:'Orbitron',sans-serif;
+  font-size:24px;font-weight:900;
+  text-align:center;
+  outline:none;
+  transition:all .2s;
+}
+.pin-row input:focus{border-color:var(--neon-cyan);box-shadow:0 0 12px rgba(0,240,255,0.5);}
+.login-err{color:var(--neon-red);font-size:13px;text-align:center;min-height:18px;margin-bottom:12px;font-weight:600;}
+.hint-text{font-size:10px;color:var(--text-dim);text-align:center;margin-top:20px;letter-spacing:1px;line-height:1.6;}
+
+/* =================== CHILD HOME =================== */
+#child-home{padding:20px;max-width:900px;margin:0 auto;}
+.profile-hero{
+  background:linear-gradient(135deg,var(--bg-card),var(--bg-2));
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:22px;
+  margin-bottom:20px;
+  position:relative;overflow:hidden;
+}
+.profile-hero::before{
+  content:'';position:absolute;top:-50%;right:-20%;width:300px;height:300px;
+  background:radial-gradient(circle,rgba(255,46,199,0.25),transparent 70%);
+  pointer-events:none;
+}
+.profile-top{display:flex;align-items:center;gap:16px;margin-bottom:18px;position:relative;z-index:1;}
+.avatar-big{
+  font-size:56px;
+  width:80px;height:80px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));
+  border-radius:50%;
+  border:3px solid var(--neon-cyan);
+  box-shadow:0 0 30px rgba(0,240,255,0.4);
+}
+.profile-info h2{
+  font-family:'Orbitron',sans-serif;
+  font-size:22px;letter-spacing:2px;
+  margin-bottom:4px;
+}
+.profile-tag{font-size:12px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;}
+
+.xp-container{position:relative;z-index:1;}
+.xp-label{display:flex;justify-content:space-between;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;margin-bottom:6px;}
+.xp-label .left{color:var(--neon-cyan);}
+.xp-label .right{color:var(--text-dim);}
+.xp-bar{
+  height:12px;background:var(--bg-0);
+  border:1px solid var(--border);
+  border-radius:8px;overflow:hidden;position:relative;
+}
+.xp-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--neon-pink),var(--neon-cyan));
+  border-radius:8px;
+  transition:width .8s;
+  box-shadow:0 0 10px rgba(0,240,255,0.8);
+  position:relative;
+}
+.xp-fill::after{
+  content:'';position:absolute;top:0;right:0;bottom:0;width:20px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6));
+}
+
+.stats-bar{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  margin-bottom:20px;
+}
+.stat-block{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 10px;
+  text-align:center;
+  position:relative;
+}
+.stat-block .icon{font-size:22px;margin-bottom:4px;}
+.stat-block .num{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--neon-cyan);}
+.stat-block .lbl{font-size:10px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+
+.session-hud{
+  background:var(--bg-card);
+  border:1px solid var(--neon-purple);
+  border-radius:12px;
+  padding:10px 16px;
+  margin-bottom:20px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:'Orbitron',sans-serif;
+  font-size:13px;letter-spacing:2px;
+}
+.session-hud .label{color:var(--text-dim);}
+.session-hud .time{color:var(--neon-green);font-weight:900;font-size:18px;}
+
+.section-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:14px;letter-spacing:3px;
+  color:var(--text-dim);
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-title::before{content:'';flex:0 0 20px;height:2px;background:var(--neon-cyan);}
+
+.missions-grid{
+  display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:24px;
+}
+.mission-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
+  cursor:pointer;
+  transition:all .2s;
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;gap:14px;
+}
+.mission-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:var(--neon-cyan);
+}
+.mission-card.reading::before{background:var(--neon-pink);}
+.mission-card.math::before{background:var(--neon-green);}
+.mission-card.writing::before{background:var(--neon-purple);}
+.mission-card.money::before{background:var(--neon-yellow);}
+.mission-card.time::before{background:var(--neon-cyan);}
+.mission-card:hover{
+  transform:translateX(4px);
+  background:var(--bg-2);
+  box-shadow:0 4px 20px rgba(0,240,255,0.15);
+}
+.mission-icon{
+  font-size:36px;
+  width:60px;height:60px;
+  background:var(--bg-0);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.mission-info{flex:1;min-width:0;}
+.mission-name{
+  font-family:'Orbitron',sans-serif;
+  font-size:15px;letter-spacing:2px;
+  margin-bottom:4px;
+}
+.mission-sub{font-size:12px;color:var(--text-dim);margin-bottom:8px;}
+.mission-prog{
+  height:6px;background:var(--bg-0);border-radius:4px;overflow:hidden;
+}
+.mission-prog-fill{height:100%;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-pink));border-radius:4px;transition:width .6s;}
+.mission-arrow{color:var(--neon-cyan);font-size:20px;flex-shrink:0;}
+
+.badges-panel{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
+}
+.badges-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:10px;
+}
+.badge-slot{
+  background:var(--bg-0);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 6px;
+  text-align:center;
+  opacity:0.3;
+  transition:all .3s;
+}
+.badge-slot.owned{
+  opacity:1;
+  border-color:var(--neon-yellow);
+  box-shadow:0 0 12px rgba(255,230,0,0.4);
+}
+.badge-slot .bi{font-size:24px;}
+.badge-slot .bn{font-size:9px;letter-spacing:1px;color:var(--text-dim);margin-top:3px;text-transform:uppercase;}
+.badge-slot.owned .bn{color:var(--neon-yellow);}
+
+/* =================== LESSON =================== */
+#lesson{padding:20px;max-width:780px;margin:0 auto;}
+.lesson-hud{
+  display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;
+}
+.back-btn{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:10px 16px;border-radius:10px;
+  font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;
+  cursor:pointer;
+}
+.back-btn:hover{border-color:var(--neon-cyan);color:var(--neon-cyan);}
+.lesson-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:18px;letter-spacing:2px;
+  flex:1;
+  color:var(--neon-cyan);
+}
+.q-counter{
+  font-family:'Orbitron',sans-serif;
+  font-size:12px;
+  letter-spacing:2px;
+  color:var(--text-dim);
+}
+
+.progress-track{
+  height:6px;background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:4px;overflow:hidden;
+  margin-bottom:20px;
+}
+.progress-track-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--neon-pink),var(--neon-cyan));
+  box-shadow:0 0 10px rgba(0,240,255,0.6);
+  transition:width .5s;
+}
+
+.q-card{
+  background:linear-gradient(180deg,var(--bg-card),var(--bg-2));
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:24px;
+  margin-bottom:16px;
+  position:relative;
+  box-shadow:0 10px 40px rgba(0,0,0,0.4);
+}
+.q-tag{
+  font-family:'Orbitron',sans-serif;
+  font-size:10px;letter-spacing:3px;
+  color:var(--neon-pink);
+  margin-bottom:10px;
+  text-transform:uppercase;
+}
+.q-text{
+  font-size:19px;font-weight:700;
+  line-height:1.4;
+  margin-bottom:22px;
+  color:var(--text);
+}
+.opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.opt-btn{
+  padding:14px 14px;
+  background:var(--bg-0);
+  border:2px solid var(--border);
+  border-radius:12px;
+  color:var(--text);
+  font-family:'Inter',sans-serif;font-weight:700;font-size:14px;
+  cursor:pointer;
+  transition:all .2s;
+  text-align:left;
+  line-height:1.3;
+  position:relative;
+}
+.opt-btn .letter{
+  font-family:'Orbitron',sans-serif;
+  color:var(--neon-cyan);
+  margin-right:8px;
+  font-weight:900;
+}
+.opt-btn:hover:not(:disabled){
+  border-color:var(--neon-cyan);
+  background:rgba(0,240,255,0.05);
+  transform:translateY(-1px);
+}
+.opt-btn.correct{
+  border-color:var(--neon-green)!important;
+  background:rgba(57,255,122,0.1)!important;
+  box-shadow:0 0 20px rgba(57,255,122,0.4);
+}
+.opt-btn.correct .letter{color:var(--neon-green);}
+.opt-btn.wrong{
+  border-color:var(--neon-red)!important;
+  background:rgba(255,61,90,0.1)!important;
+}
+.opt-btn.wrong .letter{color:var(--neon-red);}
+.opt-btn:disabled{cursor:default;}
+
+.feedback{
+  border-radius:14px;
+  padding:18px 20px;
+  margin-bottom:14px;
+  display:none;
+  animation:slideUp .3s;
+}
+.feedback.show{display:block;}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.feedback.correct-fb{
+  background:linear-gradient(135deg,rgba(57,255,122,0.1),rgba(0,240,255,0.05));
+  border:1px solid var(--neon-green);
+}
+.feedback.wrong-fb{
+  background:linear-gradient(135deg,rgba(255,61,90,0.1),rgba(255,46,199,0.05));
+  border:1px solid var(--neon-red);
+}
+.fb-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:14px;letter-spacing:2px;
+  margin-bottom:8px;
+}
+.fb-title.correct{color:var(--neon-green);}
+.fb-title.wrong{color:var(--neon-red);}
+.fb-text{font-size:14px;line-height:1.5;color:var(--text);margin-bottom:10px;}
+.fb-fix{
+  background:rgba(0,240,255,0.05);
+  border-left:3px solid var(--neon-cyan);
+  padding:10px 14px;border-radius:0 10px 10px 0;
+  font-size:13px;line-height:1.5;
+  color:var(--text-dim);
+}
+.fb-fix strong{color:var(--neon-cyan);}
+
+.next-row{display:flex;justify-content:center;gap:10px;margin-top:8px;}
+
+/* =================== RESULTS =================== */
+.result-card{
+  background:linear-gradient(180deg,var(--bg-card),var(--bg-2));
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:36px 24px;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.result-card::before{
+  content:'';position:absolute;top:-30%;left:-20%;width:400px;height:400px;
+  background:radial-gradient(circle,rgba(255,46,199,0.2),transparent 70%);
+  pointer-events:none;
+}
+.result-emoji{font-size:64px;margin-bottom:10px;position:relative;}
+.result-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:26px;letter-spacing:3px;
+  background:linear-gradient(90deg,var(--neon-pink),var(--neon-cyan));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:8px;
+}
+.result-sub{color:var(--text-dim);margin-bottom:22px;font-size:14px;}
+.score-hex{
+  width:140px;height:140px;
+  margin:0 auto 20px;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;
+  background:conic-gradient(var(--neon-green) var(--pct),var(--bg-0) 0);
+  border-radius:50%;
+  position:relative;
+}
+.score-hex::before{
+  content:'';position:absolute;inset:8px;
+  background:var(--bg-2);
+  border-radius:50%;
+}
+.score-hex .pct-num{
+  position:relative;z-index:1;
+  font-family:'Orbitron',sans-serif;
+  font-size:38px;font-weight:900;
+  color:var(--neon-green);
+}
+.score-hex .pct-label{
+  position:relative;z-index:1;
+  font-size:11px;color:var(--text-dim);letter-spacing:2px;
+  margin-top:4px;
+}
+.score-hex.fail{background:conic-gradient(var(--neon-red) var(--pct),var(--bg-0) 0);}
+.score-hex.fail .pct-num{color:var(--neon-red);}
+
+.badge-pop{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));
+  border-radius:14px;
+  padding:14px 20px;
+  margin:8px 4px;
+  box-shadow:0 0 30px rgba(255,46,199,0.5);
+  animation:bounce 0.6s;
+}
+@keyframes bounce{0%{transform:scale(0)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.badge-pop .bpi{font-size:32px;}
+.badge-pop .bpn{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;color:#fff;margin-top:4px;}
+
+/* =================== PARENT DASHBOARD =================== */
+#dashboard{padding:20px;max-width:1100px;margin:0 auto;}
+.dash-header{
+  font-family:'Orbitron',sans-serif;
+  font-size:24px;letter-spacing:3px;
+  margin-bottom:4px;
+  background:linear-gradient(90deg,var(--neon-pink),var(--neon-cyan));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.dash-sub{color:var(--text-dim);font-size:13px;letter-spacing:2px;margin-bottom:24px;text-transform:uppercase;}
+
+.kids-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:20px;}
+.kid-cell{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+}
+.kid-cell-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.kid-av-sm{
+  font-size:32px;width:50px;height:50px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));
+  border-radius:50%;
+  border:2px solid var(--neon-cyan);
+}
+.kid-name-row{flex:1;}
+.kid-name-lg{font-family:'Orbitron',sans-serif;font-size:16px;letter-spacing:2px;}
+.kid-tag{font-size:11px;color:var(--text-dim);letter-spacing:1px;}
+.mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;}
+.mini-stat{
+  background:var(--bg-0);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 4px;text-align:center;
+}
+.mini-stat .v{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--neon-cyan);}
+.mini-stat .l{font-size:9px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;}
+.subj-prog{margin-top:6px;}
+.subj-prog-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;color:var(--text-dim);letter-spacing:1px;}
+.subj-prog-bar{height:6px;background:var(--bg-0);border-radius:4px;overflow:hidden;margin-bottom:8px;border:1px solid var(--border);}
+.subj-prog-fill{height:100%;background:linear-gradient(90deg,var(--neon-green),var(--neon-cyan));border-radius:4px;transition:width .5s;}
+.kid-warning{
+  background:rgba(255,61,90,0.1);
+  border:1px solid var(--neon-red);
+  color:var(--neon-red);
+  padding:8px 12px;border-radius:8px;
+  font-size:12px;font-weight:700;margin-top:8px;
+}
+
+.panel{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:16px;
+}
+.panel-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:14px;letter-spacing:3px;
+  margin-bottom:14px;
+  color:var(--neon-cyan);
+}
+.weekly-kid-block{
+  background:var(--bg-0);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px;margin-bottom:10px;
+}
+.weekly-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.weekly-head .em{font-size:22px;}
+.weekly-head .nm{font-family:'Orbitron',sans-serif;font-size:14px;letter-spacing:2px;}
+.weekly-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+.ws{background:var(--bg-2);border-radius:8px;padding:8px 4px;text-align:center;}
+.ws .v{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;}
+.ws .v.g{color:var(--neon-green);}
+.ws .v.c{color:var(--neon-cyan);}
+.ws .v.y{color:var(--neon-yellow);}
+.ws .l{font-size:9px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;}
+.needs-box{
+  background:rgba(255,230,0,0.08);
+  border-left:3px solid var(--neon-yellow);
+  padding:8px 12px;border-radius:0 8px 8px 0;
+  font-size:12px;color:var(--neon-yellow);font-weight:600;
+}
+.great-box{
+  background:rgba(57,255,122,0.08);
+  border-left:3px solid var(--neon-green);
+  padding:8px 12px;border-radius:0 8px 8px 0;
+  font-size:12px;color:var(--neon-green);font-weight:600;
+}
+
+.alert-row{
+  display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);
+}
+.alert-row:last-child{border-bottom:none;}
+.alert-row .ic{font-size:18px;}
+.alert-row .tx{font-size:13px;color:var(--text);}
+.alert-row .tm{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.empty-msg{color:var(--text-dim);font-size:13px;text-align:center;padding:20px;font-style:italic;}
+
+@media(max-width:600px){
+  .opts-grid{grid-template-columns:1fr;}
+  .kids-row{grid-template-columns:1fr;}
+  .char-grid{grid-template-columns:repeat(2,1fr);}
+  .mini-stats{grid-template-columns:repeat(2,1fr);}
+}
+
+/* READ ALOUD BUTTONS */
+.read-btn{
+  background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
+  color:#000;
+  border:none;
+  border-radius:8px;
+  padding:6px 14px;
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
+  font-size:11px;
+  letter-spacing:1.5px;
+  cursor:pointer;
+  transition:all .2s;
+  flex-shrink:0;
+}
+.read-btn:hover{transform:scale(1.05);}
+.read-btn.speaking{
+  background:linear-gradient(135deg,var(--neon-pink),var(--neon-yellow));
+  animation:pulse 1s infinite;
+}
+.read-btn-sm{
+  background:rgba(0,240,255,0.15);
+  color:var(--neon-cyan);
+  border:1px solid var(--neon-cyan);
+  border-radius:6px;
+  padding:4px 10px;
+  font-size:12px;
+  cursor:pointer;
+  transition:all .2s;
+}
+.read-btn-sm:hover{background:rgba(0,240,255,0.3);}
+.read-btn-sm.speaking{animation:pulse 1s infinite;background:var(--neon-pink);color:#000;}
+.opt-speaker{
+  display:inline-block;
+  margin-left:8px;
+  padding:2px 6px;
+  background:rgba(0,240,255,0.1);
+  border-radius:4px;
+  font-size:12px;
+  cursor:pointer;
+  float:right;
+  transition:all .2s;
+}
+.opt-speaker:hover{background:rgba(0,240,255,0.3);}
+.opt-speaker.speaking{animation:pulse 1s infinite;background:var(--neon-pink);}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.7;transform:scale(1.1);}}
+
+.audio-toggle{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px 16px;
+  margin-bottom:16px;
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;
+  transition:all .2s;
+}
+.audio-toggle:hover{border-color:var(--neon-cyan);}
+.audio-toggle-label{
+  font-family:'Orbitron',sans-serif;
+  font-size:12px;letter-spacing:2px;
+  color:var(--text);
+}
+.audio-toggle-switch{
+  width:50px;height:26px;
+  background:var(--bg-0);
+  border:1px solid var(--border);
+  border-radius:14px;
+  position:relative;
+  transition:all .2s;
+}
+.audio-toggle-switch::after{
+  content:'';position:absolute;
+  width:20px;height:20px;
+  background:var(--text-dim);
+  border-radius:50%;
+  top:2px;left:2px;
+  transition:all .2s;
+}
+.audio-toggle.on .audio-toggle-switch{
+  background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
+  border-color:var(--neon-cyan);
+}
+.audio-toggle.on .audio-toggle-switch::after{
+  left:27px;
+  background:#fff;
+}
+
+/* HINT SYSTEM */
+.hint-btn{
+  background:linear-gradient(135deg,var(--neon-yellow),var(--orange, #ff922b));
+  color:#000;
+  border:none;
+  border-radius:8px;
+  padding:6px 14px;
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
+  font-size:11px;
+  letter-spacing:1.5px;
+  cursor:pointer;
+  transition:all .2s;
+  flex-shrink:0;
+}
+.hint-btn:hover:not(:disabled){transform:scale(1.05);box-shadow:0 0 20px rgba(255,230,0,0.5);}
+.hint-btn:disabled{cursor:default;}
+.hint-box{
+  background:linear-gradient(135deg,rgba(255,230,0,0.1),rgba(255,146,43,0.08));
+  border:1px solid var(--neon-yellow);
+  border-radius:12px;
+  padding:14px 16px;
+  margin:0 0 18px 0;
+  animation:slideDown .3s;
+}
+@keyframes slideDown{from{opacity:0;max-height:0;}to{opacity:1;max-height:200px;}}
+.hint-inner{display:flex;flex-direction:column;gap:6px;}
+.hint-header{
+  font-family:'Orbitron',sans-serif;
+  font-size:11px;
+  letter-spacing:2px;
+  color:var(--neon-yellow);
+  font-weight:900;
+}
+.hint-text{
+  font-size:14px;
+  color:var(--text);
+  line-height:1.5;
+}
+
+/* MISTAKE SUMMARY */
+.mistake-summary{
+  background:var(--bg-0);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;
+  margin:14px 0;
+  text-align:left;
+}
+.mistake-summary-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:12px;letter-spacing:2px;
+  color:var(--neon-red);
+  margin-bottom:10px;
+}
+.mistake-item{
+  display:flex;gap:10px;align-items:flex-start;
+  padding:8px 0;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.mistake-item:last-child{border-bottom:none;}
+.mistake-num{
+  background:var(--neon-red);
+  color:#000;font-weight:900;
+  width:22px;height:22px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;flex-shrink:0;
+}
+.mistake-q{flex:1;color:var(--text);line-height:1.4;}
+
+/* SMART REPORT */
+.smart-kid-block{
+  background:var(--bg-0);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:12px;
+}
+.smart-kid-head{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:12px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+.weak-list{display:flex;flex-direction:column;gap:8px;}
+.weak-item{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--bg-2);
+  border:1px solid var(--border);
+  border-left:3px solid var(--neon-yellow);
+  border-radius:8px;
+  padding:10px 12px;
+  flex-wrap:wrap;
+}
+.weak-info{flex:1;min-width:160px;}
+.weak-name{
+  font-weight:700;
+  font-size:14px;
+  color:var(--text);
+  margin-bottom:2px;
+  text-transform:capitalize;
+}
+.weak-stats{
+  font-size:11px;
+  color:var(--text-dim);
+  letter-spacing:1px;
+}
+.kc-btn{
+  background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
+  color:#000;
+  border:none;
+  border-radius:8px;
+  padding:8px 14px;
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
+  font-size:10px;
+  letter-spacing:1.5px;
+  cursor:pointer;
+  transition:all .2s;
+  white-space:nowrap;
+}
+.kc-btn:hover{transform:scale(1.03);box-shadow:0 0 15px rgba(0,240,255,0.4);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">NEXUS</div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span id="user-chip" class="hidden"></span>
+    <button id="logout-btn" class="hidden" onclick="logout()">EXIT</button>
+  </div>
+</header>
+
+<!-- LOGIN -->
+<div id="login" class="screen active">
+  <div class="login-panel">
+    <div class="login-title">SELECT PLAYER</div>
+    <div class="login-sub">◆ CHOOSE YOUR CHARACTER ◆</div>
+    <div class="char-grid">
+      <div class="char-card" data-color="pink" onclick="selectUser('taalyn')" id="char-taalyn">
+        <div class="char-emoji">🦁</div>
+        <div class="char-name">TAALYN</div>
+        <div class="char-level">LVL • RANK 4</div>
+      </div>
+      <div class="char-card" data-color="purple" onclick="selectUser('amani')" id="char-amani">
+        <div class="char-emoji">🦋</div>
+        <div class="char-name">AMANI</div>
+        <div class="char-level">LVL • RANK 5</div>
+      </div>
+      <div class="char-card" data-color="orange" onclick="selectUser('terry')" id="char-terry">
+        <div class="char-emoji">🚀</div>
+        <div class="char-name">TERRY</div>
+        <div class="char-level">LVL • RANK 4</div>
+      </div>
+      <div class="char-card" data-color="green" onclick="selectUser('parent')" id="char-parent">
+        <div class="char-emoji">👑</div>
+        <div class="char-name">ADMIN</div>
+        <div class="char-level">GAMEMASTER</div>
+      </div>
+    </div>
+    <div class="pin-row" style="gap:0;">
+      <input type="tel" maxlength="4" id="pin-input" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" placeholder="• • • •" onkeydown="if(event.key==='Enter')doLogin()" style="width:220px;height:60px;letter-spacing:12px;text-align:center;font-size:28px;padding:0 10px;">
+    </div>
+    <div class="login-err" id="login-err"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="doLogin()">▶ ENTER THE NEXUS</button>
+    <div class="hint-text">
+      TAALYN: 1111 ◆ AMANI: 2222<br>
+      TERRY: 3333 ◆ ADMIN: 0000
+    </div>
+  </div>
+</div>
+
+<!-- CHILD HOME -->
+<div id="child-home" class="screen">
+  <div class="profile-hero">
+    <div class="profile-top">
+      <div class="avatar-big" id="hero-av"></div>
+      <div class="profile-info">
+        <h2 id="hero-name"></h2>
+        <div class="profile-tag" id="hero-tag"></div>
+      </div>
+    </div>
+    <div class="xp-container">
+      <div class="xp-label"><span class="left" id="xp-level">LEVEL 1</span><span class="right" id="xp-num">0 / 1000 XP</span></div>
+      <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-block">
+      <div class="icon">🔥</div>
+      <div class="num" id="stat-streak">0</div>
+      <div class="lbl">Streak</div>
+    </div>
+    <div class="stat-block">
+      <div class="icon">💎</div>
+      <div class="num" id="stat-xp">0</div>
+      <div class="lbl">Total XP</div>
+    </div>
+    <div class="stat-block">
+      <div class="icon">🏆</div>
+      <div class="num" id="stat-badges">0</div>
+      <div class="lbl">Badges</div>
+    </div>
+  </div>
+
+  <div class="session-hud">
+    <span class="label">◆ SESSION TIME</span>
+    <span class="time" id="timer-display">60:00</span>
+  </div>
+
+  <div class="audio-toggle" id="audio-toggle" onclick="handleAudioToggle()">
+    <div>
+      <div class="audio-toggle-label">🔊 READ ALOUD MODE</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">Questions read automatically</div>
+    </div>
+    <div class="audio-toggle-switch"></div>
+  </div>
+
+  <div class="section-title">◆ MISSIONS ◆</div>
+  <div class="missions-grid" id="missions-grid"></div>
+
+  <div class="section-title">◆ ACHIEVEMENTS ◆</div>
+  <div class="badges-panel">
+    <div class="badges-grid" id="badges-grid"></div>
+  </div>
+</div>
+
+<!-- LESSON -->
+<div id="lesson" class="screen">
+  <div class="lesson-hud">
+    <button class="back-btn" onclick="goChildHome()">◀ BACK</button>
+    <span class="lesson-title" id="lesson-title"></span>
+    <span class="q-counter" id="q-counter"></span>
+  </div>
+  <div class="progress-track"><div class="progress-track-fill" id="prog-track" style="width:0%"></div></div>
+  <div id="q-area"></div>
+</div>
+
+<!-- PARENT DASHBOARD -->
+<div id="dashboard" class="screen">
+  <div class="dash-header">◆ GAMEMASTER CONSOLE</div>
+  <div class="dash-sub">REAL-TIME PLAYER TELEMETRY</div>
+  <div class="kids-row" id="kids-row"></div>
+  <div class="panel">
+    <div class="panel-title">🎯 SMART REPORT • WEAK AREAS</div>
+    <p style="color:var(--text-dim);font-size:12px;margin-bottom:12px;">Areas where each child needs more practice. Tap a concept to launch a focused knowledge check.</p>
+    <div id="smart-report"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">📅 WEEKLY REPORT</div>
+    <div id="weekly-report"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">🔔 MISSION COMPLETION LOG</div>
+    <div id="alerts-list"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">⚙️ ADMIN CONTROLS</div>
+    <p style="color:var(--text-dim);font-size:13px;margin-bottom:12px;">Reset a child's progress back to the beginning. This cannot be undone.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-ghost" style="border-color:var(--neon-red);color:var(--neon-red);" onclick="resetChildProgress('taalyn')">🔄 RESET TAALYN</button>
+      <button class="btn btn-ghost" style="border-color:var(--neon-red);color:var(--neon-red);" onclick="resetChildProgress('amani')">🔄 RESET AMANI</button>
+      <button class="btn btn-ghost" style="border-color:var(--neon-red);color:var(--neon-red);" onclick="resetChildProgress('terry')">🔄 RESET TERRY</button>
+      <button class="btn btn-ghost" style="border-color:var(--neon-red);color:var(--neon-red);" onclick="resetEverything()">🔥 RESET ALL</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ STATE ============
+let currentUser = null;
+let selectedUserKey = null;
+let currentSubject = null;
+let currentLevel = 0;
+let currentQ = 0;
+let score = 0;
+let wrongCount = 0;
+let sessionSeconds = 3600;
+let sessionTimer = null;
+let retrying = false;
+// New state for improved quiz flow
+let shuffledQuestions = []; // questions in randomized order with shuffled answers
+let wrongAnswersLog = []; // track which questions they got wrong
+let reviewMode = false; // true when reviewing missed questions at end
+let reviewQueue = []; // indexes of wrong questions to review
+let currentReviewIdx = 0;
+let speakerUsesThisQuestion = 0;
+const MAX_SPEAKER_USES = 3;
+let dashboardRefreshTimer = null;
+// Hint system state
+let hintUsedThisQuestion = false;
+let hintCountThisQuiz = 0;
+// Concept tracking
+let conceptMissesThisQuiz = {}; // {conceptTag: count}
+
+// ============ STORAGE ============
+function getStorage(k,d){try{const v=localStorage.getItem('nx_'+k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function setStorage(k,v){try{localStorage.setItem('nx_'+k,JSON.stringify(v));}catch(e){}}
+function getProgress(u){return getStorage('prog_'+u,{});}
+function setProgress(u,d){setStorage('prog_'+u,d);}
+function getAlerts(){return getStorage('alerts',[]);}
+function addAlert(msg){const a=getAlerts();a.unshift({msg,time:new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})});if(a.length>50)a.pop();setStorage('alerts',a);}
+function getStreaks(){return getStorage('streaks',{});}
+function getBadges(u){return getStorage('badges_'+u,[]);}
+function getXP(u){return getStorage('xp_'+u,0);}
+function addXP(u,amt){setStorage('xp_'+u,getXP(u)+amt);}
+function awardBadge(u,id){const b=getBadges(u);if(!b.includes(id)){b.push(id);setStorage('badges_'+u,b);return true;}return false;}
+function logWeekly(u,lvl,pct,score,total){
+  const a=getStorage('weekly_'+u,[]);
+  a.unshift({date:new Date().toISOString(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}),level:lvl,pct,score,total,passed:pct>=80});
+  if(a.length>30)a.length=30;
+  setStorage('weekly_'+u,a);
+}
+function getWeekly(u){
+  const a=getStorage('weekly_'+u,[]);
+  const wk=Date.now()-(7*24*60*60*1000);
+  return a.filter(x=>new Date(x.date).getTime()>=wk);
+}
+
+// Track which concepts a child has missed
+function logConceptMiss(user, concept){
+  if(!concept) return;
+  const key = 'concept_misses_' + user;
+  const stats = getStorage(key, {});
+  stats[concept] = (stats[concept] || 0) + 1;
+  setStorage(key, stats);
+}
+function logConceptHit(user, concept){
+  if(!concept) return;
+  const key = 'concept_hits_' + user;
+  const stats = getStorage(key, {});
+  stats[concept] = (stats[concept] || 0) + 1;
+  setStorage(key, stats);
+}
+function getConceptStats(user){
+  const misses = getStorage('concept_misses_' + user, {});
+  const hits = getStorage('concept_hits_' + user, {});
+  const allConcepts = new Set([...Object.keys(misses), ...Object.keys(hits)]);
+  const result = [];
+  allConcepts.forEach(c => {
+    const m = misses[c] || 0;
+    const h = hits[c] || 0;
+    const total = m + h;
+    if(total >= 2){ // only show concepts with enough data
+      result.push({
+        concept: c,
+        misses: m,
+        hits: h,
+        total: total,
+        accuracy: Math.round((h/total) * 100)
+      });
+    }
+  });
+  // Sort by worst accuracy first (weakest areas on top)
+  return result.sort((a,b) => a.accuracy - b.accuracy);
+}
+
+// Find questions from a specific concept for knowledge checks
+function getQuestionsByConcept(user, concept, max){
+  const subjects = QUESTIONS[user];
+  const found = [];
+  Object.keys(subjects).forEach(subj => {
+    subjects[subj].levels.forEach(level => {
+      level.qs.forEach(q => {
+        if(q.concept === concept) found.push(q);
+      });
+    });
+  });
+  // Shuffle and limit
+  return shuffleArray(found).slice(0, max || 5);
+}
+
+// Generate a hint from a question. If q.hint is set, use it. Otherwise derive from fix.
+function getHintForQuestion(q){
+  if(q.hint) return q.hint;
+  // Derive a strategy hint from the 'fix' field (which is already a teaching strategy)
+  const fix = q.fix || '';
+  // Take first sentence as the hint (gives strategy, not answer)
+  let hint = fix.split(/[.!?]/)[0];
+  if(hint.length > 140) hint = hint.substring(0, 140) + '...';
+  return hint + '.';
+}
+
+// ============ USER DATA ============
+const USERS={
+  taalyn:{pin:'1111',name:'TAALYN',grade:'4TH GRADE • READY',avatar:'🦁',color:'pink'},
+  amani:{pin:'2222',name:'AMANI',grade:'5TH GRADE • READY',avatar:'🦋',color:'purple'},
+  terry:{pin:'3333',name:'TERRY',grade:'4TH GRADE • READY',avatar:'🚀',color:'orange'},
+  parent:{pin:'0000',name:'ADMIN',grade:'GAMEMASTER',avatar:'👑',color:'green'}
+};
+const ALL_BADGES=[
+  {id:'first_lesson',icon:'⭐',name:'First Win'},
+  {id:'streak3',icon:'🔥',name:'Hot Streak'},
+  {id:'perfect',icon:'💯',name:'Perfect'},
+  {id:'math_star',icon:'🔢',name:'Math Pro'},
+  {id:'reading_star',icon:'📚',name:'Word Boss'},
+  {id:'no_hints',icon:'🧠',name:'No Help'},
+  {id:'week',icon:'🏆',name:'Week Champ'}
+];
+
+const QUESTIONS = {
+  taalyn: {
+    reading: {
+      name:'Reading 📖', icon:'📖', color:'#4a90e2',
+      levels:[
+        { title:'VCe Words', qs: [
+          {q:'Which word uses the VCe pattern (vowel-consonant-e)?',opts:['cap','cape','cat','can'],c:1,explain:'VCe means vowel-consonant-e. In "cape" the a-p-e pattern makes the a say its own name — long A!',fix:'Look for words ending in vowel + consonant + e. The e is silent but makes the first vowel LONG.'},
+          {q:'What sound does the "i" make in "bike"?',opts:['Short i like in sit','Long i like in my','No sound','Uh sound'],c:1,explain:'In "bike" the i-k-e pattern makes the i say its name — long I sound, like in "my"!',fix:'VCe rule: vowel + consonant + silent e = the first vowel is LONG.'},
+          {q:'Which word has a long vowel sound?',opts:['hop','hot','hope','hog'],c:2,explain:'"Hope" uses o-p-e (VCe). The o says its name — long O. The e is silent!',fix:'Check: does the word end in vowel+consonant+e? If yes, the first vowel is long.'},
+          {q:'What does the silent e do in "pine"?',opts:['Nothing','Makes the i long','Makes the p silent','Adds a syllable'],c:1,explain:'The silent e in "pine" makes the i say its name — the long I sound! Silent e is a helper.',fix:'Silent e always makes the vowel before the consonant LONG.'},
+          {q:'Which word rhymes with "kite"?',opts:['kit','bit','site','sit'],c:2,explain:'"Site" and "kite" both use the i-t-e VCe pattern making the long I sound.',fix:'Rhyming VCe words share the same vowel+consonant+e ending pattern.'},
+          {q:'Decode: m-a-d-e',opts:['mad','mahd','made — long A','maddeh'],c:2,explain:'"Made" = m + long A + d + silent e. The a-d-e pattern makes the a long!',fix:'Sound it out: m + (long A because of silent e) + d = made.'},
+          {q:'Which word does NOT follow VCe?',opts:['time','game','them','note'],c:2,explain:'"Them" has a short E sound and no silent e at the end. Time, game, note all use VCe!',fix:'Check: does it end in vowel+consonant+e? "Them" ends in just m — no VCe pattern.'},
+          {q:'How many syllables in "smile"?',opts:['1','2','3','4'],c:0,explain:'"Smile" has 1 syllable. The silent e does not add a syllable — sm+ile is said in one beat!',fix:'Count the vowel SOUNDS you hear, not the vowels you see. Silent e makes no sound.'},
+          {q:'Which word sounds like "rode"?',opts:['rod','road','rude','red'],c:1,explain:'"Road" and "rode" sound the same! Both have the long O sound.',fix:'Long O can be spelled different ways: o-e (rode), oa (road), ow (row).'},
+          {q:'Fill in: The word r___de with a long O is:',opts:['rode','rud','red','rad'],c:0,explain:'"Rode" uses the VCe o-d-e pattern. Long O + d + silent e = rode!',fix:'Long O + consonant + silent e. Place the o before the consonant, then add silent e.'}
+        ]},
+        { title:'Sight Words', qs:[
+          {q:'Which is spelled correctly?',opts:['thuh','teh','the','thee'],c:2,explain:'"The" is one of the most common sight words! It is spelled t-h-e.',fix:'Practice sight words daily. "The" is the most common word in English!'},
+          {q:'Which sentence uses "because" correctly?',opts:['Because I like it.','I ate because I was hungry.','Because hungry.','I because ate.'],c:1,explain:'"Because" connects two ideas. "I ate because I was hungry" — the second part explains why!',fix:'"Because" answers WHY. Use it between two complete thoughts.'},
+          {q:'How do you spell: "belonging to them"?',opts:['there','their','they\'re','thier'],c:1,explain:'"Their" means belonging to them. "It is their house." T-H-E-I-R!',fix:'Their = ownership. There = a place. They\'re = they are. Practice all three!'},
+          {q:'Which is a sight word you should memorize?',opts:['xylophone','would','pterodactyl','chromebook'],c:1,explain:'"Would" is a common sight word! The "oul" makes an "ood" sound — just memorize it!',fix:'Would, could, should all follow the same tricky "ould" pattern. Learn them together.'},
+          {q:'Read: W-H-E-R-E',opts:['were','where','here','ware'],c:1,explain:'"Where" asks about a place. Wh makes a W sound + "air" sound = where!',fix:'Practice: where, there, here — they all rhyme. Where asks WHERE something is.'},
+          {q:'Which word means more than one child?',opts:['childs','child','children','childrens'],c:2,explain:'"Children" is the plural of child. Some plurals are irregular — you just have to memorize them!',fix:'Irregular plurals: child→children, man→men, woman→women. These do not follow normal rules.'},
+          {q:'Choose the correct word: I ___ like to go.',opts:['wood','would','coud','woud'],c:1,explain:'"Would" is correct! It is a helping verb meaning you want to do something.',fix:'Would is spelled w-o-u-l-d. The l is silent. Just memorize it!'},
+          {q:'Which word is the opposite of "out"?',opts:['on','it','in','is'],c:2,explain:'"In" is the opposite of out! Short, simple, and a very common sight word.',fix:'Small sight words like in, on, at, it need to be instantly recognized when reading.'},
+          {q:'Spell the word that means "also"',opts:['to','two','too','tow'],c:2,explain:'"Too" means also. "I want to go too!" T-O-O has two Os — like TOO much!',fix:'To = direction (go to school). Two = the number 2. Too = also or very (too much).'},
+          {q:'Which word comes first alphabetically?',opts:['would','where','when','which'],c:2,explain:'"When" comes first! W-H-E-N — the E comes before H, I, and O in the alphabet.',fix:'Alphabetical order: look at the letters one at a time. When→e, where→e+r, which→i, would→o.'}
+        ]},
+        { title:'Story Retelling', qs:[
+          {q:'In a story retell, what comes FIRST?',opts:['The end','The middle','The beginning','The problem'],c:2,explain:'A retell starts at the BEGINNING — who are the characters and where does the story start?',fix:'Think B-M-E: Beginning = who, where, when. Middle = what happened. End = how it ended.'},
+          {q:'"A girl found a puppy. She took it home. Her mom said they could keep it." What is the MIDDLE?',opts:['A girl found a puppy','Her mom said yes','She took it home','The puppy was happy'],c:2,explain:'The middle is "She took it home" — it happens after finding the puppy but before mom says yes.',fix:'Order: 1-found puppy, 2-took home, 3-mom said yes. Middle = step 2.'},
+          {q:'Which is a KEY detail to include in a retell?',opts:['What color the wall was','The main character\'s problem','How many words are in the book','The font size'],c:1,explain:'The main character\'s problem is KEY — it drives the whole story! Wall color is not important.',fix:'Ask: would the story change without this detail? If not, it is probably not a key detail.'},
+          {q:'A good retell has how many main parts?',opts:['1','2','3','10'],c:2,explain:'3 parts: Beginning (who/where), Middle (problem/events), End (resolution). That is B-M-E!',fix:'Use the B-M-E graphic organizer. Fill each section before you start retelling.'},
+          {q:'True or False: Include EVERY detail in a retell.',opts:['True','False — only key events','True — always','False — only the ending'],c:1,explain:'FALSE! A good retell focuses on KEY events. Including everything makes it confusing!',fix:'Practice: tell the story in 3-5 sentences using only the most important events.'},
+          {q:'Which sentence starter helps BEGIN a retell?',opts:['"The end..."','"In this story..."','"I do not remember..."','"Page one says..."'],c:1,explain:'"In this story..." is a great starter! It signals you are about to summarize the story.',fix:'Use: "In this story...", "First...", "Next...", "Finally..." to organize your retell.'},
+          {q:'"Sam planted a seed. He watered it every day. A flower bloomed." What is the END?',opts:['Sam planted a seed','He watered it','A flower bloomed','Sam was happy'],c:2,explain:'The END is "a flower bloomed" — the final event and result of the story!',fix:'The end tells how things worked out. Look for the final result or resolution.'},
+          {q:'Which detail is MOST important to retell?',opts:['The boy wore a blue shirt','The girl saved her friend','The house had three floors','The walk took a long time'],c:1,explain:'"The girl saved her friend" is key — it shows important action! Shirt color is not important.',fix:'Key events move the story forward or show important character actions. Choose those.'},
+          {q:'What should you do BEFORE retelling a story?',opts:['Guess what happened','Think about the key events','Read a different book','Skip to the end'],c:1,explain:'Think about the key events FIRST! This helps organize your retell before you speak or write.',fix:'Before retelling: ask yourself — who, what happened first, what was the problem, how did it end?'},
+          {q:'A good retell includes:',opts:['Characters, events, and ending','Every single sentence','Only the ending','Just the character names'],c:0,explain:'A strong retell includes the characters, the main events, and how it ended. All three parts!',fix:'Checklist: Did I mention the characters? Key events? How it ended? If yes, great retell!'}
+        ]}
+      ]
+    },
+    math: {
+      name:'Math 🔢', icon:'🔢', color:'#52c97a',
+      levels:[
+        { title:'Addition with Regrouping', qs:[
+          {q:'What is 47 + 35?',opts:['72','82','73','81'],c:1,explain:'47+35: Add ones: 7+5=12, write 2 carry 1. Add tens: 4+3+1=8. Answer: 82!',fix:'Step 1: Add the ones column. If it is 10 or more, write the ones digit and carry the tens. Step 2: Add tens column plus any carried number.'},
+          {q:'What is 58 + 27?',opts:['75','85','84','76'],c:1,explain:'58+27: Ones: 8+7=15, write 5 carry 1. Tens: 5+2+1=8. Answer: 85!',fix:'Remember to carry when ones column adds up to 10 or more. Write the extra ten above the tens column.'},
+          {q:'65 + 48 = ?',opts:['103','113','107','112'],c:1,explain:'65+48: Ones: 5+8=13, write 3 carry 1. Tens: 6+4+1=11. Answer: 113!',fix:'When the tens column gives you 10 or more, the hundreds digit goes in a new column to the left.'},
+          {q:'What is 39 + 43?',opts:['72','82','73','71'],c:1,explain:'39+43: Ones: 9+3=12, write 2 carry 1. Tens: 3+4+1=8. Answer: 82!',fix:'Always start with the ones column. Then move left to the tens column, adding any carried digit.'},
+          {q:'76 + 57 = ?',opts:['123','133','124','132'],c:1,explain:'76+57: Ones: 6+7=13, write 3 carry 1. Tens: 7+5+1=13. Answer: 133!',fix:'When both columns regroup, carry from ones to tens, then carry from tens to hundreds.'},
+          {q:'What is 124 + 89?',opts:['203','213','212','201'],c:1,explain:'124+89: Ones: 4+9=13, write 3 carry 1. Tens: 2+8+1=11, write 1 carry 1. Hundreds: 1+1=2. Answer: 213!',fix:'Three-digit addition uses the same steps. Start at ones, move to tens, then hundreds. Carry each time needed.'},
+          {q:'Which shows regrouping?',opts:['23+14=37','45+32=77','56+47=103','61+28=89'],c:2,explain:'56+47=103 requires regrouping! Ones: 6+7=13 (regroup). Tens: 5+4+1=10 (regroup again). Answer: 103.',fix:'Regrouping happens when a column adds up to 10 or more. You carry the extra to the next column.'},
+          {q:'29 + 71 = ?',opts:['90','100','99','101'],c:1,explain:'29+71: Ones: 9+1=10, write 0 carry 1. Tens: 2+7+1=10. Answer: 100!',fix:'This one regroups twice! Both columns add to exactly 10. Write 0, carry 1 each time.'},
+          {q:'What is the missing number? 4_ + 38 = 85',opts:['3','5','7','4'],c:2,explain:'48+38=86... try 47+38=85! The missing digit is 7.',fix:'Work backwards: 85-38=47. The tens digit of the first number is 4, so the ones digit must be 7.'},
+          {q:'True or False: 67 + 45 = 102',opts:['True','False — it is 112','True always','False — it is 101'],c:1,explain:'67+45: Ones: 7+5=12, write 2 carry 1. Tens: 6+4+1=11. Answer: 112, not 102!',fix:'Do not forget the carried digit! Always add the carried number to the tens column.'}
+        ]},
+        { title:'Subtraction with Regrouping', qs:[
+          {q:'What is 72 - 38?',opts:['34','44','36','46'],c:0,explain:'72-38: Ones: 2 < 8, borrow from tens. 12-8=4. Tens: 6-3=3. Answer: 34!',fix:'When the top ones digit is smaller than the bottom, borrow 1 from the tens. The ones become 10 more, tens become 1 less.'},
+          {q:'85 - 47 = ?',opts:['48','38','42','32'],c:1,explain:'85-47: Ones: 5<7, borrow. 15-7=8. Tens: 7-4=3. Answer: 38!',fix:'Borrowing: cross out the tens digit, make it 1 less. Add 10 to the ones column, then subtract.'},
+          {q:'What is 63 - 28?',opts:['35','45','25','34'],c:0,explain:'63-28: Ones: 3<8, borrow. 13-8=5. Tens: 5-2=3. Answer: 35!',fix:'Remember: when you borrow, the tens digit goes down by 1 and the ones get +10.'},
+          {q:'91 - 54 = ?',opts:['47','37','43','57'],c:1,explain:'91-54: Ones: 1<4, borrow. 11-4=7. Tens: 8-5=3. Answer: 37!',fix:'91 borrows: tens becomes 8 (was 9), ones becomes 11. Then 11-4=7, 8-5=3.'},
+          {q:'Which problem requires regrouping?',opts:['59-23','78-31','64-39','85-44'],c:2,explain:'64-39 needs regrouping! Ones: 4<9, must borrow. 14-9=5, tens: 5-3=2. Answer: 25.',fix:'Regrouping is needed when the top ones digit is SMALLER than the bottom ones digit.'},
+          {q:'100 - 45 = ?',opts:['65','55','56','45'],c:1,explain:'100-45: Borrow through two columns. 10-5=5 in ones, 9-4=5 in tens, 0 in hundreds. Answer: 55!',fix:'Subtracting from 100 means borrowing twice. The hundreds becomes 0, tens becomes 9, ones becomes 10.'},
+          {q:'What is 143 - 67?',opts:['76','86','66','84'],c:0,explain:'143-67: Ones: 3<7, borrow. 13-7=6. Tens: 3<6, borrow. 13-6=7. Hundreds: 0. Answer: 76!',fix:'Sometimes you need to borrow twice — once for ones, once for tens. Take it one column at a time.'},
+          {q:'52 - 28 = ?',opts:['34','24','26','36'],c:1,explain:'52-28: Ones: 2<8, borrow. 12-8=4. Tens: 4-2=2. Answer: 24!',fix:'Borrow 1 from the tens (5 becomes 4), add 10 to ones (2 becomes 12). Then 12-8=4, 4-2=2.'},
+          {q:'True or False: 80 - 36 = 54',opts:['True','False — it is 44','True always','False — it is 46'],c:1,explain:'80-36: Ones: 0<6, borrow. 10-6=4. Tens: 7-3=4. Answer: 44, not 54!',fix:'Remember to reduce the tens when borrowing. 80: tens go from 8 to 7 when you borrow for ones.'},
+          {q:'What is 200 - 134?',opts:['66','76','56','74'],c:0,explain:'200-134: Borrow across zeros. 10-4=6 ones, 9-3=6 tens, 1-1=0 hundreds. Answer: 66!',fix:'Subtracting from a number with zeros needs multiple borrows. Work right to left, borrowing as needed.'}
+        ]},
+        { title:'Word Problems', qs:[
+          {q:'Sam has 34 stickers. He gets 28 more. How many stickers does he have?',opts:['52','62','56','64'],c:1,explain:'34+28: Ones: 4+8=12, write 2 carry 1. Tens: 3+2+1=6. Answer: 62 stickers!',fix:'"Gets more" means addition. Add 34+28. Remember to regroup the ones column!'},
+          {q:'A box has 75 crayons. 38 are used up. How many are left?',opts:['37','47','43','33'],c:0,explain:'75-38: Ones: 5<8, borrow. 15-8=7. Tens: 6-3=3. Answer: 37 crayons!',fix:'"Left" or "remaining" means subtraction. Subtract the used from the total: 75-38.'},
+          {q:'There are 26 girls and 37 boys in a school play. How many children total?',opts:['53','63','64','52'],c:1,explain:'26+37: Ones: 6+7=13, write 3 carry 1. Tens: 2+3+1=6. Answer: 63 children!',fix:'"Total" or "altogether" means addition. Add both numbers together.'},
+          {q:'More/fewer: Mia has 52 cards. Jay has 35. How many MORE does Mia have?',opts:['17','27','19','87'],c:0,explain:'52-35: Ones: 2<5, borrow. 12-5=7. Tens: 4-3=1. Answer: 17 more cards!',fix:'"How many more" means subtraction. Subtract the smaller number from the bigger one.'},
+          {q:'A store had 90 apples. They sold 47. How many are left?',opts:['53','43','57','47'],c:1,explain:'90-47: Ones: 0<7, borrow. 10-7=3. Tens: 8-4=4. Answer: 43 apples!',fix:'"Sold" means those are gone. Subtract to find what remains: 90-47.'},
+          {q:'Write the equation: There are 48 boys and 56 girls. How many students?',opts:['56-48','48+56','56×48','56÷48'],c:1,explain:'To find the TOTAL of two groups, use addition: 48+56. Addition brings groups together!',fix:'"How many total?" or "how many altogether?" = ADDITION. Add the two amounts.'},
+          {q:'Write the equation: 83 total students, 45 are girls. How many boys?',opts:['83+45','83×45','83-45','45-83'],c:2,explain:'83-45 finds the boys. We know the total and one part, so subtract to find the other part.',fix:'Total - one part = other part. This is a subtraction situation!'},
+          {q:'Jake scores 67 points. He needs 100 to win. How many more does he need?',opts:['33','43','37','167'],c:0,explain:'100-67: Ones: 0<7, borrow. 10-7=3. Tens: 9-6=3. Answer: 33 more points!',fix:'"How many more needed" = subtract what you have from the goal: 100-67.'},
+          {q:'There are 124 students. 58 go home sick. How many remain?',opts:['66','76','56','86'],c:0,explain:'124-58: Ones: 4<8, borrow. 14-8=6. Tens: 1<5, borrow. 11-5=6. Hundreds: 0. Answer: 66!',fix:'Three-digit subtraction with regrouping. Take it one column at a time, borrowing when needed.'},
+          {q:'Part-part-whole: One part is 43, the whole is 91. What is the other part?',opts:['134','48','138','38'],c:1,explain:'91-43: Ones: 1<3, borrow. 11-3=8. Tens: 8-4=4. Answer: 48! The two parts are 43 and 48.',fix:'Part + Part = Whole. If you know one part and the whole, subtract to find the missing part: Whole - Part = Part.'}
+        ]},
+        { title:'Telling Time', qs:[
+          {q:'The hour hand points to 3, minute hand to 12. What time is it?',opts:['12:03','3:00','3:12','12:15'],c:1,explain:'Hour hand at 3, minute hand at 12 = 3 o\'clock = 3:00!',fix:'When the minute hand points to 12, it is exactly on the hour. Read the hour hand for the hour.'},
+          {q:'What does the MINUTE hand tell you?',opts:['The hour','The minutes','The seconds','The date'],c:1,explain:'The MINUTE hand is the LONG hand. It tells you the minutes past the hour!',fix:'Memory trick: Minute and Long both have more letters. The LONG hand = MINUTES.'},
+          {q:'The minute hand points to 6. How many minutes past the hour?',opts:['6','30','60','12'],c:1,explain:'When the minute hand points to 6, it is 30 minutes past the hour. Each number = 5 minutes!',fix:'Count by 5s around the clock: 1=5min, 2=10min, 3=15min, 4=20min, 5=25min, 6=30min.'},
+          {q:'What time is it when the clock shows 7:45?',opts:['Quarter to 7','Quarter to 8','7 forty-five','Both B and C'],c:3,explain:'7:45 means 45 minutes past 7, which is also 15 minutes BEFORE 8 = quarter to 8. Both are correct!',fix:'Quarter to 8 = 7:45. Quarter past 7 = 7:15. Half past 7 = 7:30.'},
+          {q:'Which shows 2:30?',opts:['Hour at 2, minute at 6','Hour at 6, minute at 2','Hour at 2, minute at 12','Hour at 3, minute at 6'],c:0,explain:'2:30 = hour hand at 2, minute hand at 6 (pointing to 6 = 30 minutes)!',fix:'For 2:30: hour hand points to 2, minute hand points to 6. 6 × 5 = 30 minutes.'},
+          {q:'Count by 5s: The minute hand points to 4. How many minutes?',opts:['4','40','20','25'],c:2,explain:'Count by 5s: 5, 10, 15, 20 — the 4 on a clock = 20 minutes!',fix:'Each number on the clock = 5 more minutes. Count: 1→5, 2→10, 3→15, 4→20, 5→25...'},
+          {q:'It is 8:15. What does 15 minutes look like on the clock?',opts:['Minute hand at 15','Minute hand at 3','Minute hand at 1','Minute hand at 12'],c:1,explain:'15 minutes = minute hand at 3. Count by 5s: 1→5, 2→10, 3→15. There it is!',fix:'Quarter past the hour = 15 minutes = minute hand pointing to 3.'},
+          {q:'How many minutes are in one hour?',opts:['100','12','60','24'],c:2,explain:'There are 60 minutes in one hour! The minute hand goes all the way around once per hour.',fix:'60 minutes = 1 hour. 30 minutes = half hour. 15 minutes = quarter hour.'},
+          {q:'School starts at 8:00. It is now 7:45. How long until school starts?',opts:['45 minutes','1 hour','15 minutes','30 minutes'],c:2,explain:'From 7:45 to 8:00 is 15 minutes. Count up: 7:45 → 7:50 → 7:55 → 8:00 = 15 min!',fix:'Count from the earlier time to the later time by 5s or 1s to find elapsed time.'},
+          {q:'The minute hand makes one full trip around in:',opts:['1 minute','12 hours','1 hour (60 minutes)','24 hours'],c:2,explain:'The minute hand completes one full circle in exactly 60 minutes = 1 hour!',fix:'Minute hand moves: 1 full circle = 1 hour = 60 minutes. Hour hand moves slowly, 1 full circle = 12 hours.'}
+        ]}
+      ]
+    },
+    writing: {
+      name:'Writing ✏️', icon:'✏️', color:'#f76e9e',
+      levels:[
+        { title:'Topic Sentences', qs:[
+          {q:'What is a topic sentence?',opts:['The last sentence','The sentence that tells the main idea','A question','A detail about something small'],c:1,explain:'A topic sentence tells the reader WHAT the whole paragraph is about. It is usually the first sentence!',fix:'Write your topic sentence first. Ask: what is this whole paragraph about? That is your topic sentence.'},
+          {q:'Which is the best topic sentence about dogs?',opts:['Dogs have four legs.','Dogs are great pets for many reasons.','My dog is named Max.','Dogs bark loudly.'],c:1,explain:'"Dogs are great pets for many reasons" introduces the main idea and signals that details will follow!',fix:'A good topic sentence is broad enough that it needs supporting details to back it up.'},
+          {q:'Where does a topic sentence usually go?',opts:['End of paragraph','Middle','Beginning','Anywhere you want'],c:2,explain:'The topic sentence goes at the BEGINNING! It tells the reader what to expect from the whole paragraph.',fix:'Think of the topic sentence as a title for your paragraph. It comes first to set everything up.'},
+          {q:'Which is a topic sentence, NOT a detail?',opts:['Apples are red and crunchy.','Fruit is healthy and delicious for many reasons.','Bananas have potassium.','Oranges are citrus.'],c:1,explain:'"Fruit is healthy for many reasons" introduces a topic. The other three are all specific details!',fix:'If a sentence introduces a bigger idea that needs more explanation, it is likely a topic sentence.'},
+          {q:'True or False: A topic sentence should have lots of specific details.',opts:['True','False — it introduces the main idea','True, more details are better','False — it should be one word'],c:1,explain:'FALSE! The topic sentence introduces the main idea. The DETAILS go in the supporting sentences!',fix:'Keep topic sentences clear and general. Save your specific examples for the body of the paragraph.'},
+          {q:'"My favorite season is summer." Is this a good topic sentence?',opts:['No, too long','Yes, it tells the main idea','No, it has no details','No, it is a question'],c:1,explain:'Yes! This tells the reader exactly what the paragraph is about. Simple and clear works great!',fix:'A good topic sentence does not need to be long. Clear and focused is perfect.'},
+          {q:'Which topic sentence is BEST for a paragraph about exercise?',opts:['I run every day.','Exercise is important for good health for many reasons.','Running is fast.','I have sneakers.'],c:1,explain:'"Exercise is important for good health" is best — it introduces the topic and needs details to explain why!',fix:'The best topic sentences make a claim that needs details to support it.'},
+          {q:'A topic sentence should make the reader want to:',opts:['Stop reading','Keep reading to learn more details','Skip the paragraph','Read a different book'],c:1,explain:'A good topic sentence makes the reader curious about the details that will follow!',fix:'After writing your topic sentence, ask: would someone want to keep reading? If yes, it is working!'},
+          {q:'Which phrase helps signal a topic sentence?',opts:['First,','However,','There are many reasons why','Because'],c:2,explain:'"There are many reasons why" is a great signal for a topic sentence — it tells the reader that details are coming!',fix:'Topic sentence starters: "There are many...", "One important...", "[Subject] is important because..."'},
+          {q:'Fill in: "__________ are important for staying healthy" — what subject makes this a good topic sentence?',opts:['Topic sentences','Vegetables','Recess games','Writing'],c:1,explain:'"Vegetables are important for staying healthy" is a perfect topic sentence — clear, focused, and needs details!',fix:'The topic sentence names the subject AND makes a claim about it. Then the details explain the claim.'}
+        ]},
+        { title:'Supporting Details', qs:[
+          {q:'What is the job of a supporting detail?',opts:['Introduce a new topic','Support and explain the topic sentence','End the paragraph','Ask a question'],c:1,explain:'Supporting details give REASONS, EXAMPLES, or EVIDENCE that back up the topic sentence!',fix:'After your topic sentence, ask: why is this true? Each answer becomes a supporting detail.'},
+          {q:'Topic: "Dogs make great pets." Which is the BEST supporting detail?',opts:['Dogs are animals.','Dogs can be trained to help people.','Some people prefer cats.','Dogs have four legs.'],c:1,explain:'"Dogs can be trained to help people" gives a real REASON why dogs are great pets!',fix:'A good supporting detail explains WHY the topic sentence is true. It gives evidence or examples.'},
+          {q:'How many supporting details should a 4-5 sentence paragraph have?',opts:['0','1','2-3','10'],c:2,explain:'A 4-5 sentence paragraph has 2-3 supporting details, plus a topic sentence and a closing sentence.',fix:'Structure: Topic sentence + 2-3 details + closing sentence = 4-5 sentences total.'},
+          {q:'Which detail best supports "Summer is the best season"?',opts:['Summer comes after spring.','Summer has no school and lots of outdoor activities.','Winter has snow.','Fall has leaves.'],c:1,explain:'"No school and outdoor activities" gives specific reasons why summer is the BEST. That supports the topic!',fix:'Supporting details should give specific reasons or examples that prove the topic sentence is true.'},
+          {q:'True or False: A detail can introduce a completely different topic.',opts:['True','False — it must support the topic sentence','True sometimes','False — details can be anything'],c:1,explain:'FALSE! Every detail must connect to and support the TOPIC SENTENCE. No random ideas allowed!',fix:'Before writing a detail, ask: does this prove or explain my topic sentence? If not, do not include it.'},
+          {q:'Which is NOT a good supporting detail for "Pizza is a favorite food"?',opts:['Pizza has many topping choices.','Pizza can be shared with friends.','Tacos are also popular.','Pizza can be healthy with vegetables.'],c:2,explain:'"Tacos are also popular" is about a DIFFERENT food! It does not support the pizza topic sentence.',fix:'Stay on topic! Every detail must be about the SAME subject as the topic sentence.'},
+          {q:'What should come AFTER 2-3 supporting details in a paragraph?',opts:['Another topic sentence','A closing sentence','A question','Nothing'],c:1,explain:'After your details, write a closing sentence that wraps up the paragraph or restates the main idea.',fix:'Paragraph structure: Topic → Details → Closing. The closing ties everything together.'},
+          {q:'Which detail uses a specific EXAMPLE?',opts:['Exercise is good.','Running for 30 minutes helps your heart stay strong.','I like exercise.','Exercise matters.'],c:1,explain:'"Running for 30 minutes helps your heart" gives a SPECIFIC example with details — much stronger!',fix:'Specific details are more convincing than general ones. Use numbers, names, and examples.'},
+          {q:'How does a detail connect to the topic sentence?',opts:['It does not need to connect','It explains or proves the topic sentence true','It introduces a new idea','It ends the paragraph'],c:1,explain:'Every detail must EXPLAIN or PROVE the topic sentence. They work together as a team!',fix:'After each detail, ask: how does this prove my topic sentence? If you cannot answer, revise the detail.'},
+          {q:'Taalyn wrote: "Dogs are great pets. They are loyal and loving. Dogs can also be trained. They protect families too." How many supporting details are there?',opts:['1','2','3','4'],c:2,explain:'There are 3 details: loyal/loving, can be trained, protect families. These all support "dogs are great pets"!',fix:'Count the sentences that give reasons or examples for the topic sentence. That is how many details you have.'}
+        ]}
+      ]
+    },
+    money: {
+      name:'Money 💰', icon:'💰', color:'#ffe600',
+      levels:[
+        { title:'Counting Coins', qs:[
+          {q:'How many cents is a quarter?',opts:['10 cents','25 cents','5 cents','50 cents'],c:1,explain:'A quarter is 25 cents! Four quarters = $1.00.',fix:'Penny=1¢, nickel=5¢, dime=10¢, quarter=25¢. Memorize these!'},
+          {q:'How much is a nickel worth?',opts:['1 cent','5 cents','10 cents','25 cents'],c:1,explain:'A nickel is 5 cents! Two nickels = 1 dime (10 cents).',fix:'Nickel = 5 cents. The word "nickel" can help you remember it starts with N and = 5.'},
+          {q:'How many cents is a dime?',opts:['1 cent','5 cents','10 cents','25 cents'],c:2,explain:'A dime is 10 cents! It is the smallest coin but worth more than a nickel or penny.',fix:'Dimes are small but strong — 10 cents each. Two dimes = 20 cents.'},
+          {q:'Taalyn has 4 dimes. How much money?',opts:['4 cents','14 cents','40 cents','44 cents'],c:2,explain:'4 dimes × 10 cents = 40 cents!',fix:'Multiply the coin value by how many. 4 × 10¢ = 40¢.'},
+          {q:'Which coin is worth the MOST?',opts:['Penny','Nickel','Dime','Quarter'],c:3,explain:'A quarter is worth 25 cents — the most of the 4 common coins!',fix:'From most to least: Quarter (25¢) > Dime (10¢) > Nickel (5¢) > Penny (1¢).'},
+          {q:'5 pennies = ?',opts:['1 nickel','1 dime','1 quarter','1 dollar'],c:0,explain:'5 pennies = 5 cents = 1 nickel! Same value, different coins.',fix:'5 pennies and 1 nickel are both 5 cents. You can trade one for the other.'},
+          {q:'Taalyn has 2 quarters. How much is that?',opts:['25 cents','50 cents','75 cents','2 cents'],c:1,explain:'2 quarters × 25 cents = 50 cents. Half a dollar!',fix:'Each quarter is 25¢. Two of them = 50¢.'},
+          {q:'How many nickels make 25 cents?',opts:['2','3','4','5'],c:3,explain:'5 nickels × 5 cents each = 25 cents. Same as 1 quarter!',fix:'25 ÷ 5 (nickel value) = 5 nickels. So 5 nickels = 1 quarter.'},
+          {q:'Which is more: 3 dimes or 1 quarter?',opts:['3 dimes','1 quarter','They are equal','Cannot tell'],c:0,explain:'3 dimes = 30¢. 1 quarter = 25¢. 30 > 25, so 3 dimes is MORE!',fix:'Calculate each side: 3×10=30 and 1×25=25. Compare the totals.'},
+          {q:'Taalyn has 1 quarter, 2 dimes, and 1 nickel. Total?',opts:['25 cents','40 cents','50 cents','75 cents'],c:2,explain:'25 + 20 + 5 = 50 cents!',fix:'Add them up: quarter (25) + 2 dimes (20) + nickel (5) = 50 cents.'}
+        ]},
+        { title:'Money Math', qs:[
+          {q:'A sticker costs 30¢. You have 50¢. How much left after buying?',opts:['20 cents','30 cents','50 cents','80 cents'],c:0,explain:'50¢ - 30¢ = 20¢ left!',fix:'"Left" = subtract. Starting money - spent money = money left.'},
+          {q:'Apple is 50¢. You pay with 2 quarters. Do you have enough?',opts:['Yes, exactly','No','Yes, with change','Need more'],c:0,explain:'2 quarters = 50¢. Apple costs 50¢. Exactly right — no change needed!',fix:'If your money equals the cost exactly, you pay with no change.'},
+          {q:'Candy costs 25¢. You give a dollar. Change?',opts:['25 cents','75 cents','1 dollar','50 cents'],c:1,explain:'$1.00 - 25¢ = 75¢ change!',fix:'Change = paid - cost. 100¢ - 25¢ = 75¢.'},
+          {q:'You have 3 dollars. You spend 1 dollar. How much left?',opts:['$1','$2','$3','$4'],c:1,explain:'$3 - $1 = $2 left!',fix:'Subtract what you spent from what you had. Like regular math.'},
+          {q:'Two toys cost $2 each. How much total?',opts:['$2','$4','$6','$8'],c:1,explain:'2 × $2 = $4 total!',fix:'Multiply: number of items × price each = total cost.'},
+          {q:'A cookie is 50¢. You want 2. Total cost?',opts:['50¢','$1.00','$1.50','$2.00'],c:1,explain:'2 × 50¢ = 100¢ = $1.00!',fix:'Two 50¢ items = 100¢ which is the same as $1.'},
+          {q:'You have 5 dimes. Is that more or less than a dollar?',opts:['More','Less','Equal','Cannot tell'],c:1,explain:'5 dimes = 50¢. That is less than $1 (which is 100¢).',fix:'Count: 5 × 10¢ = 50¢. Then compare: 50¢ < 100¢ ($1).'},
+          {q:'Taalyn buys a $3 toy. He pays with $5. Change?',opts:['$2','$3','$5','$8'],c:0,explain:'$5 - $3 = $2 change!',fix:'Change = paid - cost. Simple subtraction.'},
+          {q:'Which costs MORE: a $2 book or 75¢ candy?',opts:['The book','The candy','Equal','Cannot tell'],c:0,explain:'$2 = 200¢. 75¢ = 75¢. The book costs MORE!',fix:'Convert to the same unit to compare. $2 = 200¢ which is more than 75¢.'},
+          {q:'You have 4 quarters. How much money?',opts:['$0.25','$0.75','$1.00','$4.00'],c:2,explain:'4 quarters = 4 × 25¢ = 100¢ = $1.00!',fix:'4 quarters always = $1. That is why we say "four quarters make a dollar."'}
+        ]}
+      ]
+    }
+  },
+  amani: {
+    reading: {
+      name:'Reading 📖', icon:'📖', color:'#9b59b6',
+      levels:[
+        { title:'Multisyllabic Words', qs:[
+          {q:'How many syllables are in "beautiful"?',opts:['2','3','4','5'],c:1,explain:'"Beautiful" has 3 syllables: beau-ti-ful. Count the vowel sounds: beau(1), ti(2), ful(3)!',fix:'To count syllables, clap each "beat" when you say the word. Beau-ti-ful = 3 claps = 3 syllables.'},
+          {q:'Which word has 4 syllables?',opts:['butterfly','animal','celebration','understand'],c:2,explain:'"Celebration" has 4 syllables: cel-e-bra-tion. Count: cel(1), e(2), bra(3), tion(4)!',fix:'Clap it out: cel-e-bra-tion. Each clap is one syllable.'},
+          {q:'Break "important" into syllables:',opts:['im-por-tant','i-m-por-tant','imp-or-tant','impor-tant'],c:0,explain:'"Important" splits as im-por-tant. Three syllables, each with its own vowel sound!',fix:'Syllable rule: each syllable needs a vowel sound. Im(i), por(o), tant(a) — three vowel sounds.'},
+          {q:'Which shows the correct syllable break for "elephant"?',opts:['e-le-phant','el-e-phant','ele-phant','eleph-ant'],c:1,explain:'"Elephant" splits as el-e-phant. Three syllables: el(1), e(2), phant(3).',fix:'When two consonants appear together (ph in elephant), keep them together in the same syllable.'},
+          {q:'Decode this multisyllabic word: "un-hap-py". What does it mean?',opts:['Very happy','Not happy','Kind of happy','Super happy'],c:1,explain:'"Un-" is a prefix meaning NOT. Unhappy = not happy!',fix:'Prefix "un-" always means NOT or the opposite. Unknown = not known. Unkind = not kind.'},
+          {q:'Which prefix means "again"?',opts:['un-','pre-','re-','mis-'],c:2,explain:'"Re-" means again! Rewrite = write again. Redo = do again. Replay = play again!',fix:'Common prefixes: un=not, re=again, pre=before, mis=wrongly. Knowing these helps decode big words.'},
+          {q:'What is a good strategy to decode "uncomfortable"?',opts:['Guess','Break it into parts: un-com-for-ta-ble','Skip it','Ask someone to read it'],c:1,explain:'Break it into parts: un(not) + comfort + able(can be). Uncomfortable = not able to be comfortable!',fix:'Long words are just short words stuck together. Break them into syllables and prefixes/suffixes.'},
+          {q:'"Dis-" in "disappear" means:',opts:['Again','Before','Not/opposite','After'],c:2,explain:'"Dis-" means not or opposite. Disappear = not appear = to vanish!',fix:'Prefix "dis-" = not/opposite. Disagree=not agree, disconnect=not connect, disappear=not appear.'},
+          {q:'Which word has the suffix "-tion" (meaning the act of)?',opts:['acting','action','acted','acts'],c:1,explain:'"Action" ends in -tion which means "the act of." Action = the act of acting!',fix:'Suffix "-tion" or "-sion" means the act of or result of. Celebration, education, information.'},
+          {q:'Amani can read 113 words per minute. Her goal is 90. Is she:',opts:['Below goal','At goal','Above goal','Unable to tell'],c:2,explain:'113 words per minute is ABOVE her goal of 90! That is amazing reading speed!',fix:'Compare the numbers: 113 > 90. When your score is higher than the goal, you exceeded it!'}
+        ]},
+        { title:'Reading Comprehension', qs:[
+          {q:'What is the MAIN IDEA of a paragraph?',opts:['The last sentence','What the whole paragraph is mostly about','A small detail','The first word'],c:1,explain:'The main idea is what the WHOLE paragraph is mostly about — the big point the author is making!',fix:'To find the main idea: ask "What is this mostly about?" The answer in one sentence is the main idea.'},
+          {q:'What is a SUPPORTING DETAIL?',opts:['The main idea','A fact or example that explains the main idea','A question','The title'],c:1,explain:'Supporting details are facts, examples, or reasons that explain or prove the main idea!',fix:'Details answer questions about the main idea: Who? What? When? Where? Why? How?'},
+          {q:'Read: "Dogs make loyal pets. They protect homes, learn tricks, and comfort people who are sad." What is the main idea?',opts:['Dogs learn tricks','Dogs make loyal pets','Dogs protect homes','Dogs comfort sad people'],c:1,explain:'"Dogs make loyal pets" is the main idea — the sentence that everything else explains!',fix:'The main idea is usually the first sentence. The other sentences are details that support it.'},
+          {q:'What does "infer" mean?',opts:['Copy from the book','Use clues to figure out what is not stated','Read aloud','Skip the hard parts'],c:1,explain:'Inferring means using CLUES from the text to figure out something the author did not say directly!',fix:'Inference = text clues + what you already know. Like a detective figuring out the answer!'},
+          {q:'The text says: "Maria grabbed her umbrella and raincoat." What can you infer?',opts:['Maria is going to bed','It is probably raining or will rain','Maria likes umbrellas','Maria lost her jacket'],c:1,explain:'We can infer it is raining or going to rain! Umbrellas and raincoats are used for rain — that is the clue!',fix:'Ask: what clues does the author give? Umbrella + raincoat = rain. Use those clues to infer.'},
+          {q:'What is the PURPOSE of a conclusion paragraph?',opts:['Start a new topic','Introduce new details','Wrap up and restate the main idea','Ask questions'],c:2,explain:'A conclusion wraps up the text and restates the main idea in a new way. It gives the reader a sense of ending!',fix:'Conclusions: restate main idea + summarize key points + closing thought. No new information!'},
+          {q:'Which text structure compares two things?',opts:['Sequence','Cause and effect','Compare and contrast','Problem and solution'],c:2,explain:'"Compare and contrast" structure looks at how two things are ALIKE and DIFFERENT!',fix:'Signal words for compare/contrast: both, also, however, but, on the other hand, unlike, similarly.'},
+          {q:'What does "context clues" mean?',opts:['Looking up every word in a dictionary','Using words around an unknown word to figure out its meaning','Skipping unknown words','Sounding out words'],c:1,explain:'Context clues are WORDS AROUND the unknown word that help you figure out what it means!',fix:'When you see an unknown word: read the whole sentence. What does it seem to mean? Those are context clues.'},
+          {q:'Read: "The ancient ruins were covered in moss and vines." What does "ancient" mean?',opts:['New and modern','Very old','Beautiful','Tall'],c:1,explain:'"Ruins covered in moss and vines" suggests the place is VERY OLD — that is the context clue for ancient!',fix:'Moss and vines grow over many years. That clues us in that "ancient" means very old.'},
+          {q:'Which is the BEST summary of a short story?',opts:['Copy all the sentences','Write every detail','Give the main events in your own words','Write only the ending'],c:2,explain:'A summary gives the MAIN EVENTS in YOUR OWN WORDS — short, clear, and focused on the most important parts!',fix:'Summary checklist: main character, main problem, key events, resolution. Leave out minor details.'}
+        ]}
+      ]
+    },
+    math: {
+      name:'Math 🔢', icon:'🔢', color:'#52c97a',
+      levels:[
+        { title:'Addition with Regrouping (Large Numbers)', qs:[
+          {q:'What is 567 + 348?',opts:['905','915','815','885'],c:0,explain:'567+348: Ones: 7+8=15, write 5 carry 1. Tens: 6+4+1=11, write 1 carry 1. Hundreds: 5+3+1=9. Answer: 915!',fix:'Line up the numbers by place value. Start at ones, regroup if needed, then move left to tens, then hundreds.'},
+          {q:'482 + 739 = ?',opts:['1,121','1,221','1,211','1,111'],c:0,explain:'482+739: Ones: 2+9=11, write 1 carry 1. Tens: 8+3+1=12, write 2 carry 1. Hundreds: 4+7+1=12. Answer: 1,221!',fix:'When the hundreds column regroups, you get a 4-digit answer. Write the new thousands digit.'},
+          {q:'What is 845 + 567?',opts:['1,312','1,412','1,402','1,302'],c:1,explain:'845+567: Ones: 5+7=12, carry 1. Tens: 4+6+1=11, carry 1. Hundreds: 8+5+1=14. Answer: 1,412!',fix:'Three-digit addition can give a 4-digit answer when hundreds regroup. The extra digit becomes thousands.'},
+          {q:'Choose the correct answer: 1,050 + 275',opts:['1,235','1,325','1,425','1,225'],c:1,explain:'1,050+275: Ones: 0+5=5. Tens: 5+7=12, carry 1. Hundreds: 0+2+1=3. Thousands: 1. Answer: 1,325!',fix:'For 4-digit addition, add column by column from right to left, carrying when needed.'},
+          {q:'Amani solved 694 + 438 = 1,032. Is this correct?',opts:['Yes','No — it is 1,132','No — it is 932','Yes, always'],c:1,explain:'694+438: Ones: 4+8=12, carry 1. Tens: 9+3+1=13, carry 1. Hundreds: 6+4+1=11. Answer: 1,132, not 1,032!',fix:'Amani forgot to add the carried 1 to the hundreds column. Always include carried digits!'},
+          {q:'What is 1,200 + 875?',opts:['1,975','2,075','2,175','1,075'],c:1,explain:'1,200+875: Start from ones. 0+5=5, 0+7=7, 2+8=10 carry 1, 1+0+1=2. Answer: 2,075!',fix:'When adding thousands, line up all place values carefully. 1,200 has zeros in ones and tens places.'},
+          {q:'Round 567 to the nearest hundred, then add 300.',opts:['867','800','900','850'],c:0,explain:'567 rounds to 600 (5 in tens place ≥ 5, round up). 600+300=900... wait: 567→600, 600+300=900. Hmm, 567 rounded = 600, 600+300=900!',fix:'Rounding to hundreds: look at the TENS digit. If 5 or more, round up. If less than 5, round down.'},
+          {q:'What property says 45 + 67 = 67 + 45?',opts:['Associative','Commutative','Distributive','Identity'],c:1,explain:'The COMMUTATIVE property says you can change the ORDER of addends and get the same sum!',fix:'Commutative = order does not matter. 45+67 = 67+45. Both equal 112!'},
+          {q:'Estimate: 489 + 312. Which is the best estimate?',opts:['700','800','900','600'],c:1,explain:'489 rounds to 500, 312 rounds to 300. 500+300=800. Best estimate is 800!',fix:'To estimate, round each number to the nearest hundred, then add the rounded numbers.'},
+          {q:'A store sold 738 items Monday and 654 items Tuesday. How many items total?',opts:['1,292','1,382','1,392','1,282'],c:2,explain:'738+654: Ones: 8+4=12, carry 1. Tens: 3+5+1=9. Hundreds: 7+6=13. Answer: 1,392 items!',fix:'"Total" or "altogether" means ADD. Line up digits, start from ones, carry when needed.'}
+        ]},
+        { title:'Two-Step Word Problems', qs:[
+          {q:'Sam has 24 stickers. He gets 15 more, then gives 8 to his friend. How many does he have?',opts:['31','47','39','17'],c:0,explain:'Step 1: 24+15=39. Step 2: 39-8=31. Sam has 31 stickers!',fix:'Two-step problems need TWO calculations. Identify what happens first, solve it, then use that answer for step 2.'},
+          {q:'A baker made 48 cookies. She sold 23, then baked 16 more. How many now?',opts:['41','57','35','87'],c:0,explain:'Step 1: 48-23=25. Step 2: 25+16=41. The baker has 41 cookies!',fix:'Read carefully for TWO actions. First she sold (subtract), then baked more (add). Do them in order.'},
+          {q:'Which TWO operations solve: "36 students, 14 go home, then 8 more arrive. How many now?"',opts:['Add then add','Subtract then add','Add then subtract','Multiply then divide'],c:1,explain:'Step 1: 36-14=22 (go home = subtract). Step 2: 22+8=30 (arrive = add). Answer: 30 students!',fix:'"Go home" = subtract (fewer). "Arrive" = add (more). Identify each action\'s operation.'},
+          {q:'A library has 120 books. They get 45 new books and return 28 borrowed ones. How many total?',opts:['137','165','193','157'],c:0,explain:'Step 1: 120+45=165 (new books). Step 2: 165-28=137 (returned ones go back to borrowers). Answer: 137!',fix:'Careful: returned books LEAVE the library (subtract). New books were ADDED. Do step 1 first.'},
+          {q:'Amani has $56. She earns $24 more, then spends $35. How much is left?',opts:['$45','$55','$67','$115'],c:0,explain:'Step 1: $56+$24=$80. Step 2: $80-$35=$45. Amani has $45 left!',fix:'Money problems: earning = add, spending = subtract. Do them in the order they happen.'},
+          {q:'What is the FIRST step to solve a two-step problem?',opts:['Guess the answer','Read the problem and find what happens first','Add all numbers','Multiply'],c:1,explain:'Always READ the problem carefully first! Identify what happens in step 1 and step 2 before solving.',fix:'Problem-solving steps: 1-Read. 2-Find step 1 action. 3-Solve step 1. 4-Use answer for step 2.'},
+          {q:'75 people on a bus. At stop 1, 23 get off and 14 get on. How many on the bus now?',opts:['66','62','84','52'],c:0,explain:'Step 1: 75-23=52 (get off). Step 2: 52+14=66 (get on). Answer: 66 people!',fix:'Bus problems: getting off = subtract, getting on = add. Always use the step 1 answer in step 2.'},
+          {q:'A garden has 3 rows of 8 flowers. 7 flowers die. How many flowers are left?',opts:['17','31','24','15'],c:0,explain:'Step 1: 3×8=24 (total flowers). Step 2: 24-7=17 (flowers die = subtract). Answer: 17!',fix:'Step 1 uses multiplication to find total. Step 2 subtracts the ones that died. Two different operations!'},
+          {q:'Which equation matches: "John had 50 cards, got 30 more, gave away 20"?',opts:['50-30+20','50+30-20','50×30-20','50+30+20'],c:1,explain:'Got more = add (+30). Gave away = subtract (-20). Equation: 50+30-20=60!',fix:'Write the equation step by step: start with 50, then +30 for getting more, then -20 for giving away.'},
+          {q:'Solve: 4 bags with 12 apples each. Ate 15 apples. How many left?',opts:['33','43','53','63'],c:0,explain:'Step 1: 4×12=48 total apples. Step 2: 48-15=33 apples left!',fix:'When a problem has "each" or "per," think multiplication first. Then do the second operation.'}
+        ]},
+        { title:'Multiplication Basics', qs:[
+          {q:'What is 6 × 7?',opts:['42','48','36','43'],c:0,explain:'6×7=42! You can think: 6×7 = 6×5 + 6×2 = 30+12 = 42. Or just memorize it!',fix:'Multiplication is repeated addition. 6×7 = 7+7+7+7+7+7 = 42. Practice your 6s: 6,12,18,24,30,36,42.'},
+          {q:'What does 4 × 8 mean?',opts:['4+8','4 groups of 8','8-4','4÷8'],c:1,explain:'4×8 means 4 GROUPS of 8. Like 4 baskets with 8 apples each = 32 apples total!',fix:'Multiplication = equal groups. 4×8 = 8+8+8+8 = 32. Think of it as groups of equal size.'},
+          {q:'8 × 9 = ?',opts:['63','72','81','64'],c:1,explain:'8×9=72! Trick: 9s pattern — 9×8: think 80-8=72. Or count up: 9,18,27,36,45,54,63,72!',fix:'9s trick: multiply by 10 then subtract one group. 9×8 = 80-8 = 72. Try it on other 9s facts!'},
+          {q:'Which shows the commutative property?',opts:['3×4=12 and 4×3=12','3×4=12 and 3×5=15','3+4=7 and 4×3=12','3×4=12 and 12÷3=4'],c:0,explain:'Commutative property: 3×4 = 4×3 = 12. The ORDER of factors does not change the product!',fix:'Commutative = order does not matter. 3×4 = 4×3. This cuts the multiplication facts you need to memorize in half!'},
+          {q:'What is 7 × 0?',opts:['7','0','1','70'],c:1,explain:'Any number times 0 = 0! Zero groups of anything = nothing. 7×0=0.',fix:'Zero property of multiplication: anything × 0 = 0. Seven groups of zero cookies = zero cookies!'},
+          {q:'Solve: There are 5 rows of desks with 9 desks in each row. How many desks?',opts:['14','45','54','40'],c:1,explain:'5 rows × 9 desks each = 5×9 = 45 desks total!',fix:'Equal groups problems use multiplication: number of groups × size of each group = total.'},
+          {q:'What is 12 × 4?',opts:['48','46','42','44'],c:0,explain:'12×4=48! Think: 10×4=40, then 2×4=8, add them: 40+8=48!',fix:'For 12× facts, break it into 10× + 2×. 12×4 = (10×4)+(2×4) = 40+8 = 48.'},
+          {q:'Which equation matches: 3 boxes, 8 crayons each, how many crayons?',opts:['3+8=11','8-3=5','3×8=24','24÷3=8'],c:2,explain:'3 boxes × 8 crayons each = 3×8 = 24 crayons! Equal groups = multiplication.',fix:'"Each" is a key word for multiplication. 3 boxes with 8 EACH = 3×8.'},
+          {q:'True or False: 6×4 = 4×6',opts:['True — commutative property','False','True sometimes','False — order matters'],c:0,explain:'TRUE! 6×4=24 and 4×6=24. The commutative property works for all multiplication!',fix:'Commutative property: a × b = b × a, always! This is always true for multiplication.'},
+          {q:'What multiplication fact is the same as 9+9+9+9+9?',opts:['9×4','5×9','9+5','9-5'],c:1,explain:'9+9+9+9+9 = 5 nines added together = 5×9 = 45!',fix:'Multiplication IS repeated addition. Count how many times a number is added — that is the factor.'}
+        ]}
+      ]
+    },
+    writing: {
+      name:'Writing ✏️', icon:'✏️', color:'#f76e9e',
+      levels:[
+        { title:'Paragraph Structure', qs:[
+          {q:'What is the first sentence of a paragraph called?',opts:['Closing sentence','Topic sentence','Detail sentence','Title'],c:1,explain:'The first sentence is the TOPIC SENTENCE — it tells the reader what the paragraph is about!',fix:'Paragraph structure: Topic sentence → 2-3 supporting details → closing sentence.'},
+          {q:'What is the purpose of supporting details?',opts:['To confuse the reader','To explain and back up the topic sentence','To add length','To be boring'],c:1,explain:'Supporting details give examples, reasons, or evidence that prove the topic sentence!',fix:'Every supporting detail must connect to and strengthen the topic sentence.'},
+          {q:'Which is a strong topic sentence?',opts:['Dogs.','I like dogs.','Dogs make wonderful family pets for many reasons.','Woof.'],c:2,explain:'"Dogs make wonderful family pets for many reasons" is specific AND invites details. Perfect topic sentence!',fix:'Good topic sentences state a main idea clearly and hint that details will follow.'},
+          {q:'What should a closing sentence do?',opts:['Introduce a new topic','Wrap up and restate the main idea','Start the paragraph','Ask a question'],c:1,explain:'A closing sentence wraps up the paragraph by restating the main idea in a new way!',fix:'Closing sentences give readers a sense of completion — like the final bow on a gift.'},
+          {q:'How many supporting details belong in a 4-5 sentence paragraph?',opts:['0','1','2-3','10'],c:2,explain:'A 4-5 sentence paragraph has 2-3 supporting details between the topic sentence and closing.',fix:'Structure: 1 topic + 2-3 details + 1 closing = 4-5 sentences total.'},
+          {q:'Which detail supports "Summer is the best season"?',opts:['Winter has snow.','Summer has no school and lots of sunshine.','Fall is cold.','Spring has rain.'],c:1,explain:'"No school and sunshine" give specific REASONS summer is the best. That supports the topic!',fix:'Supporting details should give real reasons or examples that prove the topic is true.'},
+          {q:'What is the main idea of a paragraph?',opts:['The first word','What the paragraph is mostly about','The last letter','How long it is'],c:1,explain:'The main idea is what the paragraph is MOSTLY ABOUT — the big point the author is making!',fix:'Ask yourself: "What is this paragraph trying to tell me?" That answer is the main idea.'},
+          {q:'True or False: Every sentence in a paragraph should be about the same topic.',opts:['True','False','Sometimes','Only the first sentence'],c:0,explain:'TRUE! Every sentence in a paragraph should connect to the main topic. Off-topic sentences confuse readers.',fix:'Before writing a sentence, ask: does this belong with the topic? If not, save it for another paragraph.'},
+          {q:'Which transition word shows adding more information?',opts:['However','Also','But','Instead'],c:1,explain:'"Also" adds more information. Other good ones: additionally, furthermore, in addition, plus.',fix:'Transition words connect ideas. "Also" and "furthermore" add. "However" and "but" contrast.'},
+          {q:'Amani wrote 3 paragraphs. What connects them into an essay?',opts:['Nothing','An introduction and conclusion','Random sentences','Pictures'],c:1,explain:'Multiple paragraphs make an ESSAY. You need an introduction and conclusion to tie them together!',fix:'Essay structure: Intro paragraph → body paragraphs (each with its own topic) → conclusion paragraph.'}
+        ]},
+        { title:'Strong Sentences', qs:[
+          {q:'Which sentence is more interesting?',opts:['I ate food.','I devoured a cheesy slice of pizza.','Food was ate.','Pizza.'],c:1,explain:'"Devoured a cheesy slice of pizza" uses strong verbs AND descriptive details. Way more interesting!',fix:'Replace weak verbs (ate, went, said) with stronger ones (devoured, dashed, whispered).'},
+          {q:'What kind of word is "beautiful"?',opts:['Verb','Noun','Adjective','Adverb'],c:2,explain:'"Beautiful" is an ADJECTIVE — it describes a noun (a beautiful day, a beautiful song).',fix:'Adjectives describe nouns. They answer: what kind? which one? how many?'},
+          {q:'Which has a STRONG verb?',opts:['She walked','She strolled','She got there','She moved'],c:1,explain:'"Strolled" is a strong verb! It shows HOW she walked — relaxed and unhurried.',fix:'Strong verbs paint a clearer picture. Instead of "walked" try strolled, marched, tiptoed, raced.'},
+          {q:'What makes this sentence weak: "The thing was nice"?',opts:['Too long','Vague words like "thing" and "nice"','Wrong spelling','Missing punctuation'],c:1,explain:'"Thing" and "nice" are super vague! Replace them with specific words: "The blue sweater was cozy."',fix:'Avoid vague words. Ask: what thing? what kind of nice? Be specific!'},
+          {q:'Which is a complete sentence?',opts:['Running fast.','The tall tree.','She smiled.','Because it rained.'],c:2,explain:'"She smiled" is complete — it has a subject (she) and a verb (smiled) and expresses a full thought!',fix:'A complete sentence needs: a subject (who/what) + a verb (action) + a complete thought.'},
+          {q:'How do you fix this fragment: "When I went home"?',opts:['Add a period','Add what happened next: "When I went home, I ate dinner."','Delete it','Leave it'],c:1,explain:'Fragments are incomplete. "When I went home" is waiting for the REST of the thought!',fix:'If a sentence starts with when, if, because — it needs a main clause to complete the thought.'},
+          {q:'Which sentence uses sensory details?',opts:['It was a day.','The salty ocean breeze tickled my nose.','We went outside.','It was there.'],c:1,explain:'"Salty ocean breeze tickled my nose" uses SMELL and TOUCH. That is sensory writing!',fix:'Sensory details appeal to the 5 senses: sight, sound, smell, taste, touch.'},
+          {q:'What is the subject of "The big dog barked loudly"?',opts:['barked','loudly','The big dog','big'],c:2,explain:'The subject is WHO or WHAT the sentence is about. "The big dog" is who barked!',fix:'To find the subject, ask WHO or WHAT did the action. That person or thing is the subject.'},
+          {q:'Which sentence has a variety of words?',opts:['The cat ran. The cat jumped. The cat slept.','The curious cat leaped across the fence, landed softly, and curled up to nap.','Cat. Cat. Cat.','Run cat run.'],c:1,explain:'The second sentence has variety, strong verbs, and flows smoothly. Much better writing!',fix:'Combine short choppy sentences into longer, flowing ones. Use different verbs and descriptions.'},
+          {q:'Why use dialogue in writing?',opts:['To fill space','To bring characters to life with their own voices','To make it longer','No reason'],c:1,explain:'Dialogue makes characters REAL. Their words show personality, feelings, and push the story forward!',fix:'Good dialogue reveals character. Each person should sound different based on who they are.'}
+        ]}
+      ]
+    },
+    money: {
+      name:'Money 💰', icon:'💰', color:'#ffe600',
+      levels:[
+        { title:'Counting Money', qs:[
+          {q:'How much is a quarter worth?',opts:['10 cents','25 cents','50 cents','5 cents'],c:1,explain:'A quarter is worth 25 cents! Four quarters make a dollar (4 × 25 = 100 cents = $1.00).',fix:'Coin values: penny=1¢, nickel=5¢, dime=10¢, quarter=25¢, half dollar=50¢.'},
+          {q:'How much is 3 quarters?',opts:['30 cents','75 cents','25 cents','100 cents'],c:1,explain:'3 quarters = 3 × 25 = 75 cents. Almost a whole dollar!',fix:'Multiply the coin value by how many you have. 3 × 25¢ = 75¢.'},
+          {q:'A dollar is the same as how many quarters?',opts:['2','3','4','10'],c:2,explain:'4 quarters = $1.00! Each quarter is 25 cents, and 4 × 25 = 100 cents = $1.',fix:'1 dollar = 100 cents. 100 ÷ 25 (value of quarter) = 4 quarters.'},
+          {q:'Amani has 2 quarters and 3 dimes. How much money?',opts:['50 cents','65 cents','80 cents','75 cents'],c:2,explain:'2 quarters = 50¢. 3 dimes = 30¢. Total: 50 + 30 = 80 cents!',fix:'Count coins in groups: quarters first, then dimes, nickels, pennies. Add the totals.'},
+          {q:'How many pennies equal a nickel?',opts:['1','5','10','25'],c:1,explain:'5 pennies = 1 nickel. A nickel is worth 5 cents, same as 5 pennies.',fix:'Coin equivalents: 5 pennies = 1 nickel. 2 nickels = 1 dime. 5 nickels = 1 quarter.'},
+          {q:'Which is MORE: 5 dimes or 2 quarters?',opts:['5 dimes','2 quarters','They are equal','Cannot tell'],c:2,explain:'5 dimes = 50¢. 2 quarters = 50¢. They are EQUAL! Both are half a dollar.',fix:'Calculate each side: 5 × 10¢ = 50¢ and 2 × 25¢ = 50¢. Compare the totals.'},
+          {q:'How much is a $5 bill + a $10 bill?',opts:['$15','$5','$50','$150'],c:0,explain:'$5 + $10 = $15. Add bills just like you add numbers!',fix:'Bills add up just like regular addition. $5 + $10 = $15.'},
+          {q:'You have $20 and spend $7. How much is left?',opts:['$13','$27','$3','$7'],c:0,explain:'$20 - $7 = $13. When you spend money, SUBTRACT from what you had.',fix:'"Left" or "remaining" = subtraction. Start amount - spent amount = what you have left.'},
+          {q:'Pizza costs $12. You pay with $20. How much change?',opts:['$12','$20','$8','$32'],c:2,explain:'$20 - $12 = $8 change. Change is the money you get BACK when you overpay.',fix:'Change = amount you paid - cost of item. $20 paid - $12 cost = $8 change.'},
+          {q:'Amani has 2 one-dollar bills, 3 quarters, and 2 dimes. Total?',opts:['$2.00','$2.75','$2.95','$3.25'],c:2,explain:'$2 + 75¢ (3 quarters) + 20¢ (2 dimes) = $2.95!',fix:'Add bills first: $2. Then add coins: 75¢ + 20¢ = 95¢. Combine: $2.95.'}
+        ]},
+        { title:'Making Change', qs:[
+          {q:'Item costs $0.75. You give $1.00. Change?',opts:['$0.15','$0.25','$0.50','$1.75'],c:1,explain:'$1.00 - $0.75 = $0.25 change. That is 1 quarter!',fix:'Change = paid - cost. Subtract the cost from what you gave.'},
+          {q:'Toy costs $3.50. You pay $5. How much change?',opts:['$1.50','$2.50','$3.50','$8.50'],c:0,explain:'$5.00 - $3.50 = $1.50. You get back 6 quarters or a dollar and 2 quarters!',fix:'Align decimals carefully: 5.00 - 3.50 = 1.50. Subtract dollars from dollars, cents from cents.'},
+          {q:'Snack is $2.25. Amani gives $3. What coins make up the change?',opts:['3 quarters','7 dimes','15 pennies','All work'],c:3,explain:'$3.00 - $2.25 = $0.75. That could be 3 quarters, 7 dimes + 1 nickel, or 15 nickels. Any combo of 75¢!',fix:'Change can be made with different coin combinations. Count coins that add to the change amount.'},
+          {q:'You buy a book for $8 and pay with $10. Change?',opts:['$2','$8','$10','$18'],c:0,explain:'$10 - $8 = $2 change. Simple subtraction!',fix:'Change always equals paid minus cost. $10 paid - $8 cost = $2 back.'},
+          {q:'Three items cost $1.00 each. You pay with $5. How much change?',opts:['$1','$2','$3','$4'],c:1,explain:'3 × $1 = $3 total cost. $5 - $3 = $2 change. Two steps!',fix:'Step 1: Find total cost (multiply). Step 2: Subtract from what you paid.'},
+          {q:'Two quarters make change for what cost, if you paid $1?',opts:['$0.50','$0.75','$0.25','$1.50'],c:0,explain:'Two quarters = $0.50. So $1.00 - $0.50 = $0.50 cost. The item cost 50¢!',fix:'If you know the change, subtract it from what you paid to find the cost.'},
+          {q:'A slushie is $1.25. You pay with 2 one-dollar bills. Change?',opts:['$0.75','$1.00','$0.50','$0.25'],c:0,explain:'$2.00 - $1.25 = $0.75 change. That is 3 quarters!',fix:'Two $1 bills = $2. Subtract the cost: $2 - $1.25 = $0.75.'},
+          {q:'Candy costs $0.50. You pay with a dollar. What is the fewest coins for change?',opts:['5 dimes','2 quarters','50 pennies','10 nickels'],c:1,explain:'2 quarters = 50¢. Only 2 coins! Fewer coins = less to carry.',fix:'Use the largest coins first to make change with the fewest number of coins.'},
+          {q:'You have $10. You buy a $3 snack and a $2 drink. How much is left?',opts:['$5','$15','$7','$8'],c:0,explain:'$3 + $2 = $5 spent. $10 - $5 = $5 left. Two steps!',fix:'Total the cost first, then subtract from what you had. This is a two-step problem.'},
+          {q:'Apple costs $0.60. You only have $0.50. Can you buy it?',opts:['Yes','No — you need 10 more cents','Yes, with change','Sometimes'],c:1,explain:'You need $0.60 but only have $0.50. You are 10 cents short! Cannot buy it without more money.',fix:'Compare: do you have enough? If your money is less than the cost, you need more.'}
+        ]}
+      ]
+    },
+    time: {
+      name:'Time ⏰', icon:'⏰', color:'#00f0ff',
+      levels:[
+        { title:'Telling Time', qs:[
+          {q:'The hour hand is on 3, minute hand on 12. What time?',opts:['12:03','3:00','3:12','12:15'],c:1,explain:'Hour at 3, minute at 12 = 3:00 exactly (3 o\'clock)!',fix:'Minute hand on 12 = exactly on the hour. Read just the hour hand for the time.'},
+          {q:'What time is 30 minutes after 4:00?',opts:['4:30','5:00','3:30','4:15'],c:0,explain:'30 minutes after 4:00 is 4:30. Half past 4!',fix:'Adding 30 min: just add to the minutes. 4:00 + 30 = 4:30. Less than 60, so the hour stays the same.'},
+          {q:'Quarter past 7 is what time?',opts:['7:15','7:30','7:45','7:00'],c:0,explain:'Quarter past = 15 minutes after. So quarter past 7 = 7:15!',fix:'Quarter = 15 minutes. Half = 30 minutes. Three quarters = 45 minutes.'},
+          {q:'It is 8:45. What would "quarter to 9" look like?',opts:['The same time (8:45)','9:15','8:15','9:45'],c:0,explain:'Quarter to 9 = 15 minutes before 9 = 8:45. Same time, different way to say it!',fix:'Quarter TO = before the hour. Quarter to 9 means 15 minutes before 9:00 = 8:45.'},
+          {q:'How long from 3:15 to 4:00?',opts:['15 minutes','30 minutes','45 minutes','1 hour'],c:2,explain:'From 3:15 to 4:00 is 45 minutes. 15 to 30 is 15 min, 30 to 45 is 15 min, 45 to 60 is 15 min. 15+15+15=45!',fix:'Count by 15s up to the next hour. Or: 60 - 15 = 45 minutes to the top of the hour.'},
+          {q:'How many minutes in 2 hours?',opts:['60','90','120','100'],c:2,explain:'1 hour = 60 minutes. So 2 hours = 60 + 60 = 120 minutes!',fix:'Multiply hours by 60. Each hour has 60 minutes.'},
+          {q:'AM or PM: 2:00 in the afternoon?',opts:['AM','PM','Both','Neither'],c:1,explain:'PM is afternoon/evening (noon to midnight). 2:00 in the afternoon is 2:00 PM.',fix:'AM = morning (midnight to noon). PM = afternoon/evening (noon to midnight).'},
+          {q:'Movie starts at 7:30. It is now 6:45. How long until the movie?',opts:['30 minutes','45 minutes','1 hour','1 hour 15 minutes'],c:1,explain:'From 6:45 to 7:30 is 45 minutes. Count: 6:45 → 7:00 (15 min) → 7:30 (30 more min) = 45 total!',fix:'Count to the next hour first, then add the extra minutes. 6:45→7:00=15min + 30min more = 45 min.'},
+          {q:'School day starts at 8:00 AM and ends at 3:00 PM. How long?',opts:['5 hours','7 hours','8 hours','11 hours'],c:1,explain:'From 8 AM to 3 PM: 8→12 is 4 hours. 12→3 is 3 more hours. 4+3=7 hours total!',fix:'Count from AM to noon, then add PM hours. 8AM to noon = 4hr. Noon to 3PM = 3hr. Total 7hr.'},
+          {q:'Lunch is at 12:00. Your watch shows 11:20. How long until lunch?',opts:['20 minutes','40 minutes','60 minutes','1 hour 20 minutes'],c:1,explain:'From 11:20 to 12:00 is 40 minutes. Count: 11:20 → 11:30 (10 min) → 12:00 (30 more) = 40!',fix:'Find minutes to the next hour: 60 - 20 = 40 minutes to 12:00.'}
+        ]},
+        { title:'Time Word Problems', qs:[
+          {q:'Amani practices piano for 20 minutes, then homework for 45 min. Total time?',opts:['60 minutes','65 minutes','50 minutes','1 hour 15 minutes'],c:1,explain:'20 + 45 = 65 minutes total. That is 1 hour and 5 minutes!',fix:'Add minutes. If total is over 60, convert: 65 min = 1 hour 5 minutes.'},
+          {q:'A soccer game starts at 2:00 PM and lasts 90 minutes. When does it end?',opts:['3:30 PM','3:00 PM','4:00 PM','2:90 PM'],c:0,explain:'90 minutes = 1 hour 30 minutes. 2:00 + 1:30 = 3:30 PM!',fix:'Convert large minute amounts to hours. 90 min = 1 hr 30 min. Add to start time.'},
+          {q:'You need to be at school at 8:15. It takes 25 minutes to get ready. What time to wake up?',opts:['7:50','7:40','8:00','8:40'],c:0,explain:'8:15 - 25 min = 7:50. Work BACKWARDS from when you need to be ready!',fix:'To find starting time, subtract the prep time from the finish time.'},
+          {q:'Movie is 2 hours 15 minutes. Starts at 6:00 PM. End time?',opts:['8:00 PM','8:15 PM','7:15 PM','8:30 PM'],c:1,explain:'6:00 + 2 hours = 8:00. 8:00 + 15 min = 8:15 PM. Add hours then minutes!',fix:'Add hours first, then minutes. 6:00 + 2:15 = 8:15.'},
+          {q:'Recess is from 10:30 to 11:00. How long is recess?',opts:['15 minutes','30 minutes','45 minutes','1 hour'],c:1,explain:'From 10:30 to 11:00 is 30 minutes. Half an hour of recess!',fix:'Subtract: 11:00 - 10:30 = 30 minutes. Or count: 10:30 → 11:00 = 30 min.'},
+          {q:'Amani reads for 1 hour 10 minutes. Starts at 4:30. Ends when?',opts:['5:40','5:30','6:40','5:10'],c:0,explain:'4:30 + 1 hour = 5:30. 5:30 + 10 min = 5:40!',fix:'Add whole hours first, then add minutes. 4:30 + 1:10 = 5:40.'},
+          {q:'You have 45 minutes for lunch. You eat for 20 min, then talk for 15 min. How much time left?',opts:['10 minutes','20 minutes','25 minutes','40 minutes'],c:0,explain:'20 + 15 = 35 min used. 45 - 35 = 10 min left!',fix:'Add used time, then subtract from total. (20+15) from 45 = 10 min left.'},
+          {q:'TV show is 30 min. Ends at 7:00 PM. When did it start?',opts:['7:30','6:30','6:45','6:00'],c:1,explain:'7:00 - 30 min = 6:30. Work backwards from end time!',fix:'To find start time: end time - duration = start time.'},
+          {q:'Amani wakes at 6:45, eats at 7:15. How long between waking and eating?',opts:['15 min','30 min','45 min','1 hour'],c:1,explain:'From 6:45 to 7:15 is 30 minutes. Count: 6:45 → 7:00 (15) → 7:15 (15 more) = 30!',fix:'Count in chunks: get to the next hour first, then add remaining minutes.'},
+          {q:'Bus ride is 1 hour 20 min. You leave at 7:45 AM. Arrive when?',opts:['8:45 AM','9:05 AM','8:55 AM','9:15 AM'],c:1,explain:'7:45 + 1 hour = 8:45. 8:45 + 20 min = 9:05 AM!',fix:'Add hours first: 7:45 + 1hr = 8:45. Then add minutes: 8:45 + 20 = 9:05.'}
+        ]}
+      ]
+    }
+  },
+  terry: {
+    reading: {
+      name:'Reading 📖', icon:'📖', color:'#ff922b',
+      levels:[
+        { title:'Main Idea', qs:[
+          {q:'What is the MAIN IDEA of a paragraph?',opts:['A small detail','What the whole paragraph is mostly about','The first sentence always','The last word'],c:1,explain:'The main idea is what the WHOLE paragraph is mostly about — the big point the author is making!',fix:'To find the main idea: ask "What is this mostly about?" Answer in one sentence — that is your main idea.'},
+          {q:'Read: "Exercise keeps your body healthy. It strengthens your heart, builds muscles, and improves your mood." Main idea?',opts:['Exercise is fun','Exercise keeps your body healthy','Your heart needs exercise','Muscles need building'],c:1,explain:'"Exercise keeps your body healthy" is the main idea. The other sentences give details to support it!',fix:'The main idea is usually stated in the first sentence. The other sentences give evidence and examples.'},
+          {q:'What are the other sentences called that explain the main idea?',opts:['Topic sentences','Supporting details','Conclusions','Titles'],c:1,explain:'Supporting details are facts, examples, and reasons that explain the main idea!',fix:'Main idea + supporting details = a complete paragraph. Details answer: why? how? what evidence?'},
+          {q:'Read: "Cats sleep a lot. They can sleep 12-16 hours a day. Even kittens nap often." Main idea?',opts:['Kittens are small','Cats are lazy','Cats sleep a great deal','All animals nap'],c:2,explain:'All three sentences are about cats sleeping — so the main idea is "Cats sleep a great deal"!',fix:'When all sentences are about the same thing, that thing is the main idea. Find what connects them all.'},
+          {q:'Where is the main idea USUALLY found?',opts:['Last sentence','Middle of the paragraph','First sentence','In the title only'],c:2,explain:'The main idea is USUALLY in the first sentence — it tells the reader what the whole paragraph is about!',fix:'Authors usually state the main idea first, then give details. Look at the first sentence first!'},
+          {q:'Which is a MAIN IDEA, not a detail?',opts:['Dogs bark loudly.','Dogs have sharp teeth.','Dogs make wonderful companions for many reasons.','Dogs like to fetch.'],c:2,explain:'"Dogs make wonderful companions for many reasons" is the main idea — it is broad and needs details!',fix:'Main ideas are BROAD. Details are SPECIFIC. "Many reasons" signals a main idea that needs details.'},
+          {q:'True or False: Every paragraph has a main idea.',opts:['True','False','Only informational text','Only stories'],c:0,explain:'TRUE! Every paragraph has a main idea — what that paragraph is MOSTLY about.',fix:'Even in stories, each paragraph focuses on one main idea or event.'},
+          {q:'The topic and the main idea are:',opts:['Exactly the same','Different — topic is the subject, main idea is what is said about it','Both are details','Both are titles'],c:1,explain:'Topic = the SUBJECT (dogs). Main idea = what the author SAYS about that subject (dogs are great pets).',fix:'Topic: one or two words (dogs). Main idea: a full sentence about the topic (dogs are wonderful pets).'},
+          {q:'Read: "Water is important for life. People need it to drink. Plants use it to grow. Animals need it too." Main idea?',opts:['Plants need water','Animals drink water','Water is important for life','Water is wet'],c:2,explain:'"Water is important for life" is the main idea — all other sentences give examples of why!',fix:'The main idea makes a CLAIM. The details give EVIDENCE. Here: water is important = claim; people, plants, animals = evidence.'},
+          {q:'After reading a paragraph, how do you check if you found the main idea?',opts:['Count the sentences','See if all details connect to it','Check if it is the longest sentence','Ask the teacher'],c:1,explain:'Check: do all the details connect to the sentence you chose? If yes, it is likely the main idea!',fix:'Test your main idea: read each detail and ask "does this support my main idea?" If all do, you found it!'}
+        ]},
+        { title:'Reading Comprehension', qs:[
+          {q:'What does it mean to PREDICT in reading?',opts:['Look up every word','Guess what will happen based on clues','Read faster','Copy the story'],c:1,explain:'Predicting means using CLUES from the text plus what you know to guess what will happen next!',fix:'Before reading and while reading, ask: what might happen next? Use story clues to guide your prediction.'},
+          {q:'Read: "Clouds were dark. Thunder boomed. Maria grabbed her umbrella." What will probably happen NEXT?',opts:['Maria will go swimming','It will rain','The sun will shine','Maria will eat lunch'],c:1,explain:'Dark clouds + thunder + umbrella = it is going to RAIN! Those are all clues that point to rain.',fix:'Use the clues: dark clouds (sign of rain), thunder (storm is coming), umbrella (preparation for rain).'},
+          {q:'What is the SETTING of a story?',opts:['The main character','When and where the story takes place','The problem','The ending'],c:1,explain:'Setting = WHEN and WHERE. When does the story happen? Where does it take place? That is the setting!',fix:'Look for place words (in the forest, at school) and time words (one morning, long ago) for setting clues.'},
+          {q:'What is a CHARACTER\'s TRAIT?',opts:['What the character looks like','A word that describes the character\'s personality','The character\'s age','The character\'s name'],c:1,explain:'A character TRAIT is a personality word like brave, kind, selfish, or curious. It describes WHO they are!',fix:'Find evidence: brave characters do scary things. Kind characters help others. Look for actions that show traits.'},
+          {q:'Read: "Tom always shared his lunch with classmates who forgot theirs." Tom is:',opts:['Selfish','Brave','Generous','Shy'],c:2,explain:'Sharing with others shows Tom is GENEROUS — kind and giving! His actions tell us his trait.',fix:'Character traits come from actions. Sharing = generous. Helping = kind. Solving problems = determined.'},
+          {q:'What is the PROBLEM in a story?',opts:['The setting','The challenge or conflict the character faces','The ending','The title'],c:1,explain:'The PROBLEM is the challenge or conflict — what the character needs to solve or overcome in the story!',fix:'Every story has a problem (conflict) and a solution (resolution). Finding both helps you understand the story.'},
+          {q:'What does VISUALIZE mean as a reading strategy?',opts:['Read faster','Create a mental picture of what you are reading','Skip hard words','Re-read the whole book'],c:1,explain:'Visualizing means making a PICTURE in your mind as you read. It helps you understand and remember better!',fix:'As you read, picture the scene: what do you see? Hear? Smell? Feel? This makes stories come alive!'},
+          {q:'After the problem in a story, what usually comes?',opts:['Another problem','The resolution (how it is solved)','The setting','More characters'],c:1,explain:'After the problem, stories move toward the RESOLUTION — how the character solves the problem!',fix:'Story structure: Beginning → Problem → Events → Resolution → Ending. The resolution solves the problem.'},
+          {q:'True or False: You should only read a story one time.',opts:['True','False — re-reading helps understanding','True, once is enough','False — never re-read'],c:1,explain:'FALSE! Re-reading builds understanding. The second time, you notice details you missed!',fix:'Reading strategy: first read for the story. Second read for details and understanding. Third read for deep thinking.'},
+          {q:'What helps you understand an unknown word while reading?',opts:['Stop reading','Use context clues — the words around it','Only use a dictionary','Skip it always'],c:1,explain:'CONTEXT CLUES are the words around the unknown word that hint at its meaning. Use them!',fix:'Steps: read the whole sentence. What would make sense in that spot? The surrounding words are your clues.'}
+        ]}
+      ]
+    },
+    math: {
+      name:'Math 🔢', icon:'🔢', color:'#52c97a',
+      levels:[
+        { title:'Addition & Subtraction Review', qs:[
+          {q:'What is 456 + 287?',opts:['733','743','643','653'],c:1,explain:'456+287: Ones: 6+7=13, carry 1. Tens: 5+8+1=14, carry 1. Hundreds: 4+2+1=7. Answer: 743!',fix:'Line up by place value. Add from right to left. Carry when a column adds to 10 or more.'},
+          {q:'893 - 456 = ?',opts:['437','447','337','347'],c:0,explain:'893-456: Ones: 3<6, borrow, 13-6=7. Tens: 8<5? Wait: 9 becomes 8 after borrow, 8>5, no borrow. 8-5=3. Hundreds: 8-4=4. Wait, recalculate: 893-456: ones 3<6 borrow(13-6=7), tens 8-1=8... 8<5? No. 8-5=3. hundreds 8-4=4. Answer: 437!',fix:'Work right to left. Borrow when top digit is smaller than bottom digit in that column.'},
+          {q:'Round 374 to the nearest ten.',opts:['370','380','300','400'],c:0,explain:'374 — the ones digit is 4, which is less than 5, so round DOWN. 374 rounds to 370!',fix:'Rounding to tens: look at the ONES digit. 0-4 = round down. 5-9 = round up.'},
+          {q:'Which is greater: 3,456 or 3,465?',opts:['3,456','3,465','They are equal','Cannot tell'],c:1,explain:'Compare digit by digit: 3=3, 4=4, 5 vs 6 — 6 is greater! So 3,465 > 3,456.',fix:'Compare numbers left to right. Find the first place where digits differ. The larger digit = the larger number.'},
+          {q:'What is 1,000 - 367?',opts:['633','643','733','637'],c:0,explain:'1,000-367: Borrow across zeros. 10-7=3 ones, 9-6=3 tens, 9-3=6 hundreds, 0 thousands. Answer: 633!',fix:'Subtracting from 1,000: all the zeros need to borrow from the 1. Ones get 10, tens get 9, hundreds get 9.'},
+          {q:'Terry solved 528 + 364 = 892. Check his work: is it correct?',opts:['Yes','No — it is 892... wait, recalculate','Yes, 892 is right','No — it is 982'],c:0,explain:'528+364: Ones: 8+4=12, carry 1. Tens: 2+6+1=9. Hundreds: 5+3=8. Answer: 892. Terry is correct!',fix:'Always check by adding ones first, then tens (plus any carry), then hundreds. 892 is right!'},
+          {q:'Which number is 100 more than 4,567?',opts:['4,667','4,577','4,657','5,567'],c:0,explain:'100 more than 4,567 = 4,667. The hundreds digit goes from 5 to 6!',fix:'Adding 100: only the hundreds digit changes. 4,567 + 100 = 4,667. Hundreds: 5+1=6.'},
+          {q:'What property is shown: (24+15)+6 = 24+(15+6)?',opts:['Commutative','Associative','Distributive','Identity'],c:1,explain:'ASSOCIATIVE property! The GROUPING changes but the answer is the same. (39)+6 = 24+(21) = 45!',fix:'Associative = grouping does not matter. You can move the parentheses and still get the same answer.'},
+          {q:'Estimate: 678 - 312. Best estimate?',opts:['200','300','400','350'],c:2,explain:'678 rounds to 700, 312 rounds to 300. 700-300=400. Best estimate is 400!',fix:'Round each number to hundreds, then subtract. This gives a quick estimate without exact calculation.'},
+          {q:'There are 524 students. 168 go on a field trip. How many stay?',opts:['356','346','456','366'],c:0,explain:'524-168: Ones: 4<8, borrow, 14-8=6. Tens: 1<6, borrow, 11-6=5. Hundreds: 4-1=3. Wait: after borrowing from hundreds for tens: 4 becomes 3. Answer: 356!',fix:'"How many stay" = subtraction. 524-168. Borrow twice. Work from ones column to hundreds.'}
+        ]},
+        { title:'Multiplication Basics', qs:[
+          {q:'What is 3 × 7?',opts:['21','24','18','28'],c:0,explain:'3×7=21! Count by 3s: 3, 6, 9, 12, 15, 18, 21. Or think 7+7+7=21!',fix:'Multiplication is repeated addition. 3×7 = 7+7+7 = 21. Practice 3s: 3,6,9,12,15,18,21.'},
+          {q:'What does 4 × 6 mean?',opts:['4+6','4 groups of 6','6-4','4 more than 6'],c:1,explain:'4×6 means 4 GROUPS of 6. Like 4 bags with 6 apples each = 24 apples!',fix:'Multiplication = equal groups. Draw 4 circles, put 6 dots in each. Count all dots = 24.'},
+          {q:'5 × 8 = ?',opts:['35','40','45','48'],c:1,explain:'5×8=40! Count by 5s: 5,10,15,20,25,30,35,40. Eight 5s = 40!',fix:'5s are easy! Count by 5s up to 8 times: 5,10,15,20,25,30,35,40. The answer always ends in 0 or 5.'},
+          {q:'Which shows 6 groups of 4?',opts:['6+4','6×4','4÷6','6-4'],c:1,explain:'6 groups of 4 = 6×4 = 24! Multiplication shows equal groups.',fix:'Equal groups = multiplication. "Groups of" = ×. 6 groups of 4 = 6×4.'},
+          {q:'What is 9 × 3?',opts:['27','24','21','30'],c:0,explain:'9×3=27! Use the 9s trick: 9×3 = 30-3 = 27. Or count: 9,18,27!',fix:'9s trick: multiply by 10 and subtract one group. 9×3 = (10×3)-3 = 30-3 = 27.'},
+          {q:'True or False: 7×5 = 5×7',opts:['True — commutative property','False','True sometimes','False — order matters'],c:0,explain:'TRUE! Commutative property: 7×5 = 5×7 = 35. Order does not matter in multiplication!',fix:'Commutative property: a×b = b×a. You can flip the factors and get the same product.'},
+          {q:'Solve: 6 shelves with 8 books each. How many books total?',opts:['14','42','48','46'],c:2,explain:'6 shelves × 8 books = 6×8 = 48 books total!',fix:'"Each" signals multiplication. 6 shelves × 8 books each = 6×8 = 48.'},
+          {q:'What is the product in 4 × 9 = 36?',opts:['4','9','36','4 and 9'],c:2,explain:'The PRODUCT is the ANSWER to a multiplication problem. 4×9=36 — 36 is the product!',fix:'Vocabulary: factors (4 and 9) × = product (36). Factors are multiplied together to get the product.'},
+          {q:'Which multiplication fact equals 36?',opts:['4×8','4×9','4×7','4×6'],c:1,explain:'4×9=36! Check: 4×8=32, 4×9=36, 4×7=28, 4×6=24.',fix:'Count by 4s to check: 4,8,12,16,20,24,28,32,36. The 9th multiple of 4 is 36.'},
+          {q:'Terry has 7 bags with 6 candies each. How many candies?',opts:['13','42','36','48'],c:1,explain:'7 bags × 6 candies each = 7×6 = 42 candies!',fix:'"Each" = multiplication. 7×6: count by 6s seven times: 6,12,18,24,30,36,42.'}
+        ]},
+        { title:'Word Problems', qs:[
+          {q:'There are 234 boys and 189 girls at school. How many students total?',opts:['413','423','433','443'],c:1,explain:'234+189: Ones: 4+9=13, carry 1. Tens: 3+8+1=12, carry 1. Hundreds: 2+1+1=4. Answer: 423!',fix:'"Total" or "altogether" = addition. Line up digits carefully, carry when needed.'},
+          {q:'A library had 567 books. 234 were checked out. How many remain?',opts:['333','323','343','233'],c:0,explain:'567-234: Ones: 7-4=3. Tens: 6-3=3. Hundreds: 5-2=3. Answer: 333! No regrouping needed here.',fix:'"Remain" or "left" = subtraction. 567-234 = 333. Check each column for regrouping needs.'},
+          {q:'More/fewer: Class A has 28 students, Class B has 35. How many MORE does Class B have?',opts:['7','13','63','17'],c:0,explain:'35-28: Ones: 5<8, borrow. 15-8=7. Tens: 2-2=0. Answer: 7 more students!',fix:'"How many more" = subtraction. Subtract the smaller (28) from the larger (35). Answer: 7.'},
+          {q:'Write the equation: 45 apples, each bag holds 9. How many bags?',opts:['45+9','45-9','45×9','45÷9'],c:3,explain:'If you have 45 apples and each bag holds 9, you DIVIDE to find the number of bags: 45÷9=5 bags!',fix:'"How many groups?" or "split equally" = division. 45 total ÷ 9 per bag = 5 bags.'},
+          {q:'A train has 8 cars. Each car holds 45 passengers. How many passengers total?',opts:['53','360','340','380'],c:1,explain:'8 cars × 45 passengers each = 8×45 = 360 passengers!',fix:'"Each" with equal groups = multiplication. 8×45 = (8×40)+(8×5) = 320+40 = 360.'},
+          {q:'Terry read 15 pages Monday, 22 pages Tuesday, 18 pages Wednesday. Total pages?',opts:['45','55','35','50'],c:1,explain:'15+22+18 = 55 pages. Add all three: 15+22=37, then 37+18=55!',fix:'Adding three numbers: add the first two, then add the third to that sum.'},
+          {q:'Which key word signals SUBTRACTION?',opts:['total','in all','difference','combined'],c:2,explain:'"Difference" signals subtraction! Find the DIFFERENCE = subtract the smaller from the larger.',fix:'Subtraction keywords: difference, less than, fewer, left over, remaining, how many more.'},
+          {q:'A bag has 56 marbles. Terry takes out groups of 7. How many groups?',opts:['49','7','8','63'],c:2,explain:'56 ÷ 7 = 8 groups! Division splits a total into equal groups.',fix:'Division keywords: groups, split, share equally, each, per. 56÷7=8 because 7×8=56.'},
+          {q:'Which operation finds the TOTAL of two groups put together?',opts:['Subtraction','Multiplication (sometimes)','Addition','Division'],c:2,explain:'ADDITION finds the total when you put two or more groups TOGETHER!',fix:'Addition = putting together = finding total. Subtraction = taking away = finding difference.'},
+          {q:'There are 4 rows of chairs with 9 chairs in each row. 7 people leave. How many chairs are occupied?',opts:['29','36','29 (if all were full)','27'],c:2,explain:'Step 1: 4×9=36 total chairs. Step 2: if all occupied, 36-7=29 people remain (assuming all were filled).',fix:'Two-step: multiply to find total chairs, then subtract those who left. 4×9=36, 36-7=29.'}
+        ]}
+      ]
+    },
+    writing: {
+      name:'Writing ✏️', icon:'✏️', color:'#f76e9e',
+      levels:[
+        { title:'Paragraph Structure', qs:[
+          {q:'What is the first sentence of a paragraph called?',opts:['Closing sentence','Topic sentence','Detail sentence','Title'],c:1,explain:'The first sentence is the TOPIC SENTENCE — it tells the reader what the paragraph is about!',fix:'Paragraph structure: Topic sentence → 2-3 supporting details → closing sentence.'},
+          {q:'What is the purpose of supporting details?',opts:['To confuse the reader','To explain and back up the topic sentence','To add length','To be boring'],c:1,explain:'Supporting details give examples, reasons, or evidence that prove the topic sentence!',fix:'Every supporting detail must connect to and strengthen the topic sentence.'},
+          {q:'Which is a strong topic sentence?',opts:['Cars.','I like cars.','Fast cars are exciting for many reasons.','Vroom.'],c:2,explain:'"Fast cars are exciting for many reasons" is specific AND invites details. Perfect topic sentence!',fix:'Good topic sentences state a main idea clearly and hint that details will follow.'},
+          {q:'What should a closing sentence do?',opts:['Introduce a new topic','Wrap up and restate the main idea','Start the paragraph','Ask a question'],c:1,explain:'A closing sentence wraps up the paragraph by restating the main idea in a new way!',fix:'Closing sentences give readers a sense of completion — like the final bow on a gift.'},
+          {q:'How many supporting details belong in a 4-5 sentence paragraph?',opts:['0','1','2-3','10'],c:2,explain:'A 4-5 sentence paragraph has 2-3 supporting details between the topic sentence and closing.',fix:'Structure: 1 topic + 2-3 details + 1 closing = 4-5 sentences total.'},
+          {q:'Which detail supports "Video games are fun"?',opts:['Books are heavy.','Video games have exciting levels and challenges.','TV is boring.','I have hands.'],c:1,explain:'"Exciting levels and challenges" give REASONS games are fun. That supports the topic!',fix:'Supporting details should give real reasons or examples that prove the topic is true.'},
+          {q:'What is the main idea of a paragraph?',opts:['The first word','What the paragraph is mostly about','The last letter','How long it is'],c:1,explain:'The main idea is what the paragraph is MOSTLY ABOUT — the big point the author is making!',fix:'Ask yourself: "What is this paragraph trying to tell me?" That answer is the main idea.'},
+          {q:'True or False: Every sentence in a paragraph should be about the same topic.',opts:['True','False','Sometimes','Only the first sentence'],c:0,explain:'TRUE! Every sentence in a paragraph should connect to the main topic. Off-topic sentences confuse readers.',fix:'Before writing a sentence, ask: does this belong with the topic? If not, save it for another paragraph.'},
+          {q:'Which transition word shows adding more information?',opts:['However','Also','But','Instead'],c:1,explain:'"Also" adds more information. Other good ones: additionally, furthermore, in addition, plus.',fix:'Transition words connect ideas. "Also" and "furthermore" add. "However" and "but" contrast.'},
+          {q:'What connects multiple paragraphs into an essay?',opts:['Nothing','An introduction and conclusion','Random sentences','Pictures'],c:1,explain:'Multiple paragraphs make an ESSAY. You need an introduction and conclusion to tie them together!',fix:'Essay structure: Intro paragraph → body paragraphs (each with its own topic) → conclusion paragraph.'}
+        ]},
+        { title:'Strong Sentences', qs:[
+          {q:'Which sentence is more interesting?',opts:['I ate food.','I devoured a cheesy slice of pizza.','Food was ate.','Pizza.'],c:1,explain:'"Devoured a cheesy slice of pizza" uses strong verbs AND descriptive details. Way more interesting!',fix:'Replace weak verbs (ate, went, said) with stronger ones (devoured, dashed, whispered).'},
+          {q:'What kind of word is "beautiful"?',opts:['Verb','Noun','Adjective','Adverb'],c:2,explain:'"Beautiful" is an ADJECTIVE — it describes a noun (a beautiful day, a beautiful song).',fix:'Adjectives describe nouns. They answer: what kind? which one? how many?'},
+          {q:'Which has a STRONG verb?',opts:['He walked','He sprinted','He got there','He moved'],c:1,explain:'"Sprinted" is a strong verb! It shows HOW he walked — really fast!',fix:'Strong verbs paint a clearer picture. Instead of "walked" try strolled, marched, tiptoed, raced.'},
+          {q:'What makes this sentence weak: "The thing was nice"?',opts:['Too long','Vague words like "thing" and "nice"','Wrong spelling','Missing punctuation'],c:1,explain:'"Thing" and "nice" are super vague! Replace them with specific words: "The blue sweater was cozy."',fix:'Avoid vague words. Ask: what thing? what kind of nice? Be specific!'},
+          {q:'Which is a complete sentence?',opts:['Running fast.','The tall tree.','He smiled.','Because it rained.'],c:2,explain:'"He smiled" is complete — it has a subject (he) and a verb (smiled) and expresses a full thought!',fix:'A complete sentence needs: a subject (who/what) + a verb (action) + a complete thought.'},
+          {q:'How do you fix this fragment: "When I went home"?',opts:['Add a period','Add what happened next: "When I went home, I ate dinner."','Delete it','Leave it'],c:1,explain:'Fragments are incomplete. "When I went home" is waiting for the REST of the thought!',fix:'If a sentence starts with when, if, because — it needs a main clause to complete the thought.'},
+          {q:'Which sentence uses sensory details?',opts:['It was a day.','The salty ocean breeze tickled my nose.','We went outside.','It was there.'],c:1,explain:'"Salty ocean breeze tickled my nose" uses SMELL and TOUCH. That is sensory writing!',fix:'Sensory details appeal to the 5 senses: sight, sound, smell, taste, touch.'},
+          {q:'What is the subject of "The big dog barked loudly"?',opts:['barked','loudly','The big dog','big'],c:2,explain:'The subject is WHO or WHAT the sentence is about. "The big dog" is who barked!',fix:'To find the subject, ask WHO or WHAT did the action. That person or thing is the subject.'},
+          {q:'Which sentence has a variety of words?',opts:['The cat ran. The cat jumped.','The curious cat leaped across the fence and landed softly.','Cat. Cat. Cat.','Run cat run.'],c:1,explain:'The second sentence has variety, strong verbs, and flows smoothly. Much better writing!',fix:'Combine short choppy sentences into longer, flowing ones. Use different verbs and descriptions.'},
+          {q:'Why use dialogue in writing?',opts:['To fill space','To bring characters to life with their own voices','To make it longer','No reason'],c:1,explain:'Dialogue makes characters REAL. Their words show personality, feelings, and push the story forward!',fix:'Good dialogue reveals character. Each person should sound different based on who they are.'}
+        ]}
+      ]
+    },
+    money: {
+      name:'Money 💰', icon:'💰', color:'#ffe600',
+      levels:[
+        { title:'Counting Money', qs:[
+          {q:'How much is a quarter worth?',opts:['10 cents','25 cents','50 cents','5 cents'],c:1,explain:'A quarter is worth 25 cents! Four quarters make a dollar.',fix:'Coin values: penny=1¢, nickel=5¢, dime=10¢, quarter=25¢, half dollar=50¢.'},
+          {q:'How much is 3 quarters?',opts:['30 cents','75 cents','25 cents','100 cents'],c:1,explain:'3 quarters = 3 × 25 = 75 cents. Almost a whole dollar!',fix:'Multiply the coin value by how many you have. 3 × 25¢ = 75¢.'},
+          {q:'A dollar is the same as how many quarters?',opts:['2','3','4','10'],c:2,explain:'4 quarters = $1.00! Each quarter is 25 cents, and 4 × 25 = 100 cents = $1.',fix:'1 dollar = 100 cents. 100 ÷ 25 (value of quarter) = 4 quarters.'},
+          {q:'Terry has 2 quarters and 3 dimes. How much money?',opts:['50 cents','65 cents','80 cents','75 cents'],c:2,explain:'2 quarters = 50¢. 3 dimes = 30¢. Total: 50 + 30 = 80 cents!',fix:'Count coins in groups: quarters first, then dimes, nickels, pennies. Add the totals.'},
+          {q:'How many pennies equal a nickel?',opts:['1','5','10','25'],c:1,explain:'5 pennies = 1 nickel. A nickel is worth 5 cents, same as 5 pennies.',fix:'Coin equivalents: 5 pennies = 1 nickel. 2 nickels = 1 dime. 5 nickels = 1 quarter.'},
+          {q:'Which is MORE: 5 dimes or 2 quarters?',opts:['5 dimes','2 quarters','They are equal','Cannot tell'],c:2,explain:'5 dimes = 50¢. 2 quarters = 50¢. They are EQUAL! Both are half a dollar.',fix:'Calculate each side: 5 × 10¢ = 50¢ and 2 × 25¢ = 50¢. Compare the totals.'},
+          {q:'How much is a $5 bill + a $10 bill?',opts:['$15','$5','$50','$150'],c:0,explain:'$5 + $10 = $15. Add bills just like you add numbers!',fix:'Bills add up just like regular addition. $5 + $10 = $15.'},
+          {q:'You have $20 and spend $7. How much is left?',opts:['$13','$27','$3','$7'],c:0,explain:'$20 - $7 = $13. When you spend money, SUBTRACT from what you had.',fix:'"Left" or "remaining" = subtraction. Start amount - spent amount = what you have left.'},
+          {q:'Pizza costs $12. You pay with $20. How much change?',opts:['$12','$20','$8','$32'],c:2,explain:'$20 - $12 = $8 change. Change is the money you get BACK when you overpay.',fix:'Change = amount you paid - cost of item. $20 paid - $12 cost = $8 change.'},
+          {q:'Terry has 2 one-dollar bills, 3 quarters, and 2 dimes. Total?',opts:['$2.00','$2.75','$2.95','$3.25'],c:2,explain:'$2 + 75¢ (3 quarters) + 20¢ (2 dimes) = $2.95!',fix:'Add bills first: $2. Then add coins: 75¢ + 20¢ = 95¢. Combine: $2.95.'}
+        ]},
+        { title:'Making Change', qs:[
+          {q:'Item costs $0.75. You give $1.00. Change?',opts:['$0.15','$0.25','$0.50','$1.75'],c:1,explain:'$1.00 - $0.75 = $0.25 change. That is 1 quarter!',fix:'Change = paid - cost. Subtract the cost from what you gave.'},
+          {q:'Toy costs $3.50. You pay $5. How much change?',opts:['$1.50','$2.50','$3.50','$8.50'],c:0,explain:'$5.00 - $3.50 = $1.50. You get back 6 quarters or a dollar and 2 quarters!',fix:'Align decimals carefully: 5.00 - 3.50 = 1.50. Subtract dollars from dollars, cents from cents.'},
+          {q:'Snack is $2.25. Terry gives $3. What coins make up the change?',opts:['3 quarters','7 dimes','15 pennies','All work'],c:3,explain:'$3.00 - $2.25 = $0.75. That could be 3 quarters, or other coin combos adding to 75¢!',fix:'Change can be made with different coin combinations. Count coins that add to the change amount.'},
+          {q:'You buy a book for $8 and pay with $10. Change?',opts:['$2','$8','$10','$18'],c:0,explain:'$10 - $8 = $2 change. Simple subtraction!',fix:'Change always equals paid minus cost. $10 paid - $8 cost = $2 back.'},
+          {q:'Three items cost $1.00 each. You pay with $5. How much change?',opts:['$1','$2','$3','$4'],c:1,explain:'3 × $1 = $3 total cost. $5 - $3 = $2 change. Two steps!',fix:'Step 1: Find total cost (multiply). Step 2: Subtract from what you paid.'},
+          {q:'Two quarters make change for what cost, if you paid $1?',opts:['$0.50','$0.75','$0.25','$1.50'],c:0,explain:'Two quarters = $0.50. So $1.00 - $0.50 = $0.50 cost. The item cost 50¢!',fix:'If you know the change, subtract it from what you paid to find the cost.'},
+          {q:'A slushie is $1.25. You pay with 2 one-dollar bills. Change?',opts:['$0.75','$1.00','$0.50','$0.25'],c:0,explain:'$2.00 - $1.25 = $0.75 change. That is 3 quarters!',fix:'Two $1 bills = $2. Subtract the cost: $2 - $1.25 = $0.75.'},
+          {q:'Candy costs $0.50. You pay with a dollar. What is the fewest coins for change?',opts:['5 dimes','2 quarters','50 pennies','10 nickels'],c:1,explain:'2 quarters = 50¢. Only 2 coins! Fewer coins = less to carry.',fix:'Use the largest coins first to make change with the fewest number of coins.'},
+          {q:'You have $10. You buy a $3 snack and a $2 drink. How much is left?',opts:['$5','$15','$7','$8'],c:0,explain:'$3 + $2 = $5 spent. $10 - $5 = $5 left. Two steps!',fix:'Total the cost first, then subtract from what you had. This is a two-step problem.'},
+          {q:'Apple costs $0.60. You only have $0.50. Can you buy it?',opts:['Yes','No — you need 10 more cents','Yes, with change','Sometimes'],c:1,explain:'You need $0.60 but only have $0.50. You are 10 cents short!',fix:'Compare: do you have enough? If your money is less than the cost, you need more.'}
+        ]}
+      ]
+    },
+    time: {
+      name:'Time ⏰', icon:'⏰', color:'#00f0ff',
+      levels:[
+        { title:'Telling Time', qs:[
+          {q:'The hour hand is on 3, minute hand on 12. What time?',opts:['12:03','3:00','3:12','12:15'],c:1,explain:'Hour at 3, minute at 12 = 3:00 exactly (3 o\'clock)!',fix:'Minute hand on 12 = exactly on the hour. Read just the hour hand for the time.'},
+          {q:'What time is 30 minutes after 4:00?',opts:['4:30','5:00','3:30','4:15'],c:0,explain:'30 minutes after 4:00 is 4:30. Half past 4!',fix:'Adding 30 min: just add to the minutes. 4:00 + 30 = 4:30.'},
+          {q:'Quarter past 7 is what time?',opts:['7:15','7:30','7:45','7:00'],c:0,explain:'Quarter past = 15 minutes after. So quarter past 7 = 7:15!',fix:'Quarter = 15 minutes. Half = 30 minutes. Three quarters = 45 minutes.'},
+          {q:'It is 8:45. What would "quarter to 9" look like?',opts:['The same time (8:45)','9:15','8:15','9:45'],c:0,explain:'Quarter to 9 = 15 minutes before 9 = 8:45. Same time, different way to say it!',fix:'Quarter TO = before the hour. Quarter to 9 means 15 minutes before 9:00 = 8:45.'},
+          {q:'How long from 3:15 to 4:00?',opts:['15 minutes','30 minutes','45 minutes','1 hour'],c:2,explain:'From 3:15 to 4:00 is 45 minutes!',fix:'Count by 15s up to the next hour. Or: 60 - 15 = 45 minutes to the top of the hour.'},
+          {q:'How many minutes in 2 hours?',opts:['60','90','120','100'],c:2,explain:'1 hour = 60 minutes. So 2 hours = 60 + 60 = 120 minutes!',fix:'Multiply hours by 60. Each hour has 60 minutes.'},
+          {q:'AM or PM: 2:00 in the afternoon?',opts:['AM','PM','Both','Neither'],c:1,explain:'PM is afternoon/evening (noon to midnight). 2:00 in the afternoon is 2:00 PM.',fix:'AM = morning (midnight to noon). PM = afternoon/evening (noon to midnight).'},
+          {q:'Movie starts at 7:30. It is now 6:45. How long until the movie?',opts:['30 minutes','45 minutes','1 hour','1 hour 15 minutes'],c:1,explain:'From 6:45 to 7:30 is 45 minutes. Count: 6:45 → 7:00 (15 min) → 7:30 (30 more) = 45!',fix:'Count to the next hour first, then add the extra minutes.'},
+          {q:'School day starts at 8:00 AM and ends at 3:00 PM. How long?',opts:['5 hours','7 hours','8 hours','11 hours'],c:1,explain:'From 8 AM to 3 PM: 8→12 is 4 hours. 12→3 is 3 more hours. 4+3=7 hours total!',fix:'Count from AM to noon, then add PM hours.'},
+          {q:'Lunch is at 12:00. Your watch shows 11:20. How long until lunch?',opts:['20 minutes','40 minutes','60 minutes','1 hour 20 minutes'],c:1,explain:'From 11:20 to 12:00 is 40 minutes!',fix:'Find minutes to the next hour: 60 - 20 = 40 minutes to 12:00.'}
+        ]},
+        { title:'Time Word Problems', qs:[
+          {q:'Terry practices guitar for 20 minutes, then homework for 45 min. Total time?',opts:['60 minutes','65 minutes','50 minutes','1 hour 15 minutes'],c:1,explain:'20 + 45 = 65 minutes total. That is 1 hour and 5 minutes!',fix:'Add minutes. If total is over 60, convert: 65 min = 1 hour 5 minutes.'},
+          {q:'A soccer game starts at 2:00 PM and lasts 90 minutes. When does it end?',opts:['3:30 PM','3:00 PM','4:00 PM','2:90 PM'],c:0,explain:'90 minutes = 1 hour 30 minutes. 2:00 + 1:30 = 3:30 PM!',fix:'Convert large minute amounts to hours. 90 min = 1 hr 30 min. Add to start time.'},
+          {q:'You need to be at school at 8:15. It takes 25 minutes to get ready. What time to wake up?',opts:['7:50','7:40','8:00','8:40'],c:0,explain:'8:15 - 25 min = 7:50. Work BACKWARDS from when you need to be ready!',fix:'To find starting time, subtract the prep time from the finish time.'},
+          {q:'Movie is 2 hours 15 minutes. Starts at 6:00 PM. End time?',opts:['8:00 PM','8:15 PM','7:15 PM','8:30 PM'],c:1,explain:'6:00 + 2 hours = 8:00. 8:00 + 15 min = 8:15 PM!',fix:'Add hours first, then minutes. 6:00 + 2:15 = 8:15.'},
+          {q:'Recess is from 10:30 to 11:00. How long is recess?',opts:['15 minutes','30 minutes','45 minutes','1 hour'],c:1,explain:'From 10:30 to 11:00 is 30 minutes!',fix:'Subtract: 11:00 - 10:30 = 30 minutes.'},
+          {q:'Terry plays for 1 hour 10 minutes. Starts at 4:30. Ends when?',opts:['5:40','5:30','6:40','5:10'],c:0,explain:'4:30 + 1 hour = 5:30. 5:30 + 10 min = 5:40!',fix:'Add whole hours first, then add minutes. 4:30 + 1:10 = 5:40.'},
+          {q:'You have 45 minutes for lunch. You eat for 20 min, then talk for 15 min. How much time left?',opts:['10 minutes','20 minutes','25 minutes','40 minutes'],c:0,explain:'20 + 15 = 35 min used. 45 - 35 = 10 min left!',fix:'Add used time, then subtract from total.'},
+          {q:'TV show is 30 min. Ends at 7:00 PM. When did it start?',opts:['7:30','6:30','6:45','6:00'],c:1,explain:'7:00 - 30 min = 6:30. Work backwards from end time!',fix:'To find start time: end time - duration = start time.'},
+          {q:'Terry wakes at 6:45, eats at 7:15. How long between waking and eating?',opts:['15 min','30 min','45 min','1 hour'],c:1,explain:'From 6:45 to 7:15 is 30 minutes!',fix:'Count in chunks: get to the next hour first, then add remaining minutes.'},
+          {q:'Bus ride is 1 hour 20 min. You leave at 7:45 AM. Arrive when?',opts:['8:45 AM','9:05 AM','8:55 AM','9:15 AM'],c:1,explain:'7:45 + 1 hour = 8:45. 8:45 + 20 min = 9:05 AM!',fix:'Add hours first: 7:45 + 1hr = 8:45. Then add minutes: 8:45 + 20 = 9:05.'}
+        ]}
+      ]
+    }
+  }
+};
+
+
+// ============ LOGIN LOGIC ============
+function selectUser(key){
+  selectedUserKey=key;
+  document.querySelectorAll('.char-card').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('char-'+key).classList.add('selected');
+  document.getElementById('login-err').textContent='';
+  document.getElementById('pin-input').focus();
+}
+function nextPin(i){
+  // Kept for compatibility - no longer used
+}
+function doLogin(){
+  if(!selectedUserKey){document.getElementById('login-err').textContent='▸ SELECT A CHARACTER FIRST';return;}
+  const pin=document.getElementById('pin-input').value;
+  const u=USERS[selectedUserKey];
+  if(pin===u.pin){
+    currentUser=selectedUserKey;
+    clearPins();
+    document.getElementById('user-chip').textContent=u.avatar+' '+u.name;
+    document.getElementById('user-chip').classList.remove('hidden');
+    document.getElementById('logout-btn').classList.remove('hidden');
+    if(currentUser==='parent')showDashboard();
+    else showChildHome();
+  }else{
+    document.getElementById('login-err').textContent='▸ ACCESS DENIED';
+    clearPins();
+    document.getElementById('pin-input').focus();
+  }
+}
+function clearPins(){document.getElementById('pin-input').value='';}
+function logout(){
+  currentUser=null;selectedUserKey=null;clearPins();
+  document.querySelectorAll('.char-card').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('login-err').textContent='';
+  document.getElementById('user-chip').classList.add('hidden');
+  document.getElementById('logout-btn').classList.add('hidden');
+  if(sessionTimer)clearInterval(sessionTimer);
+  showScreen('login');
+}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ============ DASHBOARD ============
+function showDashboard(){
+  showScreen('dashboard');
+  renderDashboard();
+  // Auto-refresh every 5 seconds so you always see current progress
+  if(dashboardRefreshTimer) clearInterval(dashboardRefreshTimer);
+  dashboardRefreshTimer = setInterval(() => {
+    if(document.getElementById('dashboard').classList.contains('active')){
+      renderDashboard();
+    } else {
+      clearInterval(dashboardRefreshTimer);
+    }
+  }, 5000);
+}
+
+function renderDashboard(){
+  const grid=document.getElementById('kids-row');
+  grid.innerHTML='';
+  ['taalyn','amani','terry'].forEach(uid=>{
+    const u=USERS[uid];
+    const prog=getProgress(uid);
+    const badges=getBadges(uid);
+    const streaks=getStreaks();
+    const streak=streaks[uid]||0;
+    const xp=getXP(uid);
+    let totalQ=0,totalCorrect=0;
+    const subjects=QUESTIONS[uid];
+    let subjectProgress='';
+    let inProgressLesson = null;
+    Object.keys(subjects).forEach(subj=>{
+      const s=subjects[subj];
+      const pKey=uid+'_'+subj;
+      const lvl=prog[pKey+'_level']||0;
+      const pct=Math.round((lvl/s.levels.length)*100);
+      subjectProgress+=`<div class="subj-prog-row"><span>${s.icon} ${s.name.replace(/[^\w\s]/gi,'').trim()}</span><span>${pct}%</span></div><div class="subj-prog-bar"><div class="subj-prog-fill" style="width:${pct}%"></div></div>`;
+      if(prog[pKey+'_correct'])totalCorrect+=prog[pKey+'_correct'];
+      if(prog[pKey+'_total'])totalQ+=prog[pKey+'_total'];
+      // Check if there's an in-progress lesson
+      for(let li = 0; li < s.levels.length; li++){
+        const saveKey = uid + '_' + subj + '_L' + li + '_state';
+        const state = getStorage(saveKey, null);
+        if(state && state.currentQ > 0){
+          inProgressLesson = {
+            subject: s.name.replace(/[^\w\s]/gi,'').trim(),
+            level: s.levels[li].title,
+            progress: state.currentQ,
+            total: state.shuffledQuestions ? state.shuffledQuestions.length : 10,
+            correct: state.score,
+            wrong: state.wrongCount
+          };
+        }
+      }
+    });
+    const acc=totalQ>0?Math.round((totalCorrect/totalQ)*100):0;
+    const needsHelp=acc<60&&totalQ>10;
+
+    // Speaker usage for Taalyn
+    let speakerBlock = '';
+    if(uid === 'taalyn'){
+      const speakerStats = getStorage('speaker_stats_'+uid, {total:0, hitLimit:0, tried:0});
+      if(speakerStats.total > 0){
+        const limitPct = Math.round((speakerStats.hitLimit / speakerStats.total) * 100);
+        const tooMuch = limitPct > 40;
+        speakerBlock = `<div style="background:${tooMuch?'rgba(255,61,90,0.1)':'rgba(0,240,255,0.08)'};border:1px solid ${tooMuch?'var(--neon-red)':'var(--neon-cyan)'};border-radius:8px;padding:8px 12px;margin-top:8px;font-size:11px;">
+          <div style="font-family:'Orbitron',sans-serif;letter-spacing:1px;color:${tooMuch?'var(--neon-red)':'var(--neon-cyan)'};margin-bottom:3px;">🔊 SPEAKER USAGE</div>
+          <div style="color:var(--text);">Used ${speakerStats.total} times • Hit limit on ${speakerStats.hitLimit} questions ${tooMuch?'⚠️':''}</div>
+        </div>`;
+      }
+    }
+
+    // In-progress lesson indicator
+    let inProgressBlock = '';
+    if(inProgressLesson){
+      inProgressBlock = `<div style="background:rgba(168,85,247,0.1);border:1px solid var(--neon-purple);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:11px;">
+        <div style="font-family:'Orbitron',sans-serif;letter-spacing:1px;color:var(--neon-purple);margin-bottom:3px;">⚡ ACTIVE MISSION</div>
+        <div style="color:var(--text);">${inProgressLesson.subject} • ${inProgressLesson.level}</div>
+        <div style="color:var(--text-dim);margin-top:2px;">Q${inProgressLesson.progress}/${inProgressLesson.total} • ${inProgressLesson.correct} right, ${inProgressLesson.wrong} wrong</div>
+      </div>`;
+    }
+
+    grid.innerHTML+=`<div class="kid-cell">
+      <div class="kid-cell-top">
+        <div class="kid-av-sm">${u.avatar}</div>
+        <div class="kid-name-row">
+          <div class="kid-name-lg">${u.name}</div>
+          <div class="kid-tag">${u.grade}</div>
+        </div>
+      </div>
+      <div class="mini-stats">
+        <div class="mini-stat"><div class="v">${streak}</div><div class="l">Streak</div></div>
+        <div class="mini-stat"><div class="v">${xp}</div><div class="l">XP</div></div>
+        <div class="mini-stat"><div class="v">${acc}%</div><div class="l">Acc</div></div>
+        <div class="mini-stat"><div class="v">${badges.length}</div><div class="l">Badges</div></div>
+      </div>
+      <div class="subj-prog">${subjectProgress}</div>
+      ${inProgressBlock}
+      ${speakerBlock}
+      ${needsHelp?'<div class="kid-warning">⚠ Accuracy below 60% — needs support</div>':''}
+    </div>`;
+  });
+
+  const alertsList=document.getElementById('alerts-list');
+  const alerts=getAlerts();
+  alertsList.innerHTML=alerts.length===0
+    ?'<p class="empty-msg">◆ NO MISSIONS COMPLETED YET ◆</p>'
+    :alerts.slice(0,20).map(a=>`<div class="alert-row"><div class="ic">🏆</div><div><div class="tx">${a.msg}</div><div class="tm">${a.time}</div></div></div>`).join('');
+
+  // SMART REPORT - weak areas per child with knowledge check buttons
+  const smartDiv = document.getElementById('smart-report');
+  let smartHtml = '';
+  let smartAny = false;
+  ['taalyn','amani','terry'].forEach(uid => {
+    const u = USERS[uid];
+    const concepts = getConceptStats(uid);
+    // Only show concepts with accuracy below 75% and at least 2 attempts
+    const weak = concepts.filter(c => c.accuracy < 75 && c.total >= 2);
+    if(weak.length === 0) return;
+    smartAny = true;
+    const weakDisplay = weak.slice(0, 4); // top 4 weak areas
+    smartHtml += `<div class="smart-kid-block">
+      <div class="smart-kid-head">
+        <span style="font-size:22px;">${u.avatar}</span>
+        <span style="font-family:'Orbitron',sans-serif;font-size:14px;letter-spacing:2px;">${u.name}</span>
+      </div>
+      <div class="weak-list">
+        ${weakDisplay.map(c => {
+          // Make concept label friendlier
+          const label = c.concept.replace(/^[^:]+:/, '').replace(/_/g, ' ');
+          return `<div class="weak-item">
+            <div class="weak-info">
+              <div class="weak-name">${label}</div>
+              <div class="weak-stats">${c.hits} right / ${c.misses} wrong • ${c.accuracy}% accuracy</div>
+            </div>
+            <button class="kc-btn" onclick="launchKnowledgeCheck('${uid}','${c.concept.replace(/'/g,"\\'")}')">KNOWLEDGE CHECK ▶</button>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  smartDiv.innerHTML = smartAny ? smartHtml : '<p class="empty-msg">◆ NO WEAK AREAS YET • KEEP LEARNING TO BUILD DATA ◆</p>';
+
+  const weeklyDiv=document.getElementById('weekly-report');
+  let html='';let any=false;
+  ['taalyn','amani','terry'].forEach(uid=>{
+    const u=USERS[uid];
+    const act=getWeekly(uid);
+    if(act.length===0)return;
+    any=true;
+    const passed=act.filter(a=>a.passed).length;
+    const total=act.length;
+    const avg=Math.round(act.reduce((s,a)=>s+a.pct,0)/act.length);
+    const strug=[...new Set(act.filter(a=>!a.passed).map(a=>a.level))];
+    html+=`<div class="weekly-kid-block">
+      <div class="weekly-head"><span class="em">${u.avatar}</span><span class="nm">${u.name}</span></div>
+      <div class="weekly-stats">
+        <div class="ws"><div class="v g">${passed}</div><div class="l">Passed</div></div>
+        <div class="ws"><div class="v c">${total}</div><div class="l">Attempts</div></div>
+        <div class="ws"><div class="v y">${avg}%</div><div class="l">Avg Score</div></div>
+      </div>
+      ${strug.length>0?`<div class="needs-box">💡 Needs practice: ${strug.join(', ')}</div>`:'<div class="great-box">✨ Crushed every mission this week</div>'}
+    </div>`;
+  });
+  weeklyDiv.innerHTML=any?html:'<p class="empty-msg">◆ NO DATA THIS WEEK ◆</p>';
+}
+
+// ============ CHILD HOME ============
+function showChildHome(){
+  showScreen('child-home');
+  const u=USERS[currentUser];
+  document.getElementById('hero-av').textContent=u.avatar;
+  document.getElementById('hero-name').textContent=u.name;
+  document.getElementById('hero-tag').textContent=u.grade;
+  const streaks=getStreaks();
+  document.getElementById('stat-streak').textContent=streaks[currentUser]||0;
+  document.getElementById('stat-xp').textContent=getXP(currentUser);
+  document.getElementById('stat-badges').textContent=getBadges(currentUser).length;
+  const xp=getXP(currentUser);
+  const level=Math.floor(xp/1000)+1;
+  const xpInLevel=xp%1000;
+  document.getElementById('xp-level').textContent='LEVEL '+level;
+  document.getElementById('xp-num').textContent=xpInLevel+' / 1000 XP';
+  document.getElementById('xp-fill').style.width=(xpInLevel/10)+'%';
+  // Update audio toggle state
+  const audioToggle=document.getElementById('audio-toggle');
+  if(shouldAutoRead()){audioToggle.classList.add('on');}else{audioToggle.classList.remove('on');}
+  renderMissions();
+  renderBadges();
+  startSessionTimer();
+}
+
+function handleAudioToggle(){
+  const isOn = toggleAutoRead();
+  const audioToggle=document.getElementById('audio-toggle');
+  if(isOn){audioToggle.classList.add('on');}else{audioToggle.classList.remove('on');stopSpeech();}
+}
+
+function resetChildProgress(uid){
+  const name = USERS[uid].name;
+  if(!confirm('Reset all progress for ' + name + '? This cannot be undone.')) return;
+  // Find all keys belonging to this user and remove them
+  const keys = [];
+  for(let i = 0; i < localStorage.length; i++){
+    const key = localStorage.key(i);
+    if(key && key.startsWith('nx_') && key.includes(uid)){
+      keys.push(key);
+    }
+  }
+  keys.forEach(k => localStorage.removeItem(k));
+  // Also remove streak for this user
+  const streaks = getStreaks();
+  delete streaks[uid];
+  setStorage('streaks', streaks);
+  alert(name + "'s progress has been reset!");
+  renderDashboard();
+}
+
+function resetEverything(){
+  if(!confirm('This will wipe ALL progress for ALL three kids. Are you sure?')) return;
+  if(!confirm('Really? This cannot be undone.')) return;
+  // Clear everything that starts with nx_
+  const keys = [];
+  for(let i = 0; i < localStorage.length; i++){
+    const key = localStorage.key(i);
+    if(key && key.startsWith('nx_')) keys.push(key);
+  }
+  keys.forEach(k => localStorage.removeItem(k));
+  alert('All progress has been reset! Everyone starts fresh.');
+  renderDashboard();
+}
+
+// KNOWLEDGE CHECK - focused mini-quiz on a weak concept
+function launchKnowledgeCheck(uid, concept){
+  // Parse concept: format is "subject:levelTitle"
+  const parts = concept.split(':');
+  if(parts.length < 2){ alert('Cannot launch knowledge check for this concept.'); return; }
+  const subj = parts[0];
+  const levelTitle = parts.slice(1).join(':');
+  const subjects = QUESTIONS[uid];
+  if(!subjects[subj]){ alert('Subject not found.'); return; }
+  // Find the matching level
+  const level = subjects[subj].levels.find(l => l.title === levelTitle);
+  if(!level){ alert('Level not found.'); return; }
+  // Confirm
+  if(!confirm('Launch a 5-question Knowledge Check for ' + USERS[uid].name + ' on "' + levelTitle + '"?\n\nThis will log them in automatically.')) return;
+  // Log in as that child and go straight to a special knowledge check quiz
+  currentUser = uid;
+  selectedUserKey = uid;
+  document.getElementById('user-chip').textContent = USERS[uid].avatar + ' ' + USERS[uid].name + ' (KC)';
+  document.getElementById('user-chip').classList.remove('hidden');
+  document.getElementById('logout-btn').classList.remove('hidden');
+  // Stop dashboard refresh
+  if(dashboardRefreshTimer) clearInterval(dashboardRefreshTimer);
+  // Set up the lesson
+  currentSubject = subj;
+  // Find level index
+  currentLevel = subjects[subj].levels.findIndex(l => l.title === levelTitle);
+  // Take 5 random questions from the level and shuffle options
+  shuffledQuestions = shuffleArray(level.qs).slice(0, 5).map(q => shuffleQuestionOptions(q));
+  currentQ = 0;
+  score = 0;
+  wrongCount = 0;
+  wrongAnswersLog = [];
+  hintCountThisQuiz = 0;
+  hintUsedThisQuestion = false;
+  reviewMode = false;
+  reviewQueue = [];
+  retrying = false;
+  document.getElementById('lesson-title').textContent = '🎯 KNOWLEDGE CHECK: ' + levelTitle.toUpperCase();
+  showScreen('lesson');
+  startSessionTimer();
+  renderQuestion();
+}
+
+function startSessionTimer(){
+  if(sessionTimer)clearInterval(sessionTimer);
+  sessionSeconds=3600;
+  updateTimerDisplay();
+  sessionTimer=setInterval(()=>{
+    sessionSeconds--;
+    updateTimerDisplay();
+    if(sessionSeconds<=0){
+      clearInterval(sessionTimer);
+      showSessionEndPrompt();
+    }
+  },1000);
+}
+
+function showSessionEndPrompt(){
+  // Don't interrupt mid-lesson - show prompt on home or wait
+  const td = document.getElementById('timer-display');
+  if(td){
+    td.textContent='⏰ 1HR!';
+    td.style.color='var(--neon-pink)';
+  }
+  // Create overlay prompt
+  const existing = document.getElementById('session-overlay');
+  if(existing) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'session-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);';
+  overlay.innerHTML = `
+    <div style="background:linear-gradient(180deg,var(--bg-card),var(--bg-2));border:2px solid var(--neon-cyan);border-radius:20px;padding:30px;max-width:400px;text-align:center;box-shadow:0 0 40px rgba(0,240,255,0.4);">
+      <div style="font-size:56px;margin-bottom:10px;">🎉</div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:8px;background:linear-gradient(90deg,var(--neon-pink),var(--neon-cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">1 HOUR DONE!</div>
+      <p style="color:var(--text);margin-bottom:20px;font-size:15px;">Great job today! You've hit your daily goal.<br>Want to keep going?</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-green" onclick="continueSession(30)">+30 MIN MORE</button>
+        <button class="btn btn-primary" onclick="continueSession(60)">+1 HOUR MORE</button>
+        <button class="btn btn-ghost" onclick="endSession()">I'M DONE</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function continueSession(mins){
+  const overlay = document.getElementById('session-overlay');
+  if(overlay) overlay.remove();
+  sessionSeconds = mins * 60;
+  const td = document.getElementById('timer-display');
+  if(td) td.style.color='';
+  if(sessionTimer) clearInterval(sessionTimer);
+  sessionTimer = setInterval(()=>{
+    sessionSeconds--;
+    updateTimerDisplay();
+    if(sessionSeconds<=0){
+      clearInterval(sessionTimer);
+      showSessionEndPrompt();
+    }
+  },1000);
+}
+
+function endSession(){
+  const overlay = document.getElementById('session-overlay');
+  if(overlay) overlay.remove();
+  logout();
+}
+function updateTimerDisplay(){
+  const m=Math.floor(sessionSeconds/60);
+  const s=sessionSeconds%60;
+  document.getElementById('timer-display').textContent=m+':'+(s<10?'0':'')+s;
+}
+
+function renderMissions(){
+  const grid=document.getElementById('missions-grid');
+  grid.innerHTML='';
+  const subjects=QUESTIONS[currentUser];
+  const prog=getProgress(currentUser);
+  Object.keys(subjects).forEach(subj=>{
+    const s=subjects[subj];
+    const pKey=currentUser+'_'+subj;
+    const lvl=prog[pKey+'_level']||0;
+    const total=s.levels.length;
+    const pct=Math.round((lvl/total)*100);
+    const complete=lvl>=total;
+    const levelName=complete?'ALL MISSIONS COMPLETE':s.levels[lvl].title;
+    grid.innerHTML+=`<div class="mission-card ${subj}" onclick="startSubject('${subj}')">
+      <div class="mission-icon">${s.icon}</div>
+      <div class="mission-info">
+        <div class="mission-name">${s.name.replace(/[^\w\s]/gi,'').trim()}</div>
+        <div class="mission-sub">${complete?'✓ COMPLETE':'NEXT: '+levelName}</div>
+        <div class="mission-prog"><div class="mission-prog-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="mission-arrow">▸</div>
+    </div>`;
+  });
+}
+
+function renderBadges(){
+  const grid=document.getElementById('badges-grid');
+  const earned=getBadges(currentUser);
+  grid.innerHTML=ALL_BADGES.map(b=>`<div class="badge-slot ${earned.includes(b.id)?'owned':''}"><div class="bi">${b.icon}</div><div class="bn">${b.name}</div></div>`).join('');
+}
+
+// ============ LESSON LOGIC ============
+function startSubject(subj){
+  currentSubject=subj;
+  const s=QUESTIONS[currentUser][subj];
+  const prog=getProgress(currentUser);
+  const pKey=currentUser+'_'+subj;
+  currentLevel=prog[pKey+'_level']||0;
+  if(currentLevel>=s.levels.length)currentLevel=s.levels.length-1;
+  startLesson();
+}
+
+// Shuffle array helper
+function shuffleArray(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Shuffle the answer options within a question and track new correct index
+function shuffleQuestionOptions(q){
+  // Check for duplicate options (data quality check)
+  const uniqueOpts = new Set(q.opts);
+  if(uniqueOpts.size < q.opts.length){
+    console.warn('Duplicate options found in question:', q.q, 'Options:', q.opts);
+  }
+  const indices = [0,1,2,3];
+  const shuffled = shuffleArray(indices);
+  const newOpts = shuffled.map(i => q.opts[i]);
+  const newCorrect = shuffled.indexOf(q.c);
+  return { q: q.q, opts: newOpts, c: newCorrect, explain: q.explain, fix: q.fix };
+}
+
+function startLesson(){
+  const s=QUESTIONS[currentUser][currentSubject];
+  const level=s.levels[currentLevel];
+  // Check if there's saved progress for this exact level
+  const saveKey = currentUser + '_' + currentSubject + '_L' + currentLevel + '_state';
+  const savedState = getStorage(saveKey, null);
+  if(savedState && savedState.shuffledQuestions && savedState.currentQ < savedState.shuffledQuestions.length){
+    // Restore progress
+    shuffledQuestions = savedState.shuffledQuestions;
+    currentQ = savedState.currentQ;
+    score = savedState.score;
+    wrongCount = savedState.wrongCount;
+    wrongAnswersLog = savedState.wrongAnswersLog || [];
+  } else {
+    // Fresh start: shuffle questions AND shuffle each question's answer options
+    shuffledQuestions = shuffleArray(level.qs).map(q => shuffleQuestionOptions(q));
+    currentQ=0;
+    score=0;
+    wrongCount=0;
+    wrongAnswersLog = [];
+  }
+  reviewMode = false;
+  reviewQueue = [];
+  currentReviewIdx = 0;
+  retrying=false;
+  hintCountThisQuiz = 0;
+  hintUsedThisQuestion = false;
+  document.getElementById('lesson-title').textContent=level.title.toUpperCase();
+  showScreen('lesson');
+  renderQuestion();
+}
+
+function saveLessonState(){
+  const saveKey = currentUser + '_' + currentSubject + '_L' + currentLevel + '_state';
+  setStorage(saveKey, {
+    shuffledQuestions: shuffledQuestions,
+    currentQ: currentQ,
+    score: score,
+    wrongCount: wrongCount,
+    wrongAnswersLog: wrongAnswersLog
+  });
+}
+
+function clearLessonState(){
+  const saveKey = currentUser + '_' + currentSubject + '_L' + currentLevel + '_state';
+  try { localStorage.removeItem('nx_' + saveKey); } catch(e){}
+}
+
+function renderQuestion(){
+  stopSpeech();
+  speakerUsesThisQuestion = 0;
+  hintUsedThisQuestion = false;
+  const qs = reviewMode ? reviewQueue : shuffledQuestions;
+  if(currentQ>=qs.length){
+    if(reviewMode) showFinalResults();
+    else showInitialResults();
+    return;
+  }
+  const q=qs[currentQ];
+  const counterText = reviewMode ? `REVIEW ${currentQ+1} / ${qs.length}` : `${currentQ+1} / ${qs.length}`;
+  document.getElementById('q-counter').textContent=counterText;
+  document.getElementById('prog-track').style.width=((currentQ)/qs.length*100)+'%';
+  const fullText = q.q + '. Option A: ' + q.opts[0] + '. Option B: ' + q.opts[1] + '. Option C: ' + q.opts[2] + '. Option D: ' + q.opts[3];
+  const speakerLimit = shouldAutoRead() && currentUser === 'taalyn';
+  const readButton = speakerLimit
+    ? `<button class="read-btn" id="read-q-btn" onclick="readAloudWithLimit(\`${fullText.replace(/`/g,"'")}\`, this)" title="Read out loud"><span id="speaker-count">🔊 ${MAX_SPEAKER_USES} LEFT</span></button>`
+    : `<button class="read-btn" id="read-q-btn" onclick="readAloud(\`${fullText.replace(/`/g,"'")}\`, this)" title="Read out loud">🔊 READ</button>`;
+  document.getElementById('q-area').innerHTML=`
+    <div class="q-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
+        <div class="q-tag">◆ ${reviewMode?'REVIEW':'QUESTION'} ${currentQ+1}</div>
+        <div style="display:flex;gap:6px;">
+          ${!reviewMode ? '<button class="hint-btn" id="hint-btn" onclick="useHint()">💡 HINT (-5 XP)</button>' : ''}
+          ${readButton}
+        </div>
+      </div>
+      <div class="q-text" id="q-text-el">${q.q}</div>
+      <div class="hint-box hidden" id="hint-box"></div>
+      <div class="opts-grid">
+        ${q.opts.map((o,i)=>`<button class="opt-btn" onclick="checkAnswer(${i})">
+          <span class="letter">${['A','B','C','D'][i]}</span>${o}
+        </button>`).join('')}
+      </div>
+    </div>
+    <div class="feedback" id="fb-box"></div>
+    <div class="next-row hidden" id="next-row">
+      <button class="btn btn-green" onclick="nextQuestion()">${reviewMode && currentQ === qs.length-1 ? 'SEE FINAL SCORE ▶' : 'NEXT ▶'}</button>
+    </div>`;
+  // Auto-read only on first load and if speaker uses remain
+  if (shouldAutoRead()) {
+    setTimeout(() => {
+      const btn = document.getElementById('read-q-btn');
+      if (btn) {
+        if(speakerLimit){ readAloudWithLimit(fullText, btn); }
+        else { readAloud(fullText, btn); }
+      }
+    }, 400);
+  }
+}
+
+function useHint(){
+  if(hintUsedThisQuestion) return;
+  hintUsedThisQuestion = true;
+  hintCountThisQuiz++;
+  const qs = reviewMode ? reviewQueue : shuffledQuestions;
+  const q = qs[currentQ];
+  const hint = getHintForQuestion(q);
+  const hintBox = document.getElementById('hint-box');
+  hintBox.innerHTML = `<div class="hint-inner"><div class="hint-header">💡 STRATEGY HINT</div><div class="hint-text">${hint}</div></div>`;
+  hintBox.classList.remove('hidden');
+  // Disable hint button
+  const btn = document.getElementById('hint-btn');
+  if(btn){ btn.disabled = true; btn.innerHTML = '💡 HINT USED'; btn.style.opacity = '0.5'; }
+  // Deduct XP
+  const currentXP = getXP(currentUser);
+  setStorage('xp_'+currentUser, Math.max(0, currentXP - 5));
+  // Track hint usage
+  const hintStats = getStorage('hint_stats_'+currentUser, {total:0});
+  hintStats.total++;
+  setStorage('hint_stats_'+currentUser, hintStats);
+  // Read hint aloud if audio mode on
+  if(shouldAutoRead()){
+    setTimeout(() => readAloud('Hint: ' + hint, null), 200);
+  }
+}
+
+function readAloudWithLimit(text, buttonEl){
+  if(speakerUsesThisQuestion >= MAX_SPEAKER_USES){
+    const btn = document.getElementById('read-q-btn');
+    if(btn){
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '🔒 TRY READING!';
+      btn.style.background = 'linear-gradient(135deg, var(--neon-pink), var(--neon-red))';
+      setTimeout(() => {
+        btn.innerHTML = '🔒 0 LEFT';
+        btn.style.background = 'var(--bg-0)';
+        btn.style.color = 'var(--text-dim)';
+      }, 1500);
+    }
+    // Track that they hit the limit
+    incrementSpeakerStat(true);
+    return;
+  }
+  speakerUsesThisQuestion++;
+  incrementSpeakerStat(false);
+  readAloud(text, buttonEl);
+  // Update counter display
+  const countEl = document.getElementById('speaker-count');
+  if(countEl){
+    const remaining = MAX_SPEAKER_USES - speakerUsesThisQuestion;
+    countEl.textContent = remaining > 0 ? `🔊 ${remaining} LEFT` : '🔒 0 LEFT';
+    if(remaining === 0){
+      const btn = document.getElementById('read-q-btn');
+      if(btn){ btn.style.opacity = '0.5'; }
+    }
+  }
+}
+
+function incrementSpeakerStat(limitHit){
+  const key = 'speaker_stats_' + currentUser;
+  const stats = getStorage(key, {total:0, hitLimit:0, tried:0});
+  stats.total++;
+  if(limitHit) stats.hitLimit++;
+  else stats.tried++;
+  setStorage(key, stats);
+}
+
+function checkAnswer(idx){
+  const qs = reviewMode ? reviewQueue : shuffledQuestions;
+  const q=qs[currentQ];
+  const btns=document.querySelectorAll('.opt-btn');
+  btns.forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb-box');
+  const nextRow=document.getElementById('next-row');
+  // Auto-tag concept from subject+level if not explicitly set
+  const conceptTag = q.concept || (currentSubject + ':' + (QUESTIONS[currentUser][currentSubject].levels[currentLevel]?.title || 'general'));
+  if(idx===q.c){
+    btns[idx].classList.add('correct');
+    if(!reviewMode){
+      score++;
+      // Only log hits if they did NOT use a hint
+      if(!hintUsedThisQuestion) logConceptHit(currentUser, conceptTag);
+    }
+    const feedbackText = 'Correct! ' + q.explain;
+    fb.className='feedback correct-fb show';
+    fb.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;">
+      <div class="fb-title correct">◆ ${reviewMode?'NICE! YOU GOT IT':(hintUsedThisQuestion?'CORRECT • +5 XP':'CORRECT • +10 XP')}</div>
+      <button class="read-btn-sm" onclick="readAloud(\`${feedbackText.replace(/`/g,"'")}\`, this)">🔊</button>
+      </div><div class="fb-text">${q.explain}</div>`;
+    if(!reviewMode){
+      addXP(currentUser, hintUsedThisQuestion ? 5 : 10);
+    }
+    nextRow.classList.remove('hidden');
+    if (shouldAutoRead()) {
+      setTimeout(() => readAloud(feedbackText, null), 300);
+    }
+  }else{
+    btns[idx].classList.add('wrong');
+    btns[q.c].classList.add('correct');
+    if(!reviewMode){
+      wrongCount++;
+      // Log concept miss
+      logConceptMiss(currentUser, conceptTag);
+      // Log wrong answer for review at end
+      wrongAnswersLog.push({
+        question: q,
+        wrongIdx: idx,
+        concept: conceptTag
+      });
+    }
+    const feedbackText = 'Not quite. ' + q.explain + ' How to fix it: ' + q.fix;
+    fb.className='feedback wrong-fb show';
+    fb.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;">
+      <div class="fb-title wrong">◆ NOT QUITE</div>
+      <button class="read-btn-sm" onclick="readAloud(\`${feedbackText.replace(/`/g,"'")}\`, this)">🔊</button>
+      </div>
+      <div class="fb-text">${q.explain}</div>
+      <div class="fb-fix"><strong>▸ HOW TO FIX:</strong> ${q.fix}</div>`;
+    // NO retry mid-quiz - just show next button
+    nextRow.classList.remove('hidden');
+    if (shouldAutoRead()) {
+      setTimeout(() => readAloud(feedbackText, null), 300);
+    }
+  }
+  // Save progress after each answer
+  if(!reviewMode) saveLessonState();
+}
+
+function retryQuestion(){retrying=true;renderQuestion();retrying=false;}
+function nextQuestion(){currentQ++;renderQuestion();}
+
+function retryQuestion(){retrying=true;renderQuestion();retrying=false;}
+function nextQuestion(){currentQ++;renderQuestion();}
+function goChildHome(){
+  stopSpeech();
+  showScreen('child-home');renderMissions();renderBadges();
+  document.getElementById('stat-xp').textContent=getXP(currentUser);
+  document.getElementById('stat-badges').textContent=getBadges(currentUser).length;
+  const xp=getXP(currentUser);
+  const level=Math.floor(xp/1000)+1;
+  const xpInLevel=xp%1000;
+  document.getElementById('xp-level').textContent='LEVEL '+level;
+  document.getElementById('xp-num').textContent=xpInLevel+' / 1000 XP';
+  document.getElementById('xp-fill').style.width=(xpInLevel/10)+'%';
+}
+
+function showInitialResults(){
+  const total=shuffledQuestions.length;
+  const pct=Math.round((score/total)*100);
+  const hasMistakes = wrongAnswersLog.length > 0;
+  const hexPct=(pct/100)*360;
+  document.getElementById('prog-track').style.width='100%';
+  document.getElementById('q-counter').textContent='DONE';
+
+  let mistakeList = '';
+  if(hasMistakes){
+    mistakeList = '<div class="mistake-summary"><div class="mistake-summary-title">📝 Questions to review:</div>';
+    wrongAnswersLog.forEach((w, i) => {
+      mistakeList += `<div class="mistake-item">
+        <div class="mistake-num">${i+1}</div>
+        <div class="mistake-q">${w.question.q}</div>
+      </div>`;
+    });
+    mistakeList += '</div>';
+  }
+
+  document.getElementById('q-area').innerHTML=`
+    <div class="result-card">
+      <div class="result-emoji">${pct>=80?'🎯':'📊'}</div>
+      <div class="result-title">QUIZ RESULTS</div>
+      <div class="result-sub">HERE'S HOW YOU DID</div>
+      <div class="score-hex ${pct>=80?'':'fail'}" style="--pct:${hexPct}deg;">
+        <div class="pct-num">${pct}%</div>
+        <div class="pct-label">${score} / ${total}</div>
+      </div>
+      ${hasMistakes ? `
+        <p style="color:var(--text-dim);margin-bottom:14px;font-size:14px;">
+          You got <strong style="color:var(--neon-green);">${score} right</strong> and <strong style="color:var(--neon-red);">${wrongAnswersLog.length} wrong</strong>.<br>
+          Let's review the ones you missed!
+        </p>
+        ${mistakeList}
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
+          <button class="btn btn-primary" onclick="startReviewMode()">REVIEW MISTAKES ▶</button>
+          <button class="btn btn-ghost" onclick="skipReview()">SKIP</button>
+        </div>
+      ` : `
+        <p style="color:var(--neon-green);margin-bottom:14px;font-weight:700;">🎉 Perfect! No mistakes to review!</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
+          <button class="btn btn-primary" onclick="finalizeResults()">CONTINUE ▶</button>
+        </div>
+      `}
+    </div>`;
+}
+
+function startReviewMode(){
+  reviewMode = true;
+  // Reset answer index shuffling for review so it's fresh
+  reviewQueue = wrongAnswersLog.map(w => shuffleQuestionOptions(w.question));
+  currentQ = 0;
+  currentReviewIdx = 0;
+  renderQuestion();
+}
+
+function skipReview(){
+  finalizeResults();
+}
+
+function finalizeResults(){
+  showFinalResults();
+}
+
+function showFinalResults(){
+  const s=QUESTIONS[currentUser][currentSubject];
+  const total=shuffledQuestions.length;
+  const pct=Math.round((score/total)*100);
+  const passed=pct>=80;
+  const prog=getProgress(currentUser);
+  const pKey=currentUser+'_'+currentSubject;
+  prog[pKey+'_correct']=(prog[pKey+'_correct']||0)+score;
+  prog[pKey+'_total']=(prog[pKey+'_total']||0)+total;
+  let badgeHtml='';
+  if(passed){
+    const newLvl=(prog[pKey+'_level']||0)+1;
+    prog[pKey+'_level']=Math.min(newLvl,s.levels.length);
+    addAlert('🏆 '+USERS[currentUser].name+' completed '+s.levels[currentLevel].title+' ('+s.name.replace(/[^\w\s]/gi,'').trim()+') with '+pct+'%');
+    logWeekly(currentUser,s.levels[currentLevel].title,pct,score,total);
+    addXP(currentUser,100);
+    if(awardBadge(currentUser,'first_lesson'))badgeHtml+=bPop('first_lesson');
+    if(pct===100&&awardBadge(currentUser,'perfect'))badgeHtml+=bPop('perfect');
+    if(wrongCount===0&&awardBadge(currentUser,'no_hints'))badgeHtml+=bPop('no_hints');
+    if(currentSubject==='math'&&awardBadge(currentUser,'math_star'))badgeHtml+=bPop('math_star');
+    if(currentSubject==='reading'&&awardBadge(currentUser,'reading_star'))badgeHtml+=bPop('reading_star');
+    const streaks=getStreaks();
+    streaks[currentUser]=(streaks[currentUser]||0)+1;
+    setStorage('streaks',streaks);
+    if(streaks[currentUser]>=3&&awardBadge(currentUser,'streak3'))badgeHtml+=bPop('streak3');
+  }else{
+    logWeekly(currentUser,s.levels[currentLevel].title,pct,score,total);
+  }
+  setProgress(currentUser,prog);
+  // Clear saved lesson state since we finished
+  clearLessonState();
+  const hexPct=(pct/100)*360;
+  document.getElementById('q-area').innerHTML=`
+    <div class="result-card">
+      <div class="result-emoji">${passed?'🏆':'💪'}</div>
+      <div class="result-title">${passed?'MISSION COMPLETE':'TRY AGAIN'}</div>
+      <div class="result-sub">${passed?'+100 XP EARNED • MISSION PASSED':'NEED 80% TO ADVANCE'}</div>
+      <div class="score-hex ${passed?'':'fail'}" style="--pct:${hexPct}deg;">
+        <div class="pct-num">${pct}%</div>
+        <div class="pct-label">${score} / ${total}</div>
+      </div>
+      ${badgeHtml}
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
+        ${passed&&prog[pKey+'_level']<s.levels.length?'<button class="btn btn-green" onclick="startLesson()">NEXT ▶</button>':''}
+        <button class="btn btn-primary" onclick="startLesson()">REPLAY ↻</button>
+        <button class="btn btn-ghost" onclick="goChildHome()">HOME</button>
+      </div>
+    </div>`;
+}
+
+// Kept for backwards compat
+function showResults(){ showInitialResults(); }
+
+function bPop(id){
+  const b=ALL_BADGES.find(x=>x.id===id);
+  if(!b)return '';
+  return `<div class="badge-pop"><div class="bpi">${b.icon}</div><div class="bpn">${b.name}</div></div>`;
+}
+
+// ============ READ ALOUD (TEXT TO SPEECH) ============
+let currentUtterance = null;
+let readRate = 0.9; // Slightly slower than default
+
+function readAloud(text, buttonEl) {
+  // Stop any current speech
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    if (currentUtterance && currentUtterance._btn) {
+      currentUtterance._btn.classList.remove('speaking');
+    }
+    // If same button was clicked, just stop (toggle behavior)
+    if (currentUtterance && currentUtterance._btn === buttonEl) {
+      currentUtterance = null;
+      return;
+    }
+  }
+  if (!window.speechSynthesis) {
+    alert('Sorry, read-aloud is not available on this device.');
+    return;
+  }
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = readRate;
+  utterance.pitch = 1.0;
+  utterance.volume = 1.0;
+  // Try to pick a pleasant English voice
+  const voices = window.speechSynthesis.getVoices();
+  const preferredVoice = voices.find(v =>
+    v.lang.startsWith('en') && (v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Google') || v.name.includes('Female'))
+  ) || voices.find(v => v.lang.startsWith('en'));
+  if (preferredVoice) utterance.voice = preferredVoice;
+
+  if (buttonEl) {
+    buttonEl.classList.add('speaking');
+    utterance._btn = buttonEl;
+  }
+  utterance.onend = () => {
+    if (buttonEl) buttonEl.classList.remove('speaking');
+    currentUtterance = null;
+  };
+  utterance.onerror = () => {
+    if (buttonEl) buttonEl.classList.remove('speaking');
+    currentUtterance = null;
+  };
+  currentUtterance = utterance;
+  window.speechSynthesis.speak(utterance);
+}
+
+// Auto-read for users who need it (like Taalyn with decoding IEP goals)
+function shouldAutoRead() {
+  return getStorage('auto_read_'+currentUser, currentUser === 'taalyn');
+}
+function toggleAutoRead() {
+  const cur = shouldAutoRead();
+  setStorage('auto_read_'+currentUser, !cur);
+  return !cur;
+}
+
+// Stop speech when leaving a screen
+function stopSpeech() {
+  if (window.speechSynthesis && window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+  }
+  currentUtterance = null;
+  document.querySelectorAll('.speaking').forEach(el => el.classList.remove('speaking'));
+}
+
+// Preload voices (iOS needs this)
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+  };
+}
+</script>
+</body>
+</html>
