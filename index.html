@@ -446,9 +446,29 @@ header{
 }
 .q-text{
   font-size:19px;font-weight:700;
-  line-height:1.4;
+  line-height:1.5;
   margin-bottom:22px;
   color:var(--text);
+  white-space:pre-line;
+}
+.q-text .passage-label{
+  display:block;
+  font-family:'Orbitron',sans-serif;
+  font-size:11px;
+  letter-spacing:2px;
+  color:var(--neon-cyan);
+  margin-bottom:6px;
+  font-weight:900;
+}
+.q-text .question-label{
+  display:block;
+  font-family:'Orbitron',sans-serif;
+  font-size:11px;
+  letter-spacing:2px;
+  color:var(--neon-pink);
+  margin-top:14px;
+  margin-bottom:6px;
+  font-weight:900;
 }
 .opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .opt-btn{
@@ -487,6 +507,134 @@ header{
 }
 .opt-btn.wrong .letter{color:var(--neon-red);}
 .opt-btn:disabled{cursor:default;}
+.opt-btn.selected{
+  border-color:var(--neon-cyan)!important;
+  background:rgba(0,240,255,0.08)!important;
+  box-shadow:0 0 15px rgba(0,240,255,0.3);
+  transform:translateY(-1px);
+}
+.opt-btn.selected .letter{color:var(--neon-cyan);}
+
+.submit-row{
+  display:flex;justify-content:center;margin-top:18px;
+}
+.submit-row #submit-btn{
+  min-width:240px;
+  opacity:0.4;
+  transition:opacity .2s, transform .2s;
+}
+.submit-row #submit-btn.ready{
+  opacity:1;
+  animation:pulseReady 1.5s infinite;
+}
+@keyframes pulseReady{
+  0%,100%{box-shadow:0 0 20px rgba(255,46,199,0.4),0 4px 20px rgba(0,0,0,0.5);}
+  50%{box-shadow:0 0 30px rgba(255,46,199,0.8),0 4px 20px rgba(0,0,0,0.5);}
+}
+.submit-row #submit-btn:disabled{cursor:not-allowed;animation:none;}
+
+/* SPEED MATH */
+#speed-math{padding:20px;max-width:700px;margin:0 auto;}
+.sm-hud{
+  display:flex;align-items:center;gap:12px;margin-bottom:18px;justify-content:space-between;
+}
+.sm-status{display:flex;gap:10px;}
+.sm-stat{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px 14px;
+  display:flex;align-items:center;gap:6px;
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
+  font-size:18px;
+}
+.sm-stat-label{font-size:14px;color:var(--text-dim);}
+.sm-home{
+  background:linear-gradient(180deg,var(--bg-card),var(--bg-2));
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:30px 24px;
+}
+.sm-picker{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+}
+.sm-pick{
+  background:var(--bg-0);
+  border:2px solid var(--border);
+  border-radius:14px;
+  padding:18px 10px;
+  cursor:pointer;
+  transition:all .2s;
+  color:var(--text);
+}
+.sm-pick:hover{border-color:var(--neon-yellow);transform:translateY(-2px);box-shadow:0 0 20px rgba(255,230,0,0.3);}
+.sm-pick-n{
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
+  font-size:22px;
+  color:var(--neon-yellow);
+  margin-bottom:4px;
+}
+.sm-pick-l{
+  font-size:10px;
+  letter-spacing:2px;
+  color:var(--text-dim);
+}
+.sm-problem{
+  font-family:'Orbitron',sans-serif;
+  font-size:56px;
+  font-weight:900;
+  text-align:center;
+  color:var(--neon-cyan);
+  padding:30px 20px;
+  background:linear-gradient(180deg,var(--bg-card),var(--bg-2));
+  border:1px solid var(--border);
+  border-radius:20px;
+  margin-bottom:18px;
+  text-shadow:0 0 20px rgba(0,240,255,0.4);
+}
+.sm-opts{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
+}
+.sm-opt{
+  background:var(--bg-card);
+  border:2px solid var(--border);
+  border-radius:14px;
+  padding:22px;
+  cursor:pointer;
+  transition:all .15s;
+  color:var(--text);
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
+  font-size:28px;
+}
+.sm-opt:hover:not(:disabled){border-color:var(--neon-cyan);transform:scale(1.02);}
+.sm-opt.sm-correct{
+  border-color:var(--neon-green)!important;
+  background:rgba(57,255,122,0.15)!important;
+  color:var(--neon-green);
+  box-shadow:0 0 20px rgba(57,255,122,0.4);
+}
+.sm-opt.sm-wrong{
+  border-color:var(--neon-red)!important;
+  background:rgba(255,61,90,0.15)!important;
+  color:var(--neon-red);
+}
+.sm-results{
+  background:linear-gradient(180deg,var(--bg-card),var(--bg-2));
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:30px 20px;
+  text-align:center;
+}
+.sm-bests{margin-top:10px;}
+.mission-card.speed-math-card::before{background:linear-gradient(180deg,var(--neon-yellow),var(--neon-red));}
+@media(max-width:600px){
+  .sm-problem{font-size:40px;padding:22px 10px;}
+  .sm-opt{font-size:22px;padding:16px;}
+  .sm-picker{grid-template-columns:1fr 1fr 1fr;}
+}
 
 .feedback{
   border-radius:14px;
@@ -1026,6 +1174,18 @@ header{
   <div id="q-area"></div>
 </div>
 
+<!-- SPEED MATH -->
+<div id="speed-math" class="screen">
+  <div class="sm-hud">
+    <button class="back-btn" onclick="goChildHome()">◀ BACK</button>
+    <div class="sm-status">
+      <div class="sm-stat"><span class="sm-stat-label">⏱</span><span id="sm-timer">--</span></div>
+      <div class="sm-stat"><span class="sm-stat-label">✓</span><span id="sm-score">0</span></div>
+    </div>
+  </div>
+  <div id="sm-question"></div>
+</div>
+
 <!-- PARENT DASHBOARD -->
 <div id="dashboard" class="screen">
   <div class="dash-header">◆ GAMEMASTER CONSOLE</div>
@@ -1082,6 +1242,284 @@ let hintUsedThisQuestion = false;
 let hintCountThisQuiz = 0;
 // Concept tracking
 let conceptMissesThisQuiz = {}; // {conceptTag: count}
+// Selected answer (before submission)
+let selectedAnswerIdx = null;
+// Speed Math state
+let speedMathTimer = null;
+let speedMathSecondsLeft = 0;
+let speedMathScore = 0;
+let speedMathTotal = 0;
+let speedMathCurrent = null;
+let speedMathDuration = 60;
+let speedMathLevel = 'easy';
+
+// Generate speed math problems
+function generateSpeedMathProblem(user, difficulty){
+  let a, b, op, answer;
+  if(user === 'taalyn' || difficulty === 'easy'){
+    // Addition/subtraction within 20
+    const opType = Math.random() < 0.5 ? '+' : '-';
+    if(opType === '+'){
+      a = Math.floor(Math.random() * 15) + 1;
+      b = Math.floor(Math.random() * (20-a)) + 1;
+      answer = a + b;
+    } else {
+      a = Math.floor(Math.random() * 18) + 2;
+      b = Math.floor(Math.random() * a) + 1;
+      answer = a - b;
+    }
+    op = opType;
+  } else if(difficulty === 'medium'){
+    // Mix of multiplication up to 10x10, addition/subtraction within 100
+    const r = Math.random();
+    if(r < 0.5){
+      // Multiplication 2-10
+      a = Math.floor(Math.random() * 9) + 2;
+      b = Math.floor(Math.random() * 9) + 2;
+      op = '×';
+      answer = a * b;
+    } else if(r < 0.75){
+      a = Math.floor(Math.random() * 50) + 10;
+      b = Math.floor(Math.random() * 40) + 5;
+      op = '+';
+      answer = a + b;
+    } else {
+      a = Math.floor(Math.random() * 70) + 20;
+      b = Math.floor(Math.random() * a) + 1;
+      op = '-';
+      answer = a - b;
+    }
+  } else {
+    // hard - 2 digit mult, larger numbers
+    const r = Math.random();
+    if(r < 0.4){
+      a = Math.floor(Math.random() * 11) + 2;
+      b = Math.floor(Math.random() * 11) + 2;
+      op = '×';
+      answer = a * b;
+    } else if(r < 0.6){
+      a = Math.floor(Math.random() * 50) + 10;
+      b = Math.floor(Math.random() * 9) + 2;
+      op = '×';
+      answer = a * b;
+    } else if(r < 0.8){
+      a = Math.floor(Math.random() * 90) + 50;
+      b = Math.floor(Math.random() * 50) + 10;
+      op = '+';
+      answer = a + b;
+    } else {
+      a = Math.floor(Math.random() * 99) + 50;
+      b = Math.floor(Math.random() * a) + 1;
+      op = '-';
+      answer = a - b;
+    }
+  }
+  // Generate 4 answer options with the correct answer in a random spot
+  const correctIdx = Math.floor(Math.random() * 4);
+  const opts = [];
+  for(let i = 0; i < 4; i++){
+    if(i === correctIdx){
+      opts.push(answer);
+    } else {
+      // Generate plausible wrong answer within range
+      let wrong;
+      let attempts = 0;
+      do {
+        const offset = (Math.floor(Math.random() * 10) + 1) * (Math.random() < 0.5 ? 1 : -1);
+        wrong = answer + offset;
+        attempts++;
+      } while((wrong < 0 || wrong === answer || opts.includes(wrong)) && attempts < 20);
+      if(wrong < 0) wrong = answer + attempts;
+      opts.push(wrong);
+    }
+  }
+  return {
+    q: a + ' ' + op + ' ' + b + ' = ?',
+    opts: opts,
+    c: correctIdx,
+    answer: answer
+  };
+}
+
+function startSpeedMath(duration, difficulty){
+  speedMathDuration = duration;
+  speedMathLevel = difficulty;
+  speedMathSecondsLeft = duration;
+  speedMathScore = 0;
+  speedMathTotal = 0;
+  renderSpeedMath();
+  showScreen('speed-math');
+  runSpeedMathTimer();
+}
+
+function runSpeedMathTimer(){
+  if(speedMathTimer) clearInterval(speedMathTimer);
+  updateSpeedMathDisplay();
+  speedMathTimer = setInterval(() => {
+    speedMathSecondsLeft--;
+    updateSpeedMathDisplay();
+    if(speedMathSecondsLeft <= 0){
+      clearInterval(speedMathTimer);
+      endSpeedMath();
+    }
+  }, 1000);
+}
+
+function updateSpeedMathDisplay(){
+  const td = document.getElementById('sm-timer');
+  if(td){
+    const m = Math.floor(speedMathSecondsLeft / 60);
+    const s = speedMathSecondsLeft % 60;
+    td.textContent = m + ':' + (s<10?'0':'') + s;
+    if(speedMathSecondsLeft <= 10){
+      td.style.color = 'var(--neon-red)';
+    } else if(speedMathSecondsLeft <= 30){
+      td.style.color = 'var(--neon-yellow)';
+    } else {
+      td.style.color = 'var(--neon-green)';
+    }
+  }
+  const scoreEl = document.getElementById('sm-score');
+  if(scoreEl) scoreEl.textContent = speedMathScore;
+}
+
+function renderSpeedMath(){
+  speedMathCurrent = generateSpeedMathProblem(currentUser, speedMathLevel);
+  const q = speedMathCurrent;
+  document.getElementById('sm-question').innerHTML = `
+    <div class="sm-problem">${q.q}</div>
+    <div class="sm-opts">
+      ${q.opts.map((o,i) => `<button class="sm-opt" onclick="checkSpeedMath(${i})">${o}</button>`).join('')}
+    </div>`;
+}
+
+function checkSpeedMath(idx){
+  if(speedMathSecondsLeft <= 0) return;
+  speedMathTotal++;
+  const correct = idx === speedMathCurrent.c;
+  const btns = document.querySelectorAll('.sm-opt');
+  btns.forEach(b => b.disabled = true);
+  if(correct){
+    speedMathScore++;
+    btns[idx].classList.add('sm-correct');
+    addXP(currentUser, 2); // 2 XP per correct speed math
+  } else {
+    btns[idx].classList.add('sm-wrong');
+    btns[speedMathCurrent.c].classList.add('sm-correct');
+  }
+  updateSpeedMathDisplay();
+  // Next problem after brief delay
+  setTimeout(() => {
+    if(speedMathSecondsLeft > 0) renderSpeedMath();
+  }, 600);
+}
+
+function endSpeedMath(){
+  clearInterval(speedMathTimer);
+  const accuracy = speedMathTotal > 0 ? Math.round((speedMathScore/speedMathTotal)*100) : 0;
+  // Save best score
+  const bestKey = 'sm_best_' + currentUser + '_' + speedMathDuration + '_' + speedMathLevel;
+  const prevBest = getStorage(bestKey, 0);
+  const isNewBest = speedMathScore > prevBest;
+  if(isNewBest) setStorage(bestKey, speedMathScore);
+  // Log alert for parent
+  if(speedMathTotal > 0){
+    addAlert('⚡ ' + USERS[currentUser].name + ' finished Speed Math (' + speedMathDuration + 's): ' + speedMathScore + ' correct out of ' + speedMathTotal + ' (' + accuracy + '%)' + (isNewBest ? ' • NEW BEST!' : ''));
+  }
+  // Award badge for speed math
+  if(speedMathScore >= 15) awardBadge(currentUser, 'speed_demon');
+  document.getElementById('sm-question').innerHTML = `
+    <div class="sm-results">
+      <div style="font-size:64px;margin-bottom:10px;">${isNewBest ? '🏆' : '⚡'}</div>
+      <div class="result-title">${isNewBest ? 'NEW BEST!' : 'TIME UP!'}</div>
+      <div style="margin:20px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+        <div style="background:var(--bg-0);border-radius:10px;padding:14px;">
+          <div style="font-family:'Orbitron',sans-serif;font-size:28px;color:var(--neon-green);font-weight:900;">${speedMathScore}</div>
+          <div style="font-size:11px;color:var(--text-dim);letter-spacing:1px;">CORRECT</div>
+        </div>
+        <div style="background:var(--bg-0);border-radius:10px;padding:14px;">
+          <div style="font-family:'Orbitron',sans-serif;font-size:28px;color:var(--neon-cyan);font-weight:900;">${speedMathTotal}</div>
+          <div style="font-size:11px;color:var(--text-dim);letter-spacing:1px;">ATTEMPTED</div>
+        </div>
+        <div style="background:var(--bg-0);border-radius:10px;padding:14px;">
+          <div style="font-family:'Orbitron',sans-serif;font-size:28px;color:var(--neon-yellow);font-weight:900;">${accuracy}%</div>
+          <div style="font-size:11px;color:var(--text-dim);letter-spacing:1px;">ACCURACY</div>
+        </div>
+      </div>
+      <div style="color:var(--text-dim);font-size:13px;margin-bottom:18px;">
+        ${isNewBest ? 'Crushed your previous best of ' + prevBest + '!' : 'Best: ' + Math.max(prevBest, speedMathScore)}<br>
+        +${speedMathScore * 2} XP earned
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="showSpeedMathHome()">PLAY AGAIN ↻</button>
+        <button class="btn btn-ghost" onclick="goChildHome()">HOME</button>
+      </div>
+    </div>`;
+}
+
+function showSpeedMathHome(){
+  const u = USERS[currentUser];
+  const defaultLevel = (currentUser === 'taalyn') ? 'easy' : 'medium';
+  document.getElementById('sm-question').innerHTML = `
+    <div class="sm-home">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:48px;">⚡</div>
+        <div class="result-title">SPEED MATH</div>
+        <div style="color:var(--text-dim);font-size:13px;margin-top:6px;">How many can you solve before time runs out?</div>
+      </div>
+      <div class="section-title" style="margin-top:20px;">◆ PICK DURATION ◆</div>
+      <div class="sm-picker">
+        <button class="sm-pick" onclick="startSpeedMath(30, '${defaultLevel}')">
+          <div class="sm-pick-n">30s</div>
+          <div class="sm-pick-l">QUICK</div>
+        </button>
+        <button class="sm-pick" onclick="startSpeedMath(60, '${defaultLevel}')">
+          <div class="sm-pick-n">60s</div>
+          <div class="sm-pick-l">NORMAL</div>
+        </button>
+        <button class="sm-pick" onclick="startSpeedMath(120, '${defaultLevel}')">
+          <div class="sm-pick-n">2min</div>
+          <div class="sm-pick-l">MARATHON</div>
+        </button>
+      </div>
+      ${currentUser !== 'taalyn' ? `
+      <div class="section-title" style="margin-top:24px;">◆ DIFFICULTY ◆</div>
+      <div class="sm-picker">
+        <button class="sm-pick" onclick="startSpeedMath(60, 'easy')">
+          <div class="sm-pick-n" style="color:var(--neon-green);">EASY</div>
+          <div class="sm-pick-l">+ / -</div>
+        </button>
+        <button class="sm-pick" onclick="startSpeedMath(60, 'medium')">
+          <div class="sm-pick-n" style="color:var(--neon-yellow);">MEDIUM</div>
+          <div class="sm-pick-l">+ / - / ×</div>
+        </button>
+        <button class="sm-pick" onclick="startSpeedMath(60, 'hard')">
+          <div class="sm-pick-n" style="color:var(--neon-red);">HARD</div>
+          <div class="sm-pick-l">BIG NUMBERS</div>
+        </button>
+      </div>` : ''}
+      <div class="sm-bests" id="sm-bests"></div>
+    </div>`;
+  // Show best scores
+  const bests = [];
+  ['30','60','120'].forEach(dur => {
+    ['easy','medium','hard'].forEach(diff => {
+      const best = getStorage('sm_best_' + currentUser + '_' + dur + '_' + diff, 0);
+      if(best > 0) bests.push({dur, diff, best});
+    });
+  });
+  if(bests.length > 0){
+    document.getElementById('sm-bests').innerHTML = `
+      <div class="section-title" style="margin-top:24px;">◆ YOUR BEST SCORES ◆</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;">
+        ${bests.map(b => `<div style="background:var(--bg-0);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-family:'Orbitron',sans-serif;font-size:22px;color:var(--neon-cyan);font-weight:900;">${b.best}</div>
+          <div style="font-size:10px;color:var(--text-dim);letter-spacing:1px;">${b.dur}s ${b.diff.toUpperCase()}</div>
+        </div>`).join('')}
+      </div>`;
+  }
+  showScreen('speed-math');
+}
 
 // ============ STORAGE ============
 function getStorage(k,d){try{const v=localStorage.getItem('nx_'+k);return v?JSON.parse(v):d;}catch(e){return d;}}
@@ -1171,6 +1609,20 @@ function getHintForQuestion(q){
   return hint + '.';
 }
 
+// Format question text - handles PASSAGE: ... QUESTION: ... format for reading passages
+function formatQuestionText(text){
+  if(text.includes('PASSAGE:') && text.includes('QUESTION:')){
+    // Split on PASSAGE: and QUESTION: markers
+    const passageMatch = text.match(/PASSAGE:\s*"?([^"]*)"?\s*\n*\s*QUESTION:\s*(.*)/s);
+    if(passageMatch){
+      const passage = passageMatch[1].trim().replace(/^"/, '').replace(/"$/, '');
+      const question = passageMatch[2].trim();
+      return `<span class="passage-label">◆ PASSAGE</span>${passage}<span class="question-label">◆ QUESTION</span>${question}`;
+    }
+  }
+  return text;
+}
+
 // ============ USER DATA ============
 const USERS={
   taalyn:{pin:'1111',name:'TAALYN',grade:'4TH GRADE • READY',avatar:'🦁',color:'pink'},
@@ -1185,7 +1637,8 @@ const ALL_BADGES=[
   {id:'math_star',icon:'🔢',name:'Math Pro'},
   {id:'reading_star',icon:'📚',name:'Word Boss'},
   {id:'no_hints',icon:'🧠',name:'No Help'},
-  {id:'week',icon:'🏆',name:'Week Champ'}
+  {id:'week',icon:'🏆',name:'Week Champ'},
+  {id:'speed_demon',icon:'⚡',name:'Speed Demon'}
 ];
 
 const QUESTIONS = {
@@ -1339,6 +1792,35 @@ const QUESTIONS = {
           {q:'Taalyn buys a $3 toy. He pays with $5. Change?',opts:['$2','$3','$5','$8'],c:0,explain:'$5 - $3 = $2 change!',fix:'Change = paid - cost. Simple subtraction.'},
           {q:'Which costs MORE: a $2 book or 75¢ candy?',opts:['The book','The candy','Equal','Cannot tell'],c:0,explain:'$2 = 200¢. 75¢ = 75¢. The book costs MORE!',fix:'Convert to the same unit to compare. $2 = 200¢ which is more than 75¢.'},
           {q:'You have 4 quarters. How much money?',opts:['$0.25','$0.75','$1.00','$4.00'],c:2,explain:'4 quarters = 4 × 25¢ = 100¢ = $1.00!',fix:'4 quarters always = $1. That is why we say "four quarters make a dollar."'}
+        ]}
+      ]
+    },
+    passages: {
+      name:'Story Time 📚', icon:'📚', color:'#ff6b9d',
+      levels:[
+        { title:'Short Stories', qs:[
+          {q:'PASSAGE: "Max found a small, gray puppy in his yard. The puppy was shaking. Max gave it a warm blanket and some water. Soon, the puppy wagged its tail."\n\nQUESTION: What did Max find in his yard?',opts:['A cat','A gray puppy','A bird','A blanket'],c:1,explain:'The first sentence says Max found "a small, gray puppy" in his yard!',fix:'Read carefully. Look at the first sentence — it tells who and what the story is about.'},
+          {q:'PASSAGE: "Max found a small, gray puppy in his yard. The puppy was shaking. Max gave it a warm blanket and some water. Soon, the puppy wagged its tail."\n\nQUESTION: How did the puppy feel at the end?',opts:['Scared','Happy','Angry','Hungry'],c:1,explain:'The puppy wagged its tail at the end. A wagging tail means the puppy is happy!',fix:'Look for clues about feelings. A wagging tail is a happy sign. Shaking was scared.'},
+          {q:'PASSAGE: "The sun was bright. Lily put on her hat. She grabbed her bucket and shovel. At the beach, she built a big sandcastle with her dad."\n\nQUESTION: Where did Lily go?',opts:['The park','The store','The beach','School'],c:2,explain:'The passage says "At the beach, she built a big sandcastle." Lily went to the beach!',fix:'Find the location word in the story. "At the beach" tells you where she went.'},
+          {q:'PASSAGE: "The sun was bright. Lily put on her hat. She grabbed her bucket and shovel. At the beach, she built a big sandcastle with her dad."\n\nQUESTION: Who was with Lily?',opts:['Her mom','Her dad','Her friend','Alone'],c:1,explain:'The last sentence says she built a sandcastle "with her dad."',fix:'Look for "with" in the story. It tells you who was there.'},
+          {q:'PASSAGE: "Sam had a loose tooth. He wiggled it all day. At dinner, he bit into an apple. His tooth came out! Sam smiled big."\n\nQUESTION: What came out when Sam bit the apple?',opts:['His tongue','His tooth','A worm','Nothing'],c:1,explain:'The story says "His tooth came out!" when he bit the apple.',fix:'Follow the events: loose tooth → wiggled → bit apple → tooth came out.'},
+          {q:'PASSAGE: "Sam had a loose tooth. He wiggled it all day. At dinner, he bit into an apple. His tooth came out! Sam smiled big."\n\nQUESTION: How did Sam feel when his tooth came out?',opts:['Sad','Angry','Happy','Scared'],c:2,explain:'"Sam smiled big" tells us he was happy! Losing a tooth is exciting.',fix:'A big smile means happy. Look for feeling clues in actions.'},
+          {q:'PASSAGE: "A little bird built a nest in the tree. She laid three tiny blue eggs. Every day she kept them warm. Soon, three baby birds hatched."\n\nQUESTION: How many eggs did the bird lay?',opts:['One','Two','Three','Four'],c:2,explain:'The passage says "She laid three tiny blue eggs."',fix:'Look for number words in the story. "Three" is right there.'},
+          {q:'PASSAGE: "A little bird built a nest in the tree. She laid three tiny blue eggs. Every day she kept them warm. Soon, three baby birds hatched."\n\nQUESTION: What happened at the end?',opts:['The eggs broke','Three baby birds hatched','The bird flew away','The tree fell'],c:1,explain:'"Soon, three baby birds hatched" — that is the ending of the story.',fix:'The last sentence of a story usually shows the final event.'},
+          {q:'PASSAGE: "Ben wanted to ride his bike. It had a flat tire. Dad helped him pump it up. Now Ben could ride all around the yard."\n\nQUESTION: What was the problem?',opts:['Ben could not walk','The bike had a flat tire','Dad was busy','It was raining'],c:1,explain:'"It had a flat tire" — that was the problem Ben needed to solve.',fix:'The problem is usually stated early. Look for what went wrong.'},
+          {q:'PASSAGE: "Ben wanted to ride his bike. It had a flat tire. Dad helped him pump it up. Now Ben could ride all around the yard."\n\nQUESTION: Who helped Ben?',opts:['Mom','Dad','His sister','His friend'],c:1,explain:'"Dad helped him pump it up" — Dad solved the problem!',fix:'Find who did the helping. The story tells you directly.'}
+        ]},
+        { title:'Longer Stories', qs:[
+          {q:'PASSAGE: "It was Mia\'s birthday. She woke up and ran downstairs. Her mom had made pancakes shaped like stars. There were presents on the table. Mia smiled and hugged her mom."\n\nQUESTION: What special day was it?',opts:['Christmas','Mia\'s birthday','A school day','Thanksgiving'],c:1,explain:'The very first sentence says "It was Mia\'s birthday."',fix:'The first sentence often tells you the setting or special event.'},
+          {q:'PASSAGE: "It was Mia\'s birthday. She woke up and ran downstairs. Her mom had made pancakes shaped like stars. There were presents on the table. Mia smiled and hugged her mom."\n\nQUESTION: What shape were the pancakes?',opts:['Circles','Hearts','Stars','Squares'],c:2,explain:'The story says "pancakes shaped like stars."',fix:'Look for describing words. "Shaped like stars" tells you the shape.'},
+          {q:'PASSAGE: "Jake had a big test at school. He studied for two hours. When the test came, he remembered everything. Jake got every answer right and felt proud."\n\nQUESTION: How long did Jake study?',opts:['Ten minutes','One hour','Two hours','All day'],c:2,explain:'The story clearly says "He studied for two hours."',fix:'Number and time words are important clues. Look carefully for them.'},
+          {q:'PASSAGE: "Jake had a big test at school. He studied for two hours. When the test came, he remembered everything. Jake got every answer right and felt proud."\n\nQUESTION: Why did Jake feel proud?',opts:['He ate lunch','He got every answer right','He was tall','It was sunny'],c:1,explain:'Jake felt proud because "he got every answer right" on his test!',fix:'Look for the cause of his feelings. Why do people feel proud? Because of what they did.'},
+          {q:'PASSAGE: "The park was full of kids playing. Emma went down the slide. Her brother climbed on the jungle gym. They laughed and ran for hours. When the sun went down, they went home."\n\nQUESTION: What did Emma do at the park?',opts:['Climbed the jungle gym','Went down the slide','Played on the swings','Sat on a bench'],c:1,explain:'"Emma went down the slide" — that is what Emma did!',fix:'Match the action to the right character. Emma did one thing, her brother did another.'},
+          {q:'PASSAGE: "The park was full of kids playing. Emma went down the slide. Her brother climbed on the jungle gym. They laughed and ran for hours. When the sun went down, they went home."\n\nQUESTION: When did they go home?',opts:['In the morning','At lunch','When the sun went down','After a snack'],c:2,explain:'The last sentence says "When the sun went down, they went home."',fix:'Find the ending of the story. It tells you when things happened.'},
+          {q:'PASSAGE: "Tom planted a seed in a cup. He put it near the window. He watered it every day. After two weeks, a tiny green sprout popped up! Tom was so excited."\n\nQUESTION: Where did Tom put the cup?',opts:['In his backyard','Near the window','In the closet','On the floor'],c:1,explain:'The story says "He put it near the window."',fix:'Location words tell you WHERE. Look for them carefully.'},
+          {q:'PASSAGE: "Tom planted a seed in a cup. He put it near the window. He watered it every day. After two weeks, a tiny green sprout popped up! Tom was so excited."\n\nQUESTION: How long until the sprout popped up?',opts:['One day','Two weeks','One month','One year'],c:1,explain:'"After two weeks, a tiny green sprout popped up!" Two weeks!',fix:'Time words are clues. "After two weeks" tells you how long it took.'},
+          {q:'PASSAGE: "Ava lost her red backpack at school. She looked in her classroom. She looked in the gym. Finally, she found it in the lost and found. She was so relieved!"\n\nQUESTION: Where did Ava find her backpack?',opts:['In her classroom','In the gym','In the lost and found','In her car'],c:2,explain:'"Finally, she found it in the lost and found."',fix:'When a story has "finally" — that means the last place something happened.'},
+          {q:'PASSAGE: "Ava lost her red backpack at school. She looked in her classroom. She looked in the gym. Finally, she found it in the lost and found. She was so relieved!"\n\nQUESTION: What color was Ava\'s backpack?',opts:['Blue','Red','Green','Purple'],c:1,explain:'The story says "her red backpack" in the first sentence.',fix:'Color words are often right next to the thing they describe. Look for red, blue, etc.'}
         ]}
       ]
     }
@@ -1500,6 +1982,35 @@ const QUESTIONS = {
           {q:'Bus ride is 1 hour 20 min. You leave at 7:45 AM. Arrive when?',opts:['8:45 AM','9:05 AM','8:55 AM','9:15 AM'],c:1,explain:'7:45 + 1 hour = 8:45. 8:45 + 20 min = 9:05 AM!',fix:'Add hours first: 7:45 + 1hr = 8:45. Then add minutes: 8:45 + 20 = 9:05.'}
         ]}
       ]
+    },
+    passages: {
+      name:'Reading Passages 📚', icon:'📚', color:'#c77dff',
+      levels:[
+        { title:'Short Passages', qs:[
+          {q:'PASSAGE: "The African elephant is the largest land animal on Earth. Adult elephants can weigh up to 14,000 pounds. They use their long trunks to drink water, pick up food, and even give other elephants gentle hugs."\n\nQUESTION: What is the main idea of the passage?',opts:['Elephants are gray','Elephants are big animals with useful trunks','Elephants live in Africa','Elephants hug each other'],c:1,explain:'The passage is MOSTLY about elephants being huge AND what they use their trunks for. That covers both main points.',fix:'Main idea = what the whole passage is mostly about. Find the topic that every sentence supports.'},
+          {q:'PASSAGE: "The African elephant is the largest land animal on Earth. Adult elephants can weigh up to 14,000 pounds. They use their long trunks to drink water, pick up food, and even give other elephants gentle hugs."\n\nQUESTION: What can you infer about elephants?',opts:['They are scared of everything','They have close social bonds','They eat only plants','They cannot swim'],c:1,explain:'The hugging detail hints that elephants care about each other. That is social bonding!',fix:'Inference means using clues. Hugging = closeness = social bonds.'},
+          {q:'PASSAGE: "Maria moved to a new school in September. At first, she ate lunch alone and missed her old friends. By October, she had joined the art club. By November, her lunch table was packed with laughing friends."\n\nQUESTION: What is the message of this passage?',opts:['Art is fun','Schools are boring','Things get better with time','Lunch is important'],c:2,explain:'The passage shows Maria going from lonely to having many friends over time. The message: things improve!',fix:'Look at the change from beginning to end. What lesson does that change teach?'},
+          {q:'PASSAGE: "Maria moved to a new school in September. At first, she ate lunch alone and missed her old friends. By October, she had joined the art club. By November, her lunch table was packed with laughing friends."\n\nQUESTION: How did joining the art club help Maria?',opts:['It made her smarter','It helped her meet friends','It made her art better','It gave her snacks'],c:1,explain:'After joining the art club, her lunch table got full of friends. The club helped her meet people!',fix:'Cause and effect — she joined a club, then she had friends. The club caused the friendships.'},
+          {q:'PASSAGE: "Thunderstorms happen when warm air rises quickly into cold air. The water droplets freeze, then crash into each other. This creates the electricity we see as lightning. The sound of thunder is actually lightning heating the air so fast that it explodes."\n\nQUESTION: What causes lightning?',opts:['Rain falling','Warm and cold air mixing, with water droplets crashing','The sun','Trees bending'],c:1,explain:'The passage explains: warm air rises, hits cold air, droplets freeze and crash — that creates lightning.',fix:'Science passages explain HOW something happens. Follow the steps described.'},
+          {q:'PASSAGE: "Thunderstorms happen when warm air rises quickly into cold air. The water droplets freeze, then crash into each other. This creates the electricity we see as lightning. The sound of thunder is actually lightning heating the air so fast that it explodes."\n\nQUESTION: What is thunder actually?',opts:['Clouds banging together','Lightning exploding air','Rain hitting the ground','The ground shaking'],c:1,explain:'"Thunder is actually lightning heating the air so fast that it explodes." Thunder IS lightning sound!',fix:'Look for the word "actually" — it often reveals a surprising fact.'},
+          {q:'PASSAGE: "The ancient Egyptians built massive pyramids without modern tools. They used ramps, levers, and thousands of workers. The Great Pyramid of Giza took about 20 years to build. Today, it still stands as one of the Seven Wonders of the Ancient World."\n\nQUESTION: What does "massive" mean in this passage?',opts:['Small','Very large','Colorful','Ancient'],c:1,explain:'"Massive pyramids" — pyramids are huge, so massive means very large.',fix:'Use context clues. What kind of thing is the word describing? That gives you hints about meaning.'},
+          {q:'PASSAGE: "The ancient Egyptians built massive pyramids without modern tools. They used ramps, levers, and thousands of workers. The Great Pyramid of Giza took about 20 years to build. Today, it still stands as one of the Seven Wonders of the Ancient World."\n\nQUESTION: What can you infer about the Egyptians?',opts:['They were lazy','They were incredibly skilled builders','They had modern tools','They built quickly'],c:1,explain:'Building massive pyramids without modern tools shows they were skilled and resourceful!',fix:'Infer = read between the lines. Building something amazing with few tools = skill.'},
+          {q:'PASSAGE: "Amani loved soccer, but she was nervous about the big game. Coach patted her shoulder and said, \'Trust your training.\' Amani nodded, took a deep breath, and ran onto the field. She scored the winning goal."\n\nQUESTION: What does "Trust your training" mean?',opts:['Don\'t practice','Believe in what you learned','Run faster','Wear new shoes'],c:1,explain:'Trust your training = have faith in the skills you built through practice.',fix:'Figure out what a phrase means by how it\'s used. Coach was encouraging her.'},
+          {q:'PASSAGE: "Amani loved soccer, but she was nervous about the big game. Coach patted her shoulder and said, \'Trust your training.\' Amani nodded, took a deep breath, and ran onto the field. She scored the winning goal."\n\nQUESTION: How did Coach\'s words affect Amani?',opts:['Made her more nervous','Gave her confidence to play well','Made her angry','Made her leave'],c:1,explain:'After Coach\'s words, Amani took a breath and played well. His words gave her confidence!',fix:'Track character changes. What happened AFTER the coach spoke? That shows the effect.'}
+        ]},
+        { title:'Longer Passages', qs:[
+          {q:'PASSAGE: "Rosa had been saving her allowance for six months. She wanted to buy a new bike more than anything. Finally, she had enough. But on the way to the store, she saw a lost puppy shivering in the cold. Rosa used her money to take the puppy to the animal shelter instead. Her parents were so proud of her kindness."\n\nQUESTION: What was Rosa originally saving for?',opts:['A puppy','A new bike','A gift','A video game'],c:1,explain:'The passage says "She wanted to buy a new bike more than anything."',fix:'Check early in the story for the goal or original plan.'},
+          {q:'PASSAGE: "Rosa had been saving her allowance for six months. She wanted to buy a new bike more than anything. Finally, she had enough. But on the way to the store, she saw a lost puppy shivering in the cold. Rosa used her money to take the puppy to the animal shelter instead. Her parents were so proud of her kindness."\n\nQUESTION: What character trait does Rosa show?',opts:['Selfishness','Kindness','Laziness','Anger'],c:1,explain:'Rosa gave up her bike money to help a puppy. Her parents were proud of her KINDNESS.',fix:'Character traits come from actions. Helping others = kind. Only helping yourself = selfish.'},
+          {q:'PASSAGE: "Rosa had been saving her allowance for six months. She wanted to buy a new bike more than anything. Finally, she had enough. But on the way to the store, she saw a lost puppy shivering in the cold. Rosa used her money to take the puppy to the animal shelter instead. Her parents were so proud of her kindness."\n\nQUESTION: What is the theme of this story?',opts:['Money is the most important thing','Kindness matters more than possessions','Puppies are cute','Bikes are fun'],c:1,explain:'Rosa chose helping a puppy over getting her bike. The theme: kindness is more important than things.',fix:'Theme = the big life lesson. Ask: what does the story teach about life?'},
+          {q:'PASSAGE: "Octopuses are among the smartest creatures in the ocean. They can solve puzzles, open jars, and even recognize individual humans. Scientists have seen octopuses use coconut shells as armor. They change color not just to hide, but also to communicate with other octopuses. Their intelligence may rival that of dogs."\n\nQUESTION: What is the main idea of this passage?',opts:['Octopuses live in the ocean','Octopuses are highly intelligent creatures','Octopuses are the size of dogs','Coconut shells protect octopuses'],c:1,explain:'The whole passage gives examples of octopus intelligence. Main idea: they are smart!',fix:'Find the big point that ALL the examples support. Smart octopuses = main idea.'},
+          {q:'PASSAGE: "Octopuses are among the smartest creatures in the ocean. They can solve puzzles, open jars, and even recognize individual humans. Scientists have seen octopuses use coconut shells as armor. They change color not just to hide, but also to communicate with other octopuses. Their intelligence may rival that of dogs."\n\nQUESTION: What does "rival" mean in this passage?',opts:['Be smaller than','Be equal to or compete with','Be different from','Be afraid of'],c:1,explain:'"Rival" means to equal or compete with. Their intelligence may be AS SMART AS dogs.',fix:'Rival = match or compete. If your skill rivals another, they are about the same.'},
+          {q:'PASSAGE: "Octopuses are among the smartest creatures in the ocean. They can solve puzzles, open jars, and even recognize individual humans. Scientists have seen octopuses use coconut shells as armor. They change color not just to hide, but also to communicate with other octopuses. Their intelligence may rival that of dogs."\n\nQUESTION: Why do octopuses change color?',opts:['Only to hide','To hide AND to communicate','To look pretty','To scare predators'],c:1,explain:'"They change color not just to hide, but also to communicate with other octopuses." TWO reasons!',fix:'Watch for "not just... but also." That means there is more than one answer.'},
+          {q:'PASSAGE: "The wind howled through the old house. Carlos heard a loud creak behind him. He jumped, then laughed at himself. It was just his cat, Whiskers, jumping off the table. Carlos sighed and went back to his homework."\n\nQUESTION: How did Carlos feel at first?',opts:['Happy','Scared','Bored','Hungry'],c:1,explain:'He JUMPED at the noise — that means he was startled or scared.',fix:'Actions show feelings. Jumping at a noise means you were scared.'},
+          {q:'PASSAGE: "The wind howled through the old house. Carlos heard a loud creak behind him. He jumped, then laughed at himself. It was just his cat, Whiskers, jumping off the table. Carlos sighed and went back to his homework."\n\nQUESTION: Why did Carlos laugh at himself?',opts:['His homework was funny','He was scared of something harmless','His cat told a joke','The wind was funny'],c:1,explain:'He got scared by a noise that was just his cat. He laughed because his fear was silly!',fix:'People laugh at themselves when they realize something wasn\'t as scary as it seemed.'},
+          {q:'PASSAGE: "Honeybees live in colonies of up to 60,000 bees. Each bee has a job. The queen lays eggs. Worker bees gather nectar and make honey. Soldier bees protect the hive. Without bees, many of our crops could not grow because bees pollinate flowers."\n\nQUESTION: Why are bees important to food?',opts:['They eat bugs','They pollinate flowers so crops grow','They make soil rich','They scare birds'],c:1,explain:'"Without bees, many of our crops could not grow because bees pollinate flowers."',fix:'Look for cause and effect. Bees pollinate → crops grow → we have food.'},
+          {q:'PASSAGE: "Honeybees live in colonies of up to 60,000 bees. Each bee has a job. The queen lays eggs. Worker bees gather nectar and make honey. Soldier bees protect the hive. Without bees, many of our crops could not grow because bees pollinate flowers."\n\nQUESTION: How is a bee colony organized?',opts:['Randomly','Every bee has a job','By age only','By size only'],c:1,explain:'"Each bee has a job" — queen, workers, soldiers all have roles.',fix:'Organized means structured. Each bee = one job = organized system.'}
+        ]}
+      ]
     }
   },
   terry: {
@@ -1659,6 +2170,35 @@ const QUESTIONS = {
           {q:'Bus ride is 1 hour 20 min. You leave at 7:45 AM. Arrive when?',opts:['8:45 AM','9:05 AM','8:55 AM','9:15 AM'],c:1,explain:'7:45 + 1 hour = 8:45. 8:45 + 20 min = 9:05 AM!',fix:'Add hours first: 7:45 + 1hr = 8:45. Then add minutes: 8:45 + 20 = 9:05.'}
         ]}
       ]
+    },
+    passages: {
+      name:'Reading Passages 📚', icon:'📚', color:'#ff922b',
+      levels:[
+        { title:'Cool Facts', qs:[
+          {q:'PASSAGE: "A cheetah is the fastest land animal in the world. It can run 70 miles per hour in short bursts. That is as fast as a car on the highway! Cheetahs use their speed to catch their food. But they can only run this fast for about 30 seconds before they need to rest."\n\nQUESTION: What is the main idea?',opts:['Cheetahs are yellow','Cheetahs are the fastest land animal','Cars are fast','Cheetahs need to rest'],c:1,explain:'The whole passage is about cheetah SPEED. Main idea: they are the fastest.',fix:'Main idea = what the whole passage is about. Find what every sentence connects to.'},
+          {q:'PASSAGE: "A cheetah is the fastest land animal in the world. It can run 70 miles per hour in short bursts. That is as fast as a car on the highway! Cheetahs use their speed to catch their food. But they can only run this fast for about 30 seconds before they need to rest."\n\nQUESTION: How long can a cheetah run at top speed?',opts:['30 minutes','30 seconds','1 hour','All day'],c:1,explain:'"They can only run this fast for about 30 seconds" — that is short!',fix:'Look for time numbers in the passage. The answer is right there.'},
+          {q:'PASSAGE: "A cheetah is the fastest land animal in the world. It can run 70 miles per hour in short bursts. That is as fast as a car on the highway! Cheetahs use their speed to catch their food. But they can only run this fast for about 30 seconds before they need to rest."\n\nQUESTION: Why do cheetahs run so fast?',opts:['For fun','To catch food','To scare people','To stay warm'],c:1,explain:'"Cheetahs use their speed to catch their food." They run fast to hunt!',fix:'Find the reason or cause in the passage. "To catch food" is the purpose.'},
+          {q:'PASSAGE: "Did you know that octopuses have three hearts? Two hearts pump blood to their gills. The third heart pumps blood to the rest of the body. Their blood is blue, not red like ours! Octopuses are one of the weirdest creatures in the ocean."\n\nQUESTION: How many hearts does an octopus have?',opts:['1','2','3','4'],c:2,explain:'"Octopuses have three hearts." Right in the first sentence!',fix:'Number facts are usually stated directly. Scan for numbers.'},
+          {q:'PASSAGE: "Did you know that octopuses have three hearts? Two hearts pump blood to their gills. The third heart pumps blood to the rest of the body. Their blood is blue, not red like ours! Octopuses are one of the weirdest creatures in the ocean."\n\nQUESTION: What color is octopus blood?',opts:['Red','Blue','Green','Black'],c:1,explain:'"Their blood is blue, not red like ours!"',fix:'Color details are easy to find. Look for color words.'},
+          {q:'PASSAGE: "Did you know that octopuses have three hearts? Two hearts pump blood to their gills. The third heart pumps blood to the rest of the body. Their blood is blue, not red like ours! Octopuses are one of the weirdest creatures in the ocean."\n\nQUESTION: What does the author think about octopuses?',opts:['They are boring','They are weird and interesting','They are scary','They are small'],c:1,explain:'The author calls them "one of the weirdest creatures" — that is curiosity and interest!',fix:'Author\'s opinion comes from words like "weirdest," "coolest," etc. Look at adjectives.'},
+          {q:'PASSAGE: "Bananas are actually berries, but strawberries are not! Scientists group fruits by how they grow. Bananas come from one flower with one ovary. Strawberries come from one flower with many ovaries. Science makes everyday food more interesting."\n\nQUESTION: Which one is a berry?',opts:['Strawberry','Banana','Both','Neither'],c:1,explain:'"Bananas are actually berries, but strawberries are not!" Surprising but true!',fix:'Read carefully. The first sentence answers this question directly.'},
+          {q:'PASSAGE: "Bananas are actually berries, but strawberries are not! Scientists group fruits by how they grow. Bananas come from one flower with one ovary. Strawberries come from one flower with many ovaries. Science makes everyday food more interesting."\n\nQUESTION: What is the main message?',opts:['Fruits are yummy','Science groups fruits in surprising ways','Scientists are smart','Strawberries are red'],c:1,explain:'The passage shows how science categories are unexpected. Main message: scientific rules surprise us.',fix:'Main message = the big idea. The passage shows a surprise fact and explains why.'},
+          {q:'PASSAGE: "Sharks have been around for over 400 million years. That is longer than dinosaurs! Sharks have survived five mass extinctions. They are one of the oldest kinds of animals still alive today. Their survival skills are amazing."\n\nQUESTION: What can you infer about sharks?',opts:['They are weak','They are extremely tough survivors','They eat everything','They are new animals'],c:1,explain:'Surviving 400 million years and 5 mass extinctions means sharks are INCREDIBLE survivors!',fix:'Infer = read between the lines. 400 million years = tough animals.'},
+          {q:'PASSAGE: "Sharks have been around for over 400 million years. That is longer than dinosaurs! Sharks have survived five mass extinctions. They are one of the oldest kinds of animals still alive today. Their survival skills are amazing."\n\nQUESTION: How do sharks compare to dinosaurs in age?',opts:['Younger than dinosaurs','Same age as dinosaurs','Older than dinosaurs','No dinosaurs ever existed'],c:2,explain:'"That is longer than dinosaurs!" Sharks are older than dinosaurs!',fix:'Compare words: longer/older = more time existed. Sharks > dinosaurs in age.'}
+        ]},
+        { title:'Story Time', qs:[
+          {q:'PASSAGE: "Terry stared at the giant slice of chocolate cake. It was his birthday, and this was the best day ever. His mom had baked it just for him. When he took the first bite, he smiled so big his cheeks hurt. This was the best cake in the world."\n\nQUESTION: What is the main idea?',opts:['Terry loves cake','It was Terry\'s special birthday moment','Chocolate is good','Mom can bake'],c:1,explain:'The story is about Terry\'s birthday moment with cake. It is about a special moment, not just cake.',fix:'Main idea includes the setting AND action. Birthday + cake + joy = special moment.'},
+          {q:'PASSAGE: "Terry stared at the giant slice of chocolate cake. It was his birthday, and this was the best day ever. His mom had baked it just for him. When he took the first bite, he smiled so big his cheeks hurt. This was the best cake in the world."\n\nQUESTION: Who made the cake?',opts:['Terry','His mom','A bakery','His dad'],c:1,explain:'"His mom had baked it just for him."',fix:'Find the sentence with "baked" or "made." It tells you who.'},
+          {q:'PASSAGE: "The hockey game was tied 2-2 with only 10 seconds left. Marcus grabbed the puck and skated as fast as he could. The crowd was screaming. He shot, and the puck flew into the goal. His team won the championship!"\n\nQUESTION: What sport is in this passage?',opts:['Soccer','Basketball','Hockey','Baseball'],c:2,explain:'"The hockey game" — it is right in the first sentence!',fix:'Scan for sport words: hockey, soccer, basketball. The word is directly stated.'},
+          {q:'PASSAGE: "The hockey game was tied 2-2 with only 10 seconds left. Marcus grabbed the puck and skated as fast as he could. The crowd was screaming. He shot, and the puck flew into the goal. His team won the championship!"\n\nQUESTION: Why were the fans screaming?',opts:['They were angry','They were excited about the close game','They were bored','They were hungry'],c:1,explain:'A tied game with seconds left = super exciting! That is why they screamed.',fix:'Infer why people react. Close game + seconds left = big excitement.'},
+          {q:'PASSAGE: "Leo\'s little brother ate ALL his Halloween candy while Leo was at school. When Leo got home, he found an empty bag. At first he was mad. Then he saw his brother with a stomach ache. Leo laughed and said, \'I guess you got your punishment!\'"\n\nQUESTION: Why was Leo mad at first?',opts:['His brother was sick','His candy was gone','It was raining','School was hard'],c:1,explain:'"Leo got home, he found an empty bag." His candy was GONE!',fix:'Find the problem. Empty bag = no candy = Leo mad.'},
+          {q:'PASSAGE: "Leo\'s little brother ate ALL his Halloween candy while Leo was at school. When Leo got home, he found an empty bag. At first he was mad. Then he saw his brother with a stomach ache. Leo laughed and said, \'I guess you got your punishment!\'"\n\nQUESTION: What is funny about this story?',opts:['Halloween is scary','The brother got a stomach ache from eating too much','Leo went to school','Bags get empty'],c:1,explain:'Eating ALL that candy gave the brother a stomach ache — that IS his punishment!',fix:'Humor often comes from natural consequences. Too much candy = tummy ache.'},
+          {q:'PASSAGE: "Sofia\'s dog, Buddy, was missing. She looked everywhere. Finally, she checked the bathtub. There was Buddy, curled up on a pile of towels, fast asleep. Sofia laughed. Buddy always found the weirdest places to nap."\n\nQUESTION: Where did Sofia find Buddy?',opts:['Outside','In the bathtub','Under the bed','At the park'],c:1,explain:'"Finally, she checked the bathtub. There was Buddy..."',fix:'Look for "finally" — it often shows the final location in a search.'},
+          {q:'PASSAGE: "Sofia\'s dog, Buddy, was missing. She looked everywhere. Finally, she checked the bathtub. There was Buddy, curled up on a pile of towels, fast asleep. Sofia laughed. Buddy always found the weirdest places to nap."\n\nQUESTION: What can you tell about Buddy?',opts:['He is serious','He has silly napping habits','He hates towels','He is lost all the time'],c:1,explain:'Sleeping in bathtubs = "weirdest places to nap" = silly habits!',fix:'Infer personality from actions. Napping in weird spots = quirky/silly.'},
+          {q:'PASSAGE: "The test was hard. Terry wanted to give up, but he remembered his mom saying, \'Tough times show how strong you are.\' He took a deep breath and tried again. Step by step, he worked through each problem. He did not get every answer right, but he never gave up."\n\nQUESTION: What is the theme of this story?',opts:['Tests are easy','Never give up, even when things are hard','Math is fun','Moms help with tests'],c:1,explain:'The message: Terry kept trying even when it was hard. Theme = perseverance!',fix:'Theme = life lesson. "Never give up" is a classic theme shown through action.'},
+          {q:'PASSAGE: "The test was hard. Terry wanted to give up, but he remembered his mom saying, \'Tough times show how strong you are.\' He took a deep breath and tried again. Step by step, he worked through each problem. He did not get every answer right, but he never gave up."\n\nQUESTION: What helped Terry keep going?',opts:['His friend','His mom\'s words','The teacher','A snack'],c:1,explain:'"He remembered his mom saying, \'Tough times show how strong you are.\'"',fix:'Find what caused the change. Remembering mom\'s words = what helped.'}
+        ]}
+      ]
     }
   }
 };
@@ -1701,6 +2241,9 @@ function logout(){
   document.getElementById('user-chip').classList.add('hidden');
   document.getElementById('logout-btn').classList.add('hidden');
   if(sessionTimer)clearInterval(sessionTimer);
+  if(speedMathTimer){ clearInterval(speedMathTimer); speedMathTimer = null; }
+  if(dashboardRefreshTimer){ clearInterval(dashboardRefreshTimer); dashboardRefreshTimer = null; }
+  stopSpeech();
   showScreen('login');
 }
 function showScreen(id){
@@ -1841,7 +2384,7 @@ function renderDashboard(){
               <div class="weak-name">${label}</div>
               <div class="weak-stats">${c.hits} right / ${c.misses} wrong • ${c.accuracy}% accuracy</div>
             </div>
-            <button class="kc-btn" onclick="launchKnowledgeCheck('${uid}','${c.concept.replace(/'/g,"\\'")}')">KNOWLEDGE CHECK ▶</button>
+            <button class="kc-btn" onclick="launchKnowledgeCheck('${uid}','${c.concept.replace(/'/g,"\'")}')">KNOWLEDGE CHECK ▶</button>
           </div>`;
         }).join('')}
       </div>
@@ -2053,6 +2596,17 @@ function updateTimerDisplay(){
 function renderMissions(){
   const grid=document.getElementById('missions-grid');
   grid.innerHTML='';
+  // SPEED MATH at top - for all three kids
+  const smBest60 = getStorage('sm_best_' + currentUser + '_60_' + (currentUser === 'taalyn' ? 'easy' : 'medium'), 0);
+  grid.innerHTML += `<div class="mission-card speed-math-card" onclick="showSpeedMathHome()">
+    <div class="mission-icon" style="background:linear-gradient(135deg,var(--neon-yellow),var(--neon-red));">⚡</div>
+    <div class="mission-info">
+      <div class="mission-name" style="color:var(--neon-yellow);">SPEED MATH</div>
+      <div class="mission-sub">${smBest60 > 0 ? 'Best: ' + smBest60 + ' • Beat it!' : 'Fast math drills • NEW!'}</div>
+      <div class="mission-prog"><div class="mission-prog-fill" style="width:${Math.min(100,smBest60*3)}%;background:linear-gradient(90deg,var(--neon-yellow),var(--neon-red));"></div></div>
+    </div>
+    <div class="mission-arrow" style="color:var(--neon-yellow);">▸</div>
+  </div>`;
   const subjects=QUESTIONS[currentUser];
   const prog=getProgress(currentUser);
   Object.keys(subjects).forEach(subj=>{
@@ -2168,6 +2722,7 @@ function renderQuestion(){
   stopSpeech();
   speakerUsesThisQuestion = 0;
   hintUsedThisQuestion = false;
+  selectedAnswerIdx = null;
   const qs = reviewMode ? reviewQueue : shuffledQuestions;
   if(currentQ>=qs.length){
     if(reviewMode) showFinalResults();
@@ -2192,12 +2747,15 @@ function renderQuestion(){
           ${readButton}
         </div>
       </div>
-      <div class="q-text" id="q-text-el">${q.q}</div>
+      <div class="q-text" id="q-text-el">${formatQuestionText(q.q)}</div>
       <div class="hint-box hidden" id="hint-box"></div>
       <div class="opts-grid">
-        ${q.opts.map((o,i)=>`<button class="opt-btn" onclick="checkAnswer(${i})">
+        ${q.opts.map((o,i)=>`<button class="opt-btn" id="opt-${i}" onclick="selectAnswer(${i})">
           <span class="letter">${['A','B','C','D'][i]}</span>${o}
         </button>`).join('')}
+      </div>
+      <div class="submit-row" id="submit-row">
+        <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()" disabled>SUBMIT ANSWER ▶</button>
       </div>
     </div>
     <div class="feedback" id="fb-box"></div>
@@ -2214,6 +2772,30 @@ function renderQuestion(){
       }
     }, 400);
   }
+}
+
+function selectAnswer(idx){
+  selectedAnswerIdx = idx;
+  // Clear previous selected states
+  document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+  // Highlight the new one
+  const btn = document.getElementById('opt-'+idx);
+  if(btn) btn.classList.add('selected');
+  // Enable submit button
+  const submitBtn = document.getElementById('submit-btn');
+  if(submitBtn){
+    submitBtn.disabled = false;
+    submitBtn.classList.add('ready');
+  }
+}
+
+function submitAnswer(){
+  if(selectedAnswerIdx === null) return;
+  // Hide the submit row
+  const submitRow = document.getElementById('submit-row');
+  if(submitRow) submitRow.classList.add('hidden');
+  // Call the original checkAnswer with the selected index
+  checkAnswer(selectedAnswerIdx);
 }
 
 function useHint(){
@@ -2351,6 +2933,7 @@ function retryQuestion(){retrying=true;renderQuestion();retrying=false;}
 function nextQuestion(){currentQ++;renderQuestion();}
 function goChildHome(){
   stopSpeech();
+  if(speedMathTimer){ clearInterval(speedMathTimer); speedMathTimer = null; }
   showScreen('child-home');renderMissions();renderBadges();
   document.getElementById('stat-xp').textContent=getXP(currentUser);
   document.getElementById('stat-badges').textContent=getBadges(currentUser).length;
