@@ -1242,6 +1242,9 @@ let hintUsedThisQuestion = false;
 let hintCountThisQuiz = 0;
 // Concept tracking
 let conceptMissesThisQuiz = {}; // {conceptTag: count}
+// Current question text for read-aloud
+let currentFullText = '';
+let currentFeedbackText = '';
 // Selected answer (before submission)
 let selectedAnswerIdx = null;
 // Speed Math state
@@ -2733,11 +2736,14 @@ function renderQuestion(){
   const counterText = reviewMode ? `REVIEW ${currentQ+1} / ${qs.length}` : `${currentQ+1} / ${qs.length}`;
   document.getElementById('q-counter').textContent=counterText;
   document.getElementById('prog-track').style.width=((currentQ)/qs.length*100)+'%';
-  const fullText = q.q + '. Option A: ' + q.opts[0] + '. Option B: ' + q.opts[1] + '. Option C: ' + q.opts[2] + '. Option D: ' + q.opts[3];
-  const speakerLimit = shouldAutoRead() && currentUser === 'taalyn';
+  const fullText = q.q.replace(/\\n/g, ' ').replace(/"/g, '') + '. Option A: ' + q.opts[0] + '. Option B: ' + q.opts[1] + '. Option C: ' + q.opts[2] + '. Option D: ' + q.opts[3];
+  // Always apply speaker limit for Taalyn, regardless of auto-read toggle
+  const speakerLimit = currentUser === 'taalyn';
   const readButton = speakerLimit
-    ? `<button class="read-btn" id="read-q-btn" onclick="readAloudWithLimit(\`${fullText.replace(/`/g,"'")}\`, this)" title="Read out loud"><span id="speaker-count">🔊 ${MAX_SPEAKER_USES} LEFT</span></button>`
-    : `<button class="read-btn" id="read-q-btn" onclick="readAloud(\`${fullText.replace(/`/g,"'")}\`, this)" title="Read out loud">🔊 READ</button>`;
+    ? `<button class="read-btn" id="read-q-btn" onclick="readCurrentQuestion(true)" title="Read out loud"><span id="speaker-count">🔊 ${MAX_SPEAKER_USES} LEFT</span></button>`
+    : `<button class="read-btn" id="read-q-btn" onclick="readCurrentQuestion(false)" title="Read out loud">🔊 READ</button>`;
+  // Store for read-aloud reference
+  currentFullText = fullText;
   document.getElementById('q-area').innerHTML=`
     <div class="q-card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
@@ -2765,13 +2771,24 @@ function renderQuestion(){
   // Auto-read only on first load and if speaker uses remain
   if (shouldAutoRead()) {
     setTimeout(() => {
-      const btn = document.getElementById('read-q-btn');
-      if (btn) {
-        if(speakerLimit){ readAloudWithLimit(fullText, btn); }
-        else { readAloud(fullText, btn); }
-      }
+      readCurrentQuestion(currentUser === 'taalyn');
     }, 400);
   }
+}
+
+// Read the current question using stored text - safe from special char issues
+function readCurrentQuestion(limited){
+  const btn = document.getElementById('read-q-btn');
+  if(limited){
+    readAloudWithLimit(currentFullText, btn);
+  } else {
+    readAloud(currentFullText, btn);
+  }
+}
+
+// Read feedback text aloud
+function readFeedback(){
+  readAloud(currentFeedbackText, null);
 }
 
 function selectAnswer(idx){
@@ -2881,12 +2898,13 @@ function checkAnswer(idx){
       // Only log hits if they did NOT use a hint
       if(!hintUsedThisQuestion) logConceptHit(currentUser, conceptTag);
     }
-    const feedbackText = 'Correct! ' + q.explain;
+    const feedbackText = ('Correct! ' + q.explain).replace(/"/g, '');
     fb.className='feedback correct-fb show';
     fb.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;">
       <div class="fb-title correct">◆ ${reviewMode?'NICE! YOU GOT IT':(hintUsedThisQuestion?'CORRECT • +5 XP':'CORRECT • +10 XP')}</div>
-      <button class="read-btn-sm" onclick="readAloud(\`${feedbackText.replace(/`/g,"'")}\`, this)">🔊</button>
+      <button class="read-btn-sm" onclick="readFeedback()">🔊</button>
       </div><div class="fb-text">${q.explain}</div>`;
+    currentFeedbackText = feedbackText;
     if(!reviewMode){
       addXP(currentUser, hintUsedThisQuestion ? 5 : 10);
     }
@@ -2908,14 +2926,15 @@ function checkAnswer(idx){
         concept: conceptTag
       });
     }
-    const feedbackText = 'Not quite. ' + q.explain + ' How to fix it: ' + q.fix;
+    const feedbackText = ('Not quite. ' + q.explain + ' How to fix it: ' + q.fix).replace(/"/g, '');
     fb.className='feedback wrong-fb show';
     fb.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;">
       <div class="fb-title wrong">◆ NOT QUITE</div>
-      <button class="read-btn-sm" onclick="readAloud(\`${feedbackText.replace(/`/g,"'")}\`, this)">🔊</button>
+      <button class="read-btn-sm" onclick="readFeedback()">🔊</button>
       </div>
       <div class="fb-text">${q.explain}</div>
       <div class="fb-fix"><strong>▸ HOW TO FIX:</strong> ${q.fix}</div>`;
+    currentFeedbackText = feedbackText;
     // NO retry mid-quiz - just show next button
     nextRow.classList.remove('hidden');
     if (shouldAutoRead()) {
