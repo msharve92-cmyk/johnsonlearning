@@ -3119,7 +3119,7 @@ function readAloud(text, buttonEl) {
 
 // Auto-read for users who need it (like Taalyn with decoding IEP goals)
 function shouldAutoRead() {
-  return getStorage('auto_read_'+currentUser, currentUser === 'taalyn');
+  return getStorage('auto_read_'+currentUser, false);
 }
 function toggleAutoRead() {
   const cur = shouldAutoRead();
