@@ -470,6 +470,25 @@ header{
   margin-bottom:6px;
   font-weight:900;
 }
+.q-text .keyword-label{
+  display:block;
+  font-family:'Orbitron',sans-serif;
+  font-size:13px;
+  letter-spacing:2px;
+  color:var(--neon-yellow);
+  background:rgba(255,230,0,0.1);
+  padding:8px 12px;
+  border-radius:8px;
+  border-left:3px solid var(--neon-yellow);
+  margin-bottom:14px;
+  font-weight:900;
+}
+.q-text b{
+  color:var(--neon-yellow);
+  background:rgba(255,230,0,0.15);
+  padding:2px 6px;
+  border-radius:4px;
+}
 .opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .opt-btn{
   padding:14px 14px;
@@ -1077,17 +1096,17 @@ header{
       <div class="char-card" data-color="pink" onclick="selectUser('taalyn')" id="char-taalyn">
         <div class="char-emoji">🦁</div>
         <div class="char-name">TAALYN</div>
-        <div class="char-level">LVL • RANK 4</div>
+        <div class="char-level">3RD GRADE</div>
       </div>
       <div class="char-card" data-color="purple" onclick="selectUser('amani')" id="char-amani">
         <div class="char-emoji">🦋</div>
         <div class="char-name">AMANI</div>
-        <div class="char-level">LVL • RANK 5</div>
+        <div class="char-level">4TH GRADE</div>
       </div>
       <div class="char-card" data-color="orange" onclick="selectUser('terry')" id="char-terry">
         <div class="char-emoji">🚀</div>
         <div class="char-name">TERRY</div>
-        <div class="char-level">LVL • RANK 4</div>
+        <div class="char-level">3RD GRADE</div>
       </div>
       <div class="char-card" data-color="green" onclick="selectUser('parent')" id="char-parent">
         <div class="char-emoji">👑</div>
@@ -1623,14 +1642,23 @@ function formatQuestionText(text){
       return `<span class="passage-label">◆ PASSAGE</span>${passage}<span class="question-label">◆ QUESTION</span>${question}`;
     }
   }
+  // Handle KEYWORD: or STEP: format for Terry's word problems
+  if(text.startsWith('KEYWORD:') || text.startsWith('STEP') || text.startsWith('TWO STEPS')){
+    const lines = text.split('\n\n');
+    if(lines.length >= 2){
+      const label = lines[0].trim();
+      const rest = lines.slice(1).join('\n\n').trim();
+      return `<span class="keyword-label">⚡ ${label}</span>${rest}`;
+    }
+  }
   return text;
 }
 
 // ============ USER DATA ============
 const USERS={
-  taalyn:{pin:'1111',name:'TAALYN',grade:'4TH GRADE • READY',avatar:'🦁',color:'pink'},
-  amani:{pin:'2222',name:'AMANI',grade:'5TH GRADE • READY',avatar:'🦋',color:'purple'},
-  terry:{pin:'3333',name:'TERRY',grade:'4TH GRADE • READY',avatar:'🚀',color:'orange'},
+  taalyn:{pin:'1111',name:'TAALYN',grade:'3RD GRADE • READING SUPPORT',avatar:'🦁',color:'pink'},
+  amani:{pin:'2222',name:'AMANI',grade:'4TH GRADE • TAKE FLIGHT',avatar:'🦋',color:'purple'},
+  terry:{pin:'3333',name:'TERRY',grade:'3RD GRADE • DYSLEXIA SUPPORT',avatar:'🚀',color:'orange'},
   parent:{pin:'0000',name:'ADMIN',grade:'GAMEMASTER',avatar:'👑',color:'green'}
 };
 const ALL_BADGES=[
@@ -2017,6 +2045,35 @@ const QUESTIONS = {
     }
   },
   terry: {
+    phonics: {
+      name:'Phonics 🔤', icon:'🔤', color:'#ff6b9d',
+      levels:[
+        { title:'Sounds & Syllables', qs:[
+          {q:'How many syllables in the word "rabbit"?',opts:['1','2','3','4'],c:1,explain:'Rab-bit has 2 syllables. Clap it out: "rab" (clap) "bit" (clap) = 2!',fix:'Clap each beat as you say the word slowly. Each clap is one syllable.'},
+          {q:'Which word starts with the SAME sound as "sun"?',opts:['moon','soap','cat','dog'],c:1,explain:'"Sun" and "soap" both start with the /s/ sound!',fix:'Say each word slowly. Listen to the very first sound. Match the starting sound.'},
+          {q:'What sound does the letter "b" make?',opts:['/buh/','/duh/','/puh/','/muh/'],c:0,explain:'The letter "b" makes the /buh/ sound, like in "ball" or "bat"!',fix:'Each letter has its own sound. B sounds like the start of "ball" or "boy".'},
+          {q:'How many sounds are in the word "cat"?',opts:['1','2','3','4'],c:2,explain:'Cat has 3 sounds: /c/ /a/ /t/. Each letter makes one sound!',fix:'Stretch the word slowly: c-a-t. Count each sound you hear.'},
+          {q:'Which word rhymes with "hat"?',opts:['dog','bat','sun','tree'],c:1,explain:'"Hat" and "bat" both end with the same "-at" sound!',fix:'Rhyming words share the same ending sound. Listen to the END of each word.'},
+          {q:'What is the FIRST sound in "fish"?',opts:['/f/','/i/','/sh/','/s/'],c:0,explain:'The first sound in "fish" is /f/, like in "fun" or "fast"!',fix:'Say the word slowly. The very first sound you hear is the beginning sound.'},
+          {q:'How many syllables in "elephant"?',opts:['2','3','4','5'],c:1,explain:'El-e-phant has 3 syllables: el-e-phant!',fix:'Clap each beat: el (clap) e (clap) phant (clap) = 3 syllables.'},
+          {q:'Which word has the long "a" sound (like in "cake")?',opts:['cat','rain','dog','sit'],c:1,explain:'"Rain" has the long /a/ sound. The "ai" together sounds like the letter A name!',fix:'Long vowels say their own name. Long A sounds like the letter A.'},
+          {q:'What is the LAST sound in "dog"?',opts:['/d/','/o/','/g/','/og/'],c:2,explain:'The last sound in "dog" is /g/!',fix:'Say the word slowly. The very last sound you hear is the ending sound.'},
+          {q:'Which word has 2 syllables?',opts:['pen','table','run','bat'],c:1,explain:'"Table" has 2 syllables: ta-ble!',fix:'Clap each beat. One-syllable words have only one beat.'}
+        ]},
+        { title:'Word Building', qs:[
+          {q:'What word do these sounds make: /c/ /a/ /t/?',opts:['cup','cat','can','cap'],c:1,explain:'Blend the sounds: /c/ + /a/ + /t/ = CAT!',fix:'Blending means putting sounds together smoothly. Slide them: ccc-aaa-ttt = cat.'},
+          {q:'Change the first letter of "bat" to "h". What word do you get?',opts:['bat','hat','cat','rat'],c:1,explain:'Change /b/ to /h/: bat → hat!',fix:'Keep the ending sounds. Change just the first sound to make a new word.'},
+          {q:'What word rhymes with "sun" and starts with /r/?',opts:['ran','run','rub','red'],c:1,explain:'Rhymes with "sun" + starts with R = RUN!',fix:'Use both clues. Rhyming gives you the ending. The starting sound gives you the beginning.'},
+          {q:'Take away the first sound in "stop". What word is left?',opts:['top','sop','pot','tap'],c:0,explain:'Take away /s/ from "stop": stop → top!',fix:'Drop the first sound. Say what remains.'},
+          {q:'Build a word: /sh/ /i/ /p/. What does it spell?',opts:['ship','shop','sit','sap'],c:0,explain:'/sh/ + /i/ + /p/ = SHIP!',fix:'Blend the sounds in order. SH is one sound (digraph) made by two letters.'},
+          {q:'Which word ends with the SAME sound as "duck"?',opts:['dog','book','rock','rope'],c:2,explain:'"Duck" and "rock" both end with the /k/ sound!',fix:'Listen only to the END of each word. Match the ending sounds.'},
+          {q:'What word do you get if you change "cat" to start with /m/?',opts:['cat','mat','sat','rat'],c:1,explain:'Change /c/ to /m/: cat → mat!',fix:'Keep "at" the same. Just change the first sound.'},
+          {q:'Sound out: /b/ /e/ /d/. What word?',opts:['bad','bid','bed','bud'],c:2,explain:'/b/ + /e/ + /d/ = BED!',fix:'Blend smoothly: b-e-d. Try the short E sound.'},
+          {q:'Which word has the /sh/ sound?',opts:['sun','ship','soup','sock'],c:1,explain:'"Ship" has the /sh/ sound at the start! S+H together makes one sound.',fix:'/sh/ is the sound you make to tell someone to be quiet — like "shhh".'},
+          {q:'What is the middle sound in "pig"?',opts:['/p/','/i/','/g/','/ig/'],c:1,explain:'Pig: /p/ /i/ /g/. The middle sound is /i/!',fix:'Stretch the word slowly. The sound between first and last is the middle.'}
+        ]}
+      ]
+    },
     reading: {
       name:'Reading 📖', icon:'📖', color:'#ff922b',
       levels:[
@@ -2074,16 +2131,16 @@ const QUESTIONS = {
           {q:'Terry has 7 bags with 6 candies each. How many candies?',opts:['13','42','36','48'],c:1,explain:'7 bags × 6 candies each = 7×6 = 42 candies!',fix:'"Each" = multiplication. 7×6: count by 6s seven times: 6,12,18,24,30,36,42.'}
         ]},
         { title:'Word Problems', qs:[
-          {q:'There are 234 boys and 189 girls at school. How many students total?',opts:['413','423','433','443'],c:1,explain:'234+189: Ones: 4+9=13, carry 1. Tens: 3+8+1=12, carry 1. Hundreds: 2+1+1=4. Answer: 423!',fix:'"Total" or "altogether" = addition. Line up digits carefully, carry when needed.'},
-          {q:'A library had 567 books. 234 were checked out. How many remain?',opts:['333','323','343','233'],c:0,explain:'567-234: Ones: 7-4=3. Tens: 6-3=3. Hundreds: 5-2=3. Answer: 333! No regrouping needed here.',fix:'"Remain" or "left" = subtraction. 567-234 = 333. Check each column for regrouping needs.'},
-          {q:'More/fewer: Class A has 28 students, Class B has 35. How many MORE does Class B have?',opts:['7','13','63','17'],c:0,explain:'35-28: Ones: 5<8, borrow. 15-8=7. Tens: 2-2=0. Answer: 7 more students!',fix:'"How many more" = subtraction. Subtract the smaller (28) from the larger (35). Answer: 7.'},
-          {q:'Write the equation: 45 apples, each bag holds 9. How many bags?',opts:['45+9','45-9','45×9','45÷9'],c:3,explain:'If you have 45 apples and each bag holds 9, you DIVIDE to find the number of bags: 45÷9=5 bags!',fix:'"How many groups?" or "split equally" = division. 45 total ÷ 9 per bag = 5 bags.'},
-          {q:'A train has 8 cars. Each car holds 45 passengers. How many passengers total?',opts:['53','360','340','380'],c:1,explain:'8 cars × 45 passengers each = 8×45 = 360 passengers!',fix:'"Each" with equal groups = multiplication. 8×45 = (8×40)+(8×5) = 320+40 = 360.'},
-          {q:'Terry read 15 pages Monday, 22 pages Tuesday, 18 pages Wednesday. Total pages?',opts:['45','55','35','50'],c:1,explain:'15+22+18 = 55 pages. Add all three: 15+22=37, then 37+18=55!',fix:'Adding three numbers: add the first two, then add the third to that sum.'},
-          {q:'Which key word signals SUBTRACTION?',opts:['total','in all','difference','combined'],c:2,explain:'"Difference" signals subtraction! Find the DIFFERENCE = subtract the smaller from the larger.',fix:'Subtraction keywords: difference, less than, fewer, left over, remaining, how many more.'},
-          {q:'A bag has 56 marbles. Terry takes out groups of 7. How many groups?',opts:['49','7','8','63'],c:2,explain:'56 ÷ 7 = 8 groups! Division splits a total into equal groups.',fix:'Division keywords: groups, split, share equally, each, per. 56÷7=8 because 7×8=56.'},
-          {q:'Which operation finds the TOTAL of two groups put together?',opts:['Subtraction','Multiplication (sometimes)','Addition','Division'],c:2,explain:'ADDITION finds the total when you put two or more groups TOGETHER!',fix:'Addition = putting together = finding total. Subtraction = taking away = finding difference.'},
-          {q:'There are 4 rows of chairs with 9 chairs in each row. 7 people leave. How many chairs are occupied?',opts:['29','36','29 (if all were full)','27'],c:2,explain:'Step 1: 4×9=36 total chairs. Step 2: if all occupied, 36-7=29 people remain (assuming all were filled).',fix:'Two-step: multiply to find total chairs, then subtract those who left. 4×9=36, 36-7=29.'}
+          {q:'KEYWORD: <b>TOTAL</b>\n\nSam has 12 apples. Jake has 8 apples. How many do they have <b>total</b>?',opts:['4','20','15','24'],c:1,explain:'<b>Total</b> means ADD. 12 + 8 = 20 apples!',fix:'When you see "total" or "altogether" or "in all" — that means ADD the numbers.'},
+          {q:'KEYWORD: <b>LEFT</b>\n\nMia had 15 stickers. She gave away 6. How many are <b>left</b>?',opts:['9','21','11','6'],c:0,explain:'<b>Left</b> means SUBTRACT. 15 - 6 = 9 stickers!',fix:'When you see "left" or "remain" or "have now" — that means SUBTRACT.'},
+          {q:'KEYWORD: <b>EACH</b>\n\nThere are 4 bags. <b>Each</b> bag has 5 candies. How many candies in all?',opts:['9','20','25','15'],c:1,explain:'<b>Each</b> with equal groups = MULTIPLY. 4 × 5 = 20 candies!',fix:'When every group has the SAME number — multiply: number of groups × items in each.'},
+          {q:'KEYWORD: <b>MORE</b>\n\nTerry has 14 toys. Joe has 9 toys. How many <b>more</b> does Terry have?',opts:['23','5','7','3'],c:1,explain:'<b>More</b> means SUBTRACT. 14 - 9 = 5 more toys!',fix:'"How many MORE" = subtract. Take the bigger number minus the smaller number.'},
+          {q:'KEYWORD: <b>ALL</b>\n\nThe class read 18 books. Then 12 more books. How many <b>in all</b>?',opts:['6','30','22','25'],c:1,explain:'<b>In all</b> means ADD. 18 + 12 = 30 books!',fix:'"In all" or "altogether" or "total" all mean ADD.'},
+          {q:'STEP 1: Find the action word.\n\nA pizza had 8 slices. The kids ate 5. How many <b>left</b>?',opts:['3','13','5','8'],c:0,explain:'"Left" = SUBTRACT. 8 - 5 = 3 slices!',fix:'Find the keyword first. "Left" tells you to subtract.'},
+          {q:'KEYWORD: <b>SHARE EQUALLY</b>\n\n12 cookies. 4 friends. <b>Share equally</b>. How many each?',opts:['8','3','16','4'],c:1,explain:'<b>Share equally</b> = DIVIDE. 12 ÷ 4 = 3 cookies each!',fix:'"Share equally" or "split into groups" = DIVIDE.'},
+          {q:'KEYWORD: <b>FEWER</b>\n\nLisa has 11 books. Tom has 4 <b>fewer</b>. How many does Tom have?',opts:['15','7','14','11'],c:1,explain:'<b>Fewer</b> means SUBTRACT. 11 - 4 = 7 books!',fix:'"Fewer than" = subtract. Tom has 4 less than Lisa.'},
+          {q:'KEYWORD: <b>EACH</b>\n\nThere are 3 plates. <b>Each</b> plate has 6 cookies. Total cookies?',opts:['9','18','12','15'],c:1,explain:'<b>Each</b> = MULTIPLY. 3 × 6 = 18 cookies!',fix:'Equal groups always means multiply. 3 plates × 6 each = 18.'},
+          {q:'TWO STEPS:\n\nTerry had 20 marbles. He gave 5 away. Then he got 7 more. How many now?',opts:['18','22','12','32'],c:1,explain:'Step 1: 20 - 5 = 15 (gave away). Step 2: 15 + 7 = 22 (got more). Answer: 22!',fix:'Two-step: do the FIRST action, then use that answer for the SECOND action.'}
         ]}
       ]
     },
@@ -2310,18 +2367,16 @@ function renderDashboard(){
     const acc=totalQ>0?Math.round((totalCorrect/totalQ)*100):0;
     const needsHelp=acc<60&&totalQ>10;
 
-    // Speaker usage for Taalyn
+    // Speaker usage stats - show for all kids
     let speakerBlock = '';
-    if(uid === 'taalyn'){
-      const speakerStats = getStorage('speaker_stats_'+uid, {total:0, hitLimit:0, tried:0});
-      if(speakerStats.total > 0){
-        const limitPct = Math.round((speakerStats.hitLimit / speakerStats.total) * 100);
-        const tooMuch = limitPct > 40;
-        speakerBlock = `<div style="background:${tooMuch?'rgba(255,61,90,0.1)':'rgba(0,240,255,0.08)'};border:1px solid ${tooMuch?'var(--neon-red)':'var(--neon-cyan)'};border-radius:8px;padding:8px 12px;margin-top:8px;font-size:11px;">
-          <div style="font-family:'Orbitron',sans-serif;letter-spacing:1px;color:${tooMuch?'var(--neon-red)':'var(--neon-cyan)'};margin-bottom:3px;">🔊 SPEAKER USAGE</div>
-          <div style="color:var(--text);">Used ${speakerStats.total} times • Hit limit on ${speakerStats.hitLimit} questions ${tooMuch?'⚠️':''}</div>
-        </div>`;
-      }
+    const speakerStats = getStorage('speaker_stats_'+uid, {total:0, hitLimit:0, tried:0});
+    if(speakerStats.total > 0){
+      const limitPct = Math.round((speakerStats.hitLimit / speakerStats.total) * 100);
+      const tooMuch = limitPct > 40;
+      speakerBlock = `<div style="background:${tooMuch?'rgba(255,61,90,0.1)':'rgba(0,240,255,0.08)'};border:1px solid ${tooMuch?'var(--neon-red)':'var(--neon-cyan)'};border-radius:8px;padding:8px 12px;margin-top:8px;font-size:11px;">
+        <div style="font-family:'Orbitron',sans-serif;letter-spacing:1px;color:${tooMuch?'var(--neon-red)':'var(--neon-cyan)'};margin-bottom:3px;">🔊 SPEAKER USAGE</div>
+        <div style="color:var(--text);">Used ${speakerStats.total} times • Hit limit on ${speakerStats.hitLimit} questions ${tooMuch?'⚠️':''}</div>
+      </div>`;
     }
 
     // In-progress lesson indicator
@@ -2737,8 +2792,8 @@ function renderQuestion(){
   document.getElementById('q-counter').textContent=counterText;
   document.getElementById('prog-track').style.width=((currentQ)/qs.length*100)+'%';
   const fullText = q.q.replace(/\\n/g, ' ').replace(/"/g, '') + '. Option A: ' + q.opts[0] + '. Option B: ' + q.opts[1] + '. Option C: ' + q.opts[2] + '. Option D: ' + q.opts[3];
-  // Always apply speaker limit for Taalyn, regardless of auto-read toggle
-  const speakerLimit = currentUser === 'taalyn';
+  // Speaker limit applies to all kids - encourages reading attempts before relying on audio
+  const speakerLimit = currentUser !== 'parent';
   const readButton = speakerLimit
     ? `<button class="read-btn" id="read-q-btn" onclick="readCurrentQuestion(true)" title="Read out loud"><span id="speaker-count">🔊 ${MAX_SPEAKER_USES} LEFT</span></button>`
     : `<button class="read-btn" id="read-q-btn" onclick="readCurrentQuestion(false)" title="Read out loud">🔊 READ</button>`;
@@ -2771,7 +2826,7 @@ function renderQuestion(){
   // Auto-read only on first load and if speaker uses remain
   if (shouldAutoRead()) {
     setTimeout(() => {
-      readCurrentQuestion(currentUser === 'taalyn');
+      readCurrentQuestion(currentUser !== 'parent');
     }, 400);
   }
 }
@@ -3136,9 +3191,13 @@ function readAloud(text, buttonEl) {
   window.speechSynthesis.speak(utterance);
 }
 
-// Auto-read for users who need it (like Taalyn with decoding IEP goals)
+// Auto-read default: ON for kids whose IEP/evaluation specifies read-aloud accommodation
 function shouldAutoRead() {
-  return getStorage('auto_read_'+currentUser, false);
+  // Terry's evaluation specifies "read math word problems aloud" - default ON
+  // Amani's IEP includes oral administration accommodation - default ON
+  // Taalyn: default OFF to encourage independent reading practice (he can toggle on)
+  const defaults = { terry: true, amani: true, taalyn: false, parent: false };
+  return getStorage('auto_read_'+currentUser, defaults[currentUser] || false);
 }
 function toggleAutoRead() {
   const cur = shouldAutoRead();
