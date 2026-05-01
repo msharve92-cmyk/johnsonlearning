@@ -3291,14 +3291,23 @@ function goChildHome(){
 function showInitialResults(){
   const total=shuffledQuestions.length;
   const pct=Math.round((score/total)*100);
-  const hasMistakes = wrongAnswersLog.length > 0;
+  const wrongCount = wrongAnswersLog.length;
   const hexPct=(pct/100)*360;
   document.getElementById('prog-track').style.width='100%';
   document.getElementById('q-counter').textContent='DONE';
 
+  // SCORE-BASED MODE SELECTION:
+  // 100% → instant continue (perfect)
+  // 80-99% → forced REVIEW ONCE (passed but missed a few)
+  // Below 80% → forced MASTERY MODE (failed, must master before moving on)
+  let mode;
+  if(wrongCount === 0){ mode = 'perfect'; }
+  else if(pct >= 80){ mode = 'review'; }
+  else { mode = 'mastery'; }
+
   let mistakeList = '';
-  if(hasMistakes){
-    mistakeList = '<div class="mistake-summary"><div class="mistake-summary-title">📝 Questions to review:</div>';
+  if(wrongCount > 0){
+    mistakeList = '<div class="mistake-summary"><div class="mistake-summary-title">📝 Questions you missed:</div>';
     wrongAnswersLog.forEach((w, i) => {
       mistakeList += `<div class="mistake-item">
         <div class="mistake-num">${i+1}</div>
@@ -3308,35 +3317,51 @@ function showInitialResults(){
     mistakeList += '</div>';
   }
 
+  let modeContent = '';
+  if(mode === 'perfect'){
+    modeContent = `
+      <p style="color:var(--neon-green);margin-bottom:14px;font-weight:700;font-size:16px;">🎉 PERFECT! No mistakes to review!</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
+        <button class="btn btn-primary" onclick="finalizeResults()">CONTINUE ▶</button>
+      </div>`;
+  } else if(mode === 'review'){
+    modeContent = `
+      <p style="color:var(--text-dim);margin-bottom:14px;font-size:14px;">
+        You got <strong style="color:var(--neon-green);">${score} right</strong> and <strong style="color:var(--neon-red);">${wrongCount} wrong</strong>.<br>
+        <strong style="color:var(--neon-cyan);">You passed! ✓</strong> Let's quickly review what you missed.
+      </p>
+      ${mistakeList}
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
+        <button class="btn btn-primary" onclick="startReviewMode()">REVIEW THESE ▶</button>
+      </div>
+      <p style="color:var(--text-dim);margin-top:12px;font-size:11px;font-style:italic;">
+        One quick pass through your mistakes — then you're done!
+      </p>`;
+  } else { // mastery
+    modeContent = `
+      <p style="color:var(--text-dim);margin-bottom:14px;font-size:14px;">
+        You got <strong style="color:var(--neon-green);">${score} right</strong> and <strong style="color:var(--neon-red);">${wrongCount} wrong</strong>.<br>
+        <strong style="color:var(--neon-yellow);">Below 80% — let's lock it in.</strong>
+      </p>
+      ${mistakeList}
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
+        <button class="btn btn-primary" onclick="startMasteryMode()">🔒 LOCK IN MODE ▶</button>
+      </div>
+      <p style="color:var(--text-dim);margin-top:12px;font-size:11px;font-style:italic;">
+        Each wrong question comes back until you get it right. Stick with it — you got this. Bonus XP when you finish!
+      </p>`;
+  }
+
   document.getElementById('q-area').innerHTML=`
     <div class="result-card">
-      <div class="result-emoji">${pct>=80?'🎯':'📊'}</div>
+      <div class="result-emoji">${pct>=80?(pct===100?'⭐':'🎯'):'💪'}</div>
       <div class="result-title">QUIZ RESULTS</div>
-      <div class="result-sub">HERE'S HOW YOU DID</div>
+      <div class="result-sub">${pct>=80?"HERE'S HOW YOU DID":"KEEP GOING — YOU GOT THIS"}</div>
       <div class="score-hex ${pct>=80?'':'fail'}" style="--pct:${hexPct}deg;">
         <div class="pct-num">${pct}%</div>
         <div class="pct-label">${score} / ${total}</div>
       </div>
-      ${hasMistakes ? `
-        <p style="color:var(--text-dim);margin-bottom:14px;font-size:14px;">
-          You got <strong style="color:var(--neon-green);">${score} right</strong> and <strong style="color:var(--neon-red);">${wrongAnswersLog.length} wrong</strong>.<br>
-          Pick how you want to fix them:
-        </p>
-        ${mistakeList}
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
-          <button class="btn btn-primary" onclick="startMasteryMode()" title="Locked in - keep going until all correct">🔒 MASTERY MODE</button>
-          <button class="btn btn-cyan" onclick="startReviewMode()" title="One pass through your mistakes">REVIEW ONCE</button>
-          <button class="btn btn-ghost" onclick="skipReview()">SKIP</button>
-        </div>
-        <p style="color:var(--text-dim);margin-top:12px;font-size:11px;font-style:italic;">
-          Mastery mode keeps cycling until every wrong question is correct. Bonus XP for finishing!
-        </p>
-      ` : `
-        <p style="color:var(--neon-green);margin-bottom:14px;font-weight:700;">🎉 Perfect! No mistakes to review!</p>
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
-          <button class="btn btn-primary" onclick="finalizeResults()">CONTINUE ▶</button>
-        </div>
-      `}
+      ${modeContent}
     </div>`;
 }
 
@@ -3478,10 +3503,9 @@ function readAloud(text, buttonEl) {
 
 // Auto-read default: ON for kids whose IEP/evaluation specifies read-aloud accommodation
 function shouldAutoRead() {
-  // Terry's evaluation specifies "read math word problems aloud" - default ON
   // Amani's IEP includes oral administration accommodation - default ON
-  // Taalyn: default OFF to encourage independent reading practice (he can toggle on)
-  const defaults = { terry: true, amani: true, taalyn: false, parent: false };
+  // Terry & Taalyn: default OFF - they have the read button available with 3-use limit
+  const defaults = { terry: false, amani: true, taalyn: false, parent: false };
   return getStorage('auto_read_'+currentUser, defaults[currentUser] || false);
 }
 function toggleAutoRead() {
