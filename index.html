@@ -1251,6 +1251,11 @@ let retrying = false;
 let shuffledQuestions = []; // questions in randomized order with shuffled answers
 let wrongAnswersLog = []; // track which questions they got wrong
 let reviewMode = false; // true when reviewing missed questions at end
+let masteryMode = false; // true when in lock-in mastery mode (keep cycling until all correct)
+let masteryQueue = []; // questions still needing to be mastered
+let masteryMastered = []; // questions successfully mastered this round
+let masteryAttempts = 0; // total attempts across all questions
+let masteryLastWasCorrect = false; // tracks if just-answered question was right
 let reviewQueue = []; // indexes of wrong questions to review
 let currentReviewIdx = 0;
 let speakerUsesThisQuestion = 0;
@@ -1669,7 +1674,8 @@ const ALL_BADGES=[
   {id:'reading_star',icon:'📚',name:'Word Boss'},
   {id:'no_hints',icon:'🧠',name:'No Help'},
   {id:'week',icon:'🏆',name:'Week Champ'},
-  {id:'speed_demon',icon:'⚡',name:'Speed Demon'}
+  {id:'speed_demon',icon:'⚡',name:'Speed Demon'},
+  {id:'mastery_complete',icon:'🔓',name:'Mastery'}
 ];
 
 const QUESTIONS = {
@@ -1687,7 +1693,26 @@ const QUESTIONS = {
           {q:'Which word does NOT follow VCe?',opts:['time','game','them','note'],c:2,explain:'"Them" has a short E sound and no silent e at the end. Time, game, note all use VCe!',fix:'Check: does it end in vowel+consonant+e? "Them" ends in just m — no VCe pattern.'},
           {q:'How many syllables in "smile"?',opts:['1','2','3','4'],c:0,explain:'"Smile" has 1 syllable. The silent e does not add a syllable — sm+ile is said in one beat!',fix:'Count the vowel SOUNDS you hear, not the vowels you see. Silent e makes no sound.'},
           {q:'Which word sounds like "rode"?',opts:['rod','road','rude','red'],c:1,explain:'"Road" and "rode" sound the same! Both have the long O sound.',fix:'Long O can be spelled different ways: o-e (rode), oa (road), ow (row).'},
-          {q:'Fill in: The word r___de with a long O is:',opts:['rode','rud','red','rad'],c:0,explain:'"Rode" uses the VCe o-d-e pattern. Long O + d + silent e = rode!',fix:'Long O + consonant + silent e. Place the o before the consonant, then add silent e.'}
+          {q:'Fill in: The word r___de with a long O is:',opts:['rode','rud','red','rad'],c:0,explain:'"Rode" uses the VCe o-d-e pattern. Long O + d + silent e = rode!',fix:'Long O + consonant + silent e. Place the o before the consonant, then add silent e.'},
+          {q:'Which word has the long A sound?',opts:['cat','cake','cap','can'],c:1,explain:'"Cake" has the long A sound. The silent e at the end makes the a long.',fix:'VCe pattern: vowel + consonant + silent e = long vowel sound.'},
+          {q:'What sound does the e make in "tape"?',opts:['Long e','Silent','Short e','Like a y'],c:1,explain:'The e in "tape" is silent. It is there to make the a long.',fix:'In VCe words, the e is always silent but it makes the first vowel long.'},
+          {q:'Which word does NOT have a silent e?',opts:['hope','hot','hose','home'],c:1,explain:'"Hot" has no silent e. The other three end in silent e.',fix:'Look for words ending in vowel + consonant + e. "Hot" does not have that pattern.'},
+          {q:'Which word rhymes with "lake"?',opts:['lack','luck','make','mock'],c:2,explain:'"Lake" and "make" both have the long A sound and the -ake ending.',fix:'Rhyming VCe words share the same vowel-consonant-e ending.'},
+          {q:'Decode: c-u-b-e',opts:['cub','cube — long U','cob','cab'],c:1,explain:'"Cube" = c + long U + b + silent e. Long U sound!',fix:'Sound it out: c + (long U because of silent e) + b = cube.'},
+          {q:'Which word uses the VCe pattern?',opts:['kid','kite','kit','kin'],c:1,explain:'"Kite" uses VCe (vowel-consonant-e). The silent e makes the i long.',fix:'VCe means the word ends with vowel-consonant-silent e. Kite = i-t-e.'},
+          {q:'How many syllables does "five" have?',opts:['1','2','3','4'],c:0,explain:'"Five" has 1 syllable. Silent e does not add a syllable!',fix:'Silent e is silent — it does not make a sound or add syllables.'},
+          {q:'What is the long sound of "i"?',opts:['Like in sit','Like in my','Like in cat','Like in dog'],c:1,explain:'The long I sound is like in "my" or "kite". It says its own name.',fix:'Long vowels say their own name: A as in cake, E as in feet, I as in kite.'},
+          {q:'Which word has long E?',opts:['bed','bet','bee','beg'],c:2,explain:'"Bee" has the long E sound. The double e makes it long.',fix:'Long E can be spelled different ways: ee (bee), ea (eat), e-e (eve).'},
+          {q:'Pick the VCe word with long U:',opts:['cup','cube','cut','cub'],c:1,explain:'"Cube" has the VCe pattern with a long U sound!',fix:'VCe pattern with u: tube, cube, mule, rude.'},
+          {q:'In "pine", the silent e makes the:',opts:['p silent','i long','i short','n silent'],c:1,explain:'The silent e makes the i in "pine" long. It says its own name!',fix:'Silent e\\\'s job: make the vowel before the consonant LONG.'},
+          {q:'Which word is spelled correctly?',opts:['hop','hope','hopp','hoap'],c:1,explain:'"Hope" is spelled h-o-p-e. The silent e makes the o long.',fix:'For long O sound at the end: VCe pattern works (hope, rope, note).'},
+          {q:'What does the e in "game" do?',opts:['Makes a sound','Is silent and makes the a long','Makes the m silent','Is read as a separate sound'],c:1,explain:'The e in "game" is silent and makes the a long.',fix:'Silent e at the end of VCe words has one job: make the vowel long.'},
+          {q:'Decode the word b-i-k-e',opts:['bike — long I','bik — short I','bigh','bake'],c:0,explain:'b-i-k-e = bike. Long I sound because of the silent e!',fix:'Silent e makes the i long. b-i-k-e = bike.'},
+          {q:'Which word has a SHORT vowel (no silent e)?',opts:['name','net','nine','note'],c:1,explain:'"Net" has a short e sound and no silent e at the end.',fix:'Words without silent e usually have short vowels.'},
+          {q:'Read: r-o-p-e',opts:['rop','rope — long O','ropp','rip'],c:1,explain:'r-o-p-e = rope. Long O because of the silent e!',fix:'VCe pattern: silent e makes the vowel before it long.'},
+          {q:'What word rhymes with "made"?',opts:['mad','made','fade','mat'],c:2,explain:'"Made" and "fade" both have the long A and -ade ending.',fix:'Both use VCe pattern: a + d + silent e = long A.'},
+          {q:'Which word follows the VCe pattern?',opts:['cup','cape','cap','can'],c:1,explain:'"Cape" follows VCe: c-a-p-e. Long A with silent e!',fix:'Look for vowel + consonant + e endings. That is VCe.'},
+          {q:'Sound out: t-i-m-e',opts:['tim','time — long I','tame','tem'],c:1,explain:'t-i-m-e = time. Long I because of the silent e!',fix:'Each VCe word follows the same rule: silent e makes the vowel long.'}
         ]},
         { title:'Sight Words', qs:[
           {q:'Which is spelled correctly?',opts:['thuh','teh','the','thee'],c:2,explain:'"The" is one of the most common sight words! It is spelled t-h-e.',fix:'Practice sight words daily. "The" is the most common word in English!'},
@@ -1728,7 +1753,26 @@ const QUESTIONS = {
           {q:'Which shows regrouping?',opts:['23+14=37','45+32=77','56+47=103','61+28=89'],c:2,explain:'56+47=103 requires regrouping! Ones: 6+7=13 (regroup). Tens: 5+4+1=10 (regroup again). Answer: 103.',fix:'Regrouping happens when a column adds up to 10 or more. You carry the extra to the next column.'},
           {q:'29 + 71 = ?',opts:['90','100','99','101'],c:1,explain:'29+71: Ones: 9+1=10, write 0 carry 1. Tens: 2+7+1=10. Answer: 100!',fix:'This one regroups twice! Both columns add to exactly 10. Write 0, carry 1 each time.'},
           {q:'What is the missing number? 4_ + 38 = 85',opts:['3','5','7','4'],c:2,explain:'48+38=86... try 47+38=85! The missing digit is 7.',fix:'Work backwards: 85-38=47. The tens digit of the first number is 4, so the ones digit must be 7.'},
-          {q:'True or False: 67 + 45 = 102',opts:['True','False — it is 112','True always','False — it is 101'],c:1,explain:'67+45: Ones: 7+5=12, write 2 carry 1. Tens: 6+4+1=11. Answer: 112, not 102!',fix:'Do not forget the carried digit! Always add the carried number to the tens column.'}
+          {q:'True or False: 67 + 45 = 102',opts:['True','False — it is 112','True always','False — it is 101'],c:1,explain:'67+45: Ones: 7+5=12, write 2 carry 1. Tens: 6+4+1=11. Answer: 112, not 102!',fix:'Do not forget the carried digit! Always add the carried number to the tens column.'},
+          {q:'What is 36 + 47?',opts:['73','83','82','93'],c:1,explain:'36+47: Ones: 6+7=13, write 3 carry 1. Tens: 3+4+1=8. Answer: 83!',fix:'Add ones first. If 10 or more, carry the 1 to the tens column.'},
+          {q:'What is 19 + 24?',opts:['33','43','42','44'],c:1,explain:'19+24: Ones: 9+4=13, write 3 carry 1. Tens: 1+2+1=4. Answer: 43!',fix:'9+4 is 13. Write the 3, carry the 1 to tens.'},
+          {q:'What is 55 + 38?',opts:['83','93','94','73'],c:1,explain:'55+38: Ones: 5+8=13, write 3 carry 1. Tens: 5+3+1=9. Answer: 93!',fix:'After carrying, add tens including the carried 1.'},
+          {q:'What is 26 + 17?',opts:['33','43','44','42'],c:1,explain:'26+17: Ones: 6+7=13, write 3 carry 1. Tens: 2+1+1=4. Answer: 43!',fix:'Carry when ones add to 10 or more. 13 → write 3, carry 1.'},
+          {q:'What is 84 + 19?',opts:['93','103','113','99'],c:1,explain:'84+19: Ones: 4+9=13, write 3 carry 1. Tens: 8+1+1=10. Answer: 103!',fix:'When tens add to 10 or more, write a 1 in the hundreds place.'},
+          {q:'What is 33 + 29?',opts:['52','62','63','61'],c:1,explain:'33+29: Ones: 3+9=12, write 2 carry 1. Tens: 3+2+1=6. Answer: 62!',fix:'12 in the ones column means write 2 and carry 1.'},
+          {q:'Find the missing number: 5_ + 28 = 84',opts:['56','66','55','46'],c:0,explain:'56+28=84. Check: ones 6+8=14 (write 4, carry 1), tens 5+2+1=8. Yes!',fix:'Work backwards: 84-28=56. The missing number is 56.'},
+          {q:'What is 99 + 1?',opts:['100','99','91','110'],c:0,explain:'99+1: Ones 9+1=10, write 0 carry 1. Tens 9+1=10. Answer: 100!',fix:'Adding 1 to 99: both columns regroup. Get 100.'},
+          {q:'What is 17 + 18?',opts:['25','35','36','34'],c:1,explain:'17+18: Ones 7+8=15, write 5 carry 1. Tens 1+1+1=3. Answer: 35!',fix:'When ones add to 15, write 5 carry 1 to tens.'},
+          {q:'Carlos has 28 marbles. He gets 15 more. How many marbles?',opts:['43','33','42','13'],c:0,explain:'28+15: Ones 8+5=13 carry 1. Tens 2+1+1=4. Answer: 43 marbles!',fix:'"Gets more" means add. 28+15 with regrouping.'},
+          {q:'What is 43 + 19?',opts:['52','62','63','61'],c:1,explain:'43+19: Ones 3+9=12, write 2 carry 1. Tens 4+1+1=6. Answer: 62!',fix:'Carry when ones make 10 or more.'},
+          {q:'What is 78 + 14?',opts:['82','92','81','91'],c:1,explain:'78+14: Ones 8+4=12, write 2 carry 1. Tens 7+1+1=9. Answer: 92!',fix:'8+4=12. Write 2, carry 1. Then 7+1+1=9.'},
+          {q:'What is 24 + 36?',opts:['50','60','61','51'],c:1,explain:'24+36: Ones 4+6=10, write 0 carry 1. Tens 2+3+1=6. Answer: 60!',fix:'When ones make exactly 10, write 0 and carry 1.'},
+          {q:'What is 65 + 25?',opts:['80','90','91','85'],c:1,explain:'65+25: Ones 5+5=10, write 0 carry 1. Tens 6+2+1=9. Answer: 90!',fix:'Ones add to 10. Write 0, carry 1.'},
+          {q:'Which problem needs regrouping?',opts:['12+15','24+13','37+25','42+31'],c:2,explain:'37+25: ones 7+5=12 — needs regrouping! The other answers do not.',fix:'Regrouping is needed when ones digits add to 10 or more.'},
+          {q:'What is 89 + 13?',opts:['92','102','103','112'],c:1,explain:'89+13: Ones 9+3=12, write 2 carry 1. Tens 8+1+1=10. Answer: 102!',fix:'Both columns regroup when 89+13. Watch for hundreds place.'},
+          {q:'What is 46 + 27?',opts:['63','73','72','64'],c:1,explain:'46+27: Ones 6+7=13, write 3 carry 1. Tens 4+2+1=7. Answer: 73!',fix:'Add ones, carry if needed. 6+7=13, carry 1.'},
+          {q:'What is 35 + 49?',opts:['74','84','85','75'],c:1,explain:'35+49: Ones 5+9=14, write 4 carry 1. Tens 3+4+1=8. Answer: 84!',fix:'Always carry the 1 when ones make 10 or more.'},
+          {q:'A bookshelf has 56 books. 28 more are added. How many books?',opts:['74','84','83','73'],c:1,explain:'56+28: Ones 6+8=14 carry 1. Tens 5+2+1=8. Answer: 84 books!',fix:'"Added" means add. 56+28 with regrouping.'}
         ]},
         { title:'Subtraction with Regrouping', qs:[
           {q:'What is 72 - 38?',opts:['34','44','36','46'],c:0,explain:'72-38: Ones: 2 < 8, borrow from tens. 12-8=4. Tens: 6-3=3. Answer: 34!',fix:'When the top ones digit is smaller than the bottom, borrow 1 from the tens. The ones become 10 more, tens become 1 less.'},
@@ -1740,7 +1784,26 @@ const QUESTIONS = {
           {q:'What is 143 - 67?',opts:['76','86','66','84'],c:0,explain:'143-67: Ones: 3<7, borrow. 13-7=6. Tens: 3<6, borrow. 13-6=7. Hundreds: 0. Answer: 76!',fix:'Sometimes you need to borrow twice — once for ones, once for tens. Take it one column at a time.'},
           {q:'52 - 28 = ?',opts:['34','24','26','36'],c:1,explain:'52-28: Ones: 2<8, borrow. 12-8=4. Tens: 4-2=2. Answer: 24!',fix:'Borrow 1 from the tens (5 becomes 4), add 10 to ones (2 becomes 12). Then 12-8=4, 4-2=2.'},
           {q:'True or False: 80 - 36 = 54',opts:['True','False — it is 44','True always','False — it is 46'],c:1,explain:'80-36: Ones: 0<6, borrow. 10-6=4. Tens: 7-3=4. Answer: 44, not 54!',fix:'Remember to reduce the tens when borrowing. 80: tens go from 8 to 7 when you borrow for ones.'},
-          {q:'What is 200 - 134?',opts:['66','76','56','74'],c:0,explain:'200-134: Borrow across zeros. 10-4=6 ones, 9-3=6 tens, 1-1=0 hundreds. Answer: 66!',fix:'Subtracting from a number with zeros needs multiple borrows. Work right to left, borrowing as needed.'}
+          {q:'What is 200 - 134?',opts:['66','76','56','74'],c:0,explain:'200-134: Borrow across zeros. 10-4=6 ones, 9-3=6 tens, 1-1=0 hundreds. Answer: 66!',fix:'Subtracting from a number with zeros needs multiple borrows. Work right to left, borrowing as needed.'},
+          {q:'What is 41 - 17?',opts:['24','34','26','22'],c:0,explain:'41-17: Ones 1<7, borrow. 11-7=4. Tens 3-1=2. Answer: 24!',fix:'Borrow 1 from tens when top ones is too small.'},
+          {q:'What is 53 - 26?',opts:['27','37','28','17'],c:0,explain:'53-26: Ones 3<6, borrow. 13-6=7. Tens 4-2=2. Answer: 27!',fix:'Borrow turns 5 into 4 and 3 into 13.'},
+          {q:'What is 62 - 39?',opts:['23','33','27','13'],c:0,explain:'62-39: Ones 2<9, borrow. 12-9=3. Tens 5-3=2. Answer: 23!',fix:'Always borrow when top ones is smaller than bottom ones.'},
+          {q:'What is 70 - 24?',opts:['46','56','44','36'],c:0,explain:'70-24: Ones 0<4, borrow. 10-4=6. Tens 6-2=4. Answer: 46!',fix:'Borrowing from a 0: takes from tens, ones becomes 10.'},
+          {q:'What is 81 - 47?',opts:['34','44','24','46'],c:0,explain:'81-47: Ones 1<7, borrow. 11-7=4. Tens 7-4=3. Answer: 34!',fix:'Top ones is 1, bottom is 7. Borrow makes ones 11.'},
+          {q:'A box had 52 candies. Maria ate 26. How many are left?',opts:['26','36','24','16'],c:0,explain:'52-26: Ones 2<6, borrow. 12-6=6. Tens 4-2=2. Answer: 26 candies!',fix:'"Left" means subtract. 52-26 with borrowing.'},
+          {q:'What is 95 - 38?',opts:['57','47','67','53'],c:0,explain:'95-38: Ones 5<8, borrow. 15-8=7. Tens 8-3=5. Answer: 57!',fix:'9 becomes 8 after borrowing for ones.'},
+          {q:'What is 64 - 29?',opts:['35','45','25','55'],c:0,explain:'64-29: Ones 4<9, borrow. 14-9=5. Tens 5-2=3. Answer: 35!',fix:'Borrow to subtract: 14-9=5, then 5-2=3.'},
+          {q:'What is 110 - 45?',opts:['65','75','55','85'],c:0,explain:'110-45: Ones 0<5, borrow. 10-5=5. Tens 0<4, borrow. 10-4=6. Answer: 65!',fix:'Subtracting from 110 needs two borrows. Work right to left.'},
+          {q:'What is 47 - 19?',opts:['28','38','26','18'],c:0,explain:'47-19: Ones 7<9, borrow. 17-9=8. Tens 3-1=2. Answer: 28!',fix:'Always borrow when ones digit on top is smaller.'},
+          {q:'What is 33 - 18?',opts:['15','25','13','24'],c:0,explain:'33-18: Ones 3<8, borrow. 13-8=5. Tens 2-1=1. Answer: 15!',fix:'13-8=5. Then 2-1=1. Final answer: 15.'},
+          {q:'What is 86 - 39?',opts:['47','57','37','46'],c:0,explain:'86-39: Ones 6<9, borrow. 16-9=7. Tens 7-3=4. Answer: 47!',fix:'After borrowing, tens column is 7-3=4.'},
+          {q:'A jar had 90 cookies. 45 were eaten. How many left?',opts:['45','55','35','40'],c:0,explain:'90-45: Ones 0<5, borrow. 10-5=5. Tens 8-4=4. Answer: 45 cookies!',fix:'Subtracting from 90: borrow makes tens 8 and ones 10.'},
+          {q:'What is 77 - 38?',opts:['39','49','29','38'],c:0,explain:'77-38: Ones 7<8, borrow. 17-8=9. Tens 6-3=3. Answer: 39!',fix:'17-8=9. Then 6-3=3. Final: 39.'},
+          {q:'Which subtraction needs borrowing?',opts:['58-23','67-32','45-26','89-45'],c:2,explain:'45-26 needs borrowing: ones 5<6 so borrow. The others do not need borrowing.',fix:'Borrowing is needed when top ones digit is smaller than bottom.'},
+          {q:'What is 100 - 28?',opts:['72','82','62','78'],c:0,explain:'100-28: Borrow across zeros. 10-8=2 ones. 9-2=7 tens. 0 hundreds. Answer: 72!',fix:'Subtracting from 100 needs borrows in both columns.'},
+          {q:'What is 68 - 29?',opts:['39','49','29','41'],c:0,explain:'68-29: Ones 8<9, borrow. 18-9=9. Tens 5-2=3. Answer: 39!',fix:'18-9=9. Then 5-2=3. Final: 39.'},
+          {q:'What is 54 - 27?',opts:['27','37','17','24'],c:0,explain:'54-27: Ones 4<7, borrow. 14-7=7. Tens 4-2=2. Answer: 27!',fix:'14-7=7. Then 4-2=2. Final answer: 27.'},
+          {q:'Sam had 75 stickers. He gave 38 away. How many are left?',opts:['37','47','27','45'],c:0,explain:'75-38: Ones 5<8, borrow. 15-8=7. Tens 6-3=3. Answer: 37 stickers!',fix:'"Gave away" means subtract. Borrow when needed.'}
         ]},
         { title:'Word Problems', qs:[
           {q:'Sam has 34 stickers. He gets 28 more. How many stickers does he have?',opts:['52','62','56','64'],c:1,explain:'34+28: Ones: 4+8=12, write 2 carry 1. Tens: 3+2+1=6. Answer: 62 stickers!',fix:'"Gets more" means addition. Add 34+28. Remember to regroup the ones column!'},
@@ -1752,7 +1815,26 @@ const QUESTIONS = {
           {q:'Write the equation: 83 total students, 45 are girls. How many boys?',opts:['83+45','83×45','83-45','45-83'],c:2,explain:'83-45 finds the boys. We know the total and one part, so subtract to find the other part.',fix:'Total - one part = other part. This is a subtraction situation!'},
           {q:'Jake scores 67 points. He needs 100 to win. How many more does he need?',opts:['33','43','37','167'],c:0,explain:'100-67: Ones: 0<7, borrow. 10-7=3. Tens: 9-6=3. Answer: 33 more points!',fix:'"How many more needed" = subtract what you have from the goal: 100-67.'},
           {q:'There are 124 students. 58 go home sick. How many remain?',opts:['66','76','56','86'],c:0,explain:'124-58: Ones: 4<8, borrow. 14-8=6. Tens: 1<5, borrow. 11-5=6. Hundreds: 0. Answer: 66!',fix:'Three-digit subtraction with regrouping. Take it one column at a time, borrowing when needed.'},
-          {q:'Part-part-whole: One part is 43, the whole is 91. What is the other part?',opts:['134','48','138','38'],c:1,explain:'91-43: Ones: 1<3, borrow. 11-3=8. Tens: 8-4=4. Answer: 48! The two parts are 43 and 48.',fix:'Part + Part = Whole. If you know one part and the whole, subtract to find the missing part: Whole - Part = Part.'}
+          {q:'Part-part-whole: One part is 43, the whole is 91. What is the other part?',opts:['134','48','138','38'],c:1,explain:'91-43: Ones: 1<3, borrow. 11-3=8. Tens: 8-4=4. Answer: 48! The two parts are 43 and 48.',fix:'Part + Part = Whole. If you know one part and the whole, subtract to find the missing part: Whole - Part = Part.'},
+          {q:'Lily reads 24 pages on Monday and 36 pages on Tuesday. How many pages total?',opts:['50','60','62','58'],c:1,explain:'24+36: Ones 4+6=10, write 0 carry 1. Tens 2+3+1=6. Answer: 60 pages!',fix:'"Total" means add. 24+36=60.'},
+          {q:'A toy store has 84 toys. 35 are sold. How many are left?',opts:['49','59','39','45'],c:0,explain:'84-35: Ones 4<5, borrow. 14-5=9. Tens 7-3=4. Answer: 49 toys left!',fix:'"Left" or "remain" means subtract. 84-35.'},
+          {q:'Tom has 27 cards. Lisa has 19 cards. How many cards together?',opts:['46','36','45','56'],c:0,explain:'27+19: Ones 7+9=16, write 6 carry 1. Tens 2+1+1=4. Answer: 46 cards!',fix:'"Together" means add. 27+19 with regrouping.'},
+          {q:'Maria has 56 stickers. She gives away 28. How many does she have now?',opts:['28','38','24','18'],c:0,explain:'56-28: Ones 6<8, borrow. 16-8=8. Tens 4-2=2. Answer: 28 stickers!',fix:'"Gives away" means subtract from what she had.'},
+          {q:'How many MORE: 67 vs 39?',opts:['28','38','26','18'],c:0,explain:'67-39: Ones 7<9, borrow. 17-9=8. Tens 5-3=2. Answer: 28 more!',fix:'"How many more" means subtract: bigger minus smaller.'},
+          {q:'Add: A class has 18 boys and 23 girls. How many students total?',opts:['41','31','42','51'],c:0,explain:'18+23: Ones 8+3=11, write 1 carry 1. Tens 1+2+1=4. Answer: 41 students!',fix:'"Total" means add the two parts together.'},
+          {q:'Jake had 45 marbles. He lost 17. How many marbles now?',opts:['28','38','26','22'],c:0,explain:'45-17: Ones 5<7, borrow. 15-7=8. Tens 3-1=2. Answer: 28 marbles!',fix:'"Lost" means subtract — gone from the total.'},
+          {q:'The library has 132 books. 68 are checked out. How many are still there?',opts:['64','74','54','66'],c:0,explain:'132-68: Ones 2<8, borrow. 12-8=4. Tens 2<6, borrow. 12-6=6. Answer: 64 books!',fix:'Three-digit subtraction with regrouping. Work right to left.'},
+          {q:'Sam saved 38 dollars. He saves 24 more. How much does he have now?',opts:['62','52','61','72'],c:0,explain:'38+24: Ones 8+4=12, write 2 carry 1. Tens 3+2+1=6. Answer: $62!',fix:'"Saves more" means add to what he had.'},
+          {q:'Which equation finds the missing part: 82 = 35 + ___?',opts:['82+35','82-35','82×35','82÷35'],c:1,explain:'To find the missing part, subtract: 82-35=47.',fix:'When you know the whole and one part, subtract to find the missing part.'},
+          {q:'A bag has 120 candies. Three friends share equally. About how many each?',opts:['30','40','50','35'],c:1,explain:'120÷3=40. Each friend gets 40 candies.',fix:'"Share equally" means divide. 120÷3=40.'},
+          {q:'Anna has 53 books. Sam has 27 fewer. How many does Sam have?',opts:['26','36','24','30'],c:0,explain:'53-27: Ones 3<7, borrow. 13-7=6. Tens 4-2=2. Answer: 26 books!',fix:'"Fewer than" means subtract from the bigger amount.'},
+          {q:'Paul has 38 toy cars. Joe has 45 toy cars. How many do they have together?',opts:['83','73','82','93'],c:0,explain:'38+45: Ones 8+5=13, write 3 carry 1. Tens 3+4+1=8. Answer: 83 toy cars!',fix:'"Together" means add. 38+45.'},
+          {q:'A box has 64 chocolates. 28 are dark. How many are NOT dark?',opts:['36','26','46','34'],c:0,explain:'64-28: Ones 4<8, borrow. 14-8=6. Tens 5-2=3. Answer: 36 are not dark!',fix:'If 28 are dark, the rest are not. Subtract: 64-28.'},
+          {q:'There are 145 students. 67 ride the bus. How many do NOT ride?',opts:['78','88','68','82'],c:0,explain:'145-67: Ones 5<7, borrow. 15-7=8. Tens 3<6, borrow. 13-6=7. Answer: 78 students!',fix:'If 67 ride, the rest do not. 145-67.'},
+          {q:'Total tickets sold: Friday 45, Saturday 67. How many in two days?',opts:['112','102','111','103'],c:0,explain:'45+67: Ones 5+7=12, write 2 carry 1. Tens 4+6+1=11. Answer: 112 tickets!',fix:'"Total" means add the two days together.'},
+          {q:'Carlos collected 85 leaves. The wind blew 39 away. How many left?',opts:['46','56','36','44'],c:0,explain:'85-39: Ones 5<9, borrow. 15-9=6. Tens 7-3=4. Answer: 46 leaves!',fix:'"Blew away" means subtract from total.'},
+          {q:'A truck has 92 boxes. It picks up 36 more. How many boxes now?',opts:['128','118','138','108'],c:0,explain:'92+36: Ones 2+6=8. Tens 9+3=12. Answer: 128 boxes!',fix:'"Picks up more" means add. 92+36.'},
+          {q:'Compare: Ana has 76 beads. Lily has 49. How many MORE does Ana have?',opts:['27','37','25','17'],c:0,explain:'76-49: Ones 6<9, borrow. 16-9=7. Tens 6-4=2. Answer: 27 more!',fix:'"How many more" means subtract: bigger minus smaller.'}
         ]},
         { title:'Telling Time', qs:[
           {q:'The hour hand points to 3, minute hand to 12. What time is it?',opts:['12:03','3:00','3:12','12:15'],c:1,explain:'Hour hand at 3, minute hand at 12 = 3 o\'clock = 3:00!',fix:'When the minute hand points to 12, it is exactly on the hour. Read the hour hand for the hour.'},
@@ -1870,7 +1952,27 @@ const QUESTIONS = {
           {q:'What is a good strategy to decode "uncomfortable"?',opts:['Guess','Break it into parts: un-com-for-ta-ble','Skip it','Ask someone to read it'],c:1,explain:'Break it into parts: un(not) + comfort + able(can be). Uncomfortable = not able to be comfortable!',fix:'Long words are just short words stuck together. Break them into syllables and prefixes/suffixes.'},
           {q:'"Dis-" in "disappear" means:',opts:['Again','Before','Not/opposite','After'],c:2,explain:'"Dis-" means not or opposite. Disappear = not appear = to vanish!',fix:'Prefix "dis-" = not/opposite. Disagree=not agree, disconnect=not connect, disappear=not appear.'},
           {q:'Which word has the suffix "-tion" (meaning the act of)?',opts:['acting','action','acted','acts'],c:1,explain:'"Action" ends in -tion which means "the act of." Action = the act of acting!',fix:'Suffix "-tion" or "-sion" means the act of or result of. Celebration, education, information.'},
-          {q:'Amani can read 113 words per minute. Her goal is 90. Is she:',opts:['Below goal','At goal','Above goal','Unable to tell'],c:2,explain:'113 words per minute is ABOVE her goal of 90! That is amazing reading speed!',fix:'Compare the numbers: 113 > 90. When your score is higher than the goal, you exceeded it!'}
+          {q:'Amani can read 113 words per minute. Her goal is 90. Is she:',opts:['Below goal','At goal','Above goal','Unable to tell'],c:2,explain:'113 words per minute is ABOVE her goal of 90! That is amazing reading speed!',fix:'Compare the numbers: 113 > 90. When your score is higher than the goal, you exceeded it!'},
+          {q:'How many syllables in "computer"?',opts:['2','3','4','5'],c:1,explain:'Com-pu-ter has 3 syllables. Three beats!',fix:'Clap each beat: com (clap) pu (clap) ter (clap) = 3 syllables.'},
+          {q:'Break "wonderful" into syllables:',opts:['won-der-ful','wonder-ful','wond-erful','w-on-derful'],c:0,explain:'"Wonderful" = won-der-ful. Three syllables!',fix:'Each syllable needs a vowel sound. Won, der, ful = three vowel sounds.'},
+          {q:'Which has the prefix "re-" meaning "again"?',opts:['rebuild','red','remember','really'],c:0,explain:'"Rebuild" means to build again. "Re-" means again!',fix:'Re- prefix means "again." Rewrite = write again. Replay = play again.'},
+          {q:'What is the suffix in "happily"?',opts:['hap-','-py','-ily','-ly'],c:3,explain:'The suffix "-ly" turns adjectives into adverbs. Happy + -ly = happily.',fix:'Suffix "-ly" means "in a way that is..." Happily = in a happy way.'},
+          {q:'Decode: re-ar-range',opts:['rearrange','rearranging','range','rare'],c:0,explain:'Rearrange = re + arrange. To arrange again!',fix:'Break the word into parts. Re + arrange = put back in order again.'},
+          {q:'Which prefix means "not"?',opts:['re-','un-','pre-','post-'],c:1,explain:'"Un-" means not. Unhappy = not happy. Unable = not able.',fix:'Un- always means "not" or "opposite of."'},
+          {q:'How many syllables in "remember"?',opts:['2','3','4','5'],c:1,explain:'Re-mem-ber has 3 syllables. Three vowel sounds!',fix:'Clap it out: re (clap) mem (clap) ber (clap) = 3.'},
+          {q:'Decode "uncomfortable":',opts:['un + comfort + able','uncom + fort + able','unc + om + fortable','un-com-for-ta-ble'],c:0,explain:'Un (not) + comfort + able (can be) = not able to be comfortable!',fix:'Long words break into prefix + root + suffix.'},
+          {q:'Which suffix means "the act of"?',opts:['-ly','-ful','-tion','-er'],c:2,explain:'"-tion" or "-sion" means "the act of." Action, vacation, motion.',fix:'Suffix "-tion" turns verbs into nouns about an action.'},
+          {q:'Read: in-ter-rupt',opts:['interrupt','intercept','intermission','introduction'],c:0,explain:'Inter (between) + rupt (break) = interrupt. To break in.',fix:'Interrupt has 3 syllables: in-ter-rupt.'},
+          {q:'Decode "preview":',opts:['pre + view','pr + eview','preview is one word','pree-view'],c:0,explain:'Pre (before) + view (see) = preview. To see before!',fix:'Pre- prefix means "before." Preview = view before.'},
+          {q:'How many syllables in "vegetable"?',opts:['2','3','4','5'],c:2,explain:'Veg-e-ta-ble has 4 syllables: veg-e-ta-ble!',fix:'Slow it down: veg (clap) e (clap) ta (clap) ble (clap) = 4.'},
+          {q:'What does "dis-" mean in "disappear"?',opts:['Again','Not/opposite','Before','After'],c:1,explain:'Dis- means not. Disappear = not appear (gone)!',fix:'Dis- = not or opposite. Disagree = not agree.'},
+          {q:'Break "important" into syllables:',opts:['imp-or-tant','im-por-tant','i-mport-ant','im-port-ant'],c:1,explain:'Im-por-tant has 3 syllables.',fix:'Three vowel sounds: im, por, tant.'},
+          {q:'Read: en-cour-age',opts:['encourage','encourager','encore','engagement'],c:0,explain:'En-cour-age = encourage. To give courage!',fix:'En + courage = encourage. To give courage to someone.'},
+          {q:'Which word has the suffix "-er" meaning "one who"?',opts:['fast','faster','teacher','running'],c:2,explain:'Teacher = one who teaches. Suffix "-er" means person who does.',fix:'Suffix "-er" often means "person who does the action."'},
+          {q:'How many syllables in "celebration"?',opts:['3','4','5','6'],c:1,explain:'Cel-e-bra-tion has 4 syllables!',fix:'Clap it out: cel (clap) e (clap) bra (clap) tion (clap) = 4.'},
+          {q:'Decode: dis-ap-point-ment',opts:['disappointment','disappoint','disappear','disagreement'],c:0,explain:'Dis-ap-point-ment = disappointment. Four syllables!',fix:'Break long words by syllable. Each beat is one syllable.'},
+          {q:'What does "-able" mean in "readable"?',opts:['Cannot be','Able to be','One who','Again'],c:1,explain:'"-Able" means "able to be." Readable = able to be read!',fix:'Suffix "-able" means something can be done.'},
+          {q:'Read: vol-un-teer',opts:['volunteer','volume','vacation','volcano'],c:0,explain:'Vol-un-teer = volunteer. One who chooses to help!',fix:'Three syllables: vol-un-teer.'}
         ]},
         { title:'Reading Comprehension', qs:[
           {q:'What is the MAIN IDEA of a paragraph?',opts:['The last sentence','What the whole paragraph is mostly about','A small detail','The first word'],c:1,explain:'The main idea is what the WHOLE paragraph is mostly about — the big point the author is making!',fix:'To find the main idea: ask "What is this mostly about?" The answer in one sentence is the main idea.'},
@@ -1911,7 +2013,26 @@ const QUESTIONS = {
           {q:'75 people on a bus. At stop 1, 23 get off and 14 get on. How many on the bus now?',opts:['66','62','84','52'],c:0,explain:'Step 1: 75-23=52 (get off). Step 2: 52+14=66 (get on). Answer: 66 people!',fix:'Bus problems: getting off = subtract, getting on = add. Always use the step 1 answer in step 2.'},
           {q:'A garden has 3 rows of 8 flowers. 7 flowers die. How many flowers are left?',opts:['17','31','24','15'],c:0,explain:'Step 1: 3×8=24 (total flowers). Step 2: 24-7=17 (flowers die = subtract). Answer: 17!',fix:'Step 1 uses multiplication to find total. Step 2 subtracts the ones that died. Two different operations!'},
           {q:'Which equation matches: "John had 50 cards, got 30 more, gave away 20"?',opts:['50-30+20','50+30-20','50×30-20','50+30+20'],c:1,explain:'Got more = add (+30). Gave away = subtract (-20). Equation: 50+30-20=60!',fix:'Write the equation step by step: start with 50, then +30 for getting more, then -20 for giving away.'},
-          {q:'Solve: 4 bags with 12 apples each. Ate 15 apples. How many left?',opts:['33','43','53','63'],c:0,explain:'Step 1: 4×12=48 total apples. Step 2: 48-15=33 apples left!',fix:'When a problem has "each" or "per," think multiplication first. Then do the second operation.'}
+          {q:'Solve: 4 bags with 12 apples each. Ate 15 apples. How many left?',opts:['33','43','53','63'],c:0,explain:'Step 1: 4×12=48 total apples. Step 2: 48-15=33 apples left!',fix:'When a problem has "each" or "per," think multiplication first. Then do the second operation.'},
+          {q:'Mia has 35 stickers. She buys 18 more, then gives away 12. How many now?',opts:['41','51','35','29'],c:0,explain:'Step 1: 35+18=53. Step 2: 53-12=41. Mia has 41 stickers!',fix:'Buy more = add. Give away = subtract. Do them in order.'},
+          {q:'A library had 86 books. They got 35 more, then loaned out 28. How many in library?',opts:['93','73','103','115'],c:0,explain:'Step 1: 86+35=121. Step 2: 121-28=93. Library has 93 books!',fix:'Got more = add. Loaned out = subtract. Two steps.'},
+          {q:'Tom has 5 boxes. Each box has 6 cars. He gives 8 away. How many cars left?',opts:['22','30','38','42'],c:0,explain:'Step 1: 5×6=30 total cars. Step 2: 30-8=22 cars left!',fix:'"Each" = multiply. "Gives away" = subtract.'},
+          {q:'Lisa baked 48 cookies. She gave 12 to her sister and 14 to her brother. How many left?',opts:['22','24','26','30'],c:0,explain:'Step 1: 12+14=26 (total given). Step 2: 48-26=22 cookies left!',fix:'Add what was given total. Then subtract from what was baked.'},
+          {q:'A theater has 8 rows of 9 seats. 22 people are seated. How many empty?',opts:['50','62','40','45'],c:0,explain:'Step 1: 8×9=72 total seats. Step 2: 72-22=50 empty seats!',fix:'Find total first (multiply), then subtract those filled.'},
+          {q:'Ben earns $25 for chores. He earns $18 more. He spends $20. How much now?',opts:['$23','$33','$43','$13'],c:0,explain:'Step 1: $25+$18=$43. Step 2: $43-$20=$23. Ben has $23!',fix:'Earns = add. Spends = subtract.'},
+          {q:'A class has 24 students. 6 are absent on Monday. 4 are absent on Tuesday. How many in class on both days?',opts:['14','18','24','20'],c:0,explain:'Step 1: 6+4=10 total absent. Step 2: 24-10=14 students in class!',fix:'Add absences first, then subtract from total class size.'},
+          {q:'A box holds 8 cans. There are 6 boxes. How many cans? Then 5 are empty.',opts:['43','48','53','58'],c:0,explain:'Step 1: 6×8=48 cans. Step 2: 48-5=43 full cans!',fix:'Multiply for total, then subtract empty ones.'},
+          {q:'Sara reads 22 pages Monday, 31 pages Tuesday, then 19 pages Wednesday. Total?',opts:['72','62','82','52'],c:0,explain:'Step 1: 22+31=53. Step 2: 53+19=72. Total: 72 pages!',fix:'Add all three numbers, two at a time.'},
+          {q:'A truck has 145 packages. It drops off 38, then picks up 24. How many packages?',opts:['131','121','141','119'],c:0,explain:'Step 1: 145-38=107. Step 2: 107+24=131. Truck has 131 packages!',fix:'Drops off = subtract. Picks up = add. Order matters!'},
+          {q:'4 friends each have 12 marbles. They put them all in one bag, then take out 7. How many in the bag?',opts:['41','45','48','55'],c:0,explain:'Step 1: 4×12=48 marbles. Step 2: 48-7=41 marbles in bag!',fix:'Multiply to find total marbles. Then subtract.'},
+          {q:'Anna has 65 cards. She gets 28 more, then trades 19 with a friend. How many now?',opts:['74','83','93','55'],c:0,explain:'Step 1: 65+28=93. Step 2: 93-19=74. Anna has 74 cards!',fix:'Gets more = add. Trades away = subtract.'},
+          {q:'A bakery makes 5 trays of cookies, 12 per tray. They sell 35. How many left?',opts:['25','30','35','40'],c:0,explain:'Step 1: 5×12=60 cookies total. Step 2: 60-35=25 cookies left!',fix:'Multiply trays times cookies per tray. Then subtract sold.'},
+          {q:'Jake buys 3 packs of stickers. Each pack has 24 stickers. He gives 18 to his sister. How many left?',opts:['54','72','60','64'],c:0,explain:'Step 1: 3×24=72 stickers. Step 2: 72-18=54 stickers left!',fix:'"Each" = multiply. "Gives" = subtract.'},
+          {q:'A school has 230 students. 45 leave for a field trip and 28 are out sick. How many at school?',opts:['157','167','185','147'],c:0,explain:'Step 1: 45+28=73 not at school. Step 2: 230-73=157 at school!',fix:'Add the two groups gone. Then subtract from total.'},
+          {q:'A box has 9 rows of 8 chocolates. 25 are eaten. How many left?',opts:['47','57','37','67'],c:0,explain:'Step 1: 9×8=72 chocolates. Step 2: 72-25=47 chocolates left!',fix:'Multiply rows × items per row. Then subtract eaten.'},
+          {q:'Carlos collected 84 stamps. He gave 12 to his cousin and 15 to his uncle. How many stamps now?',opts:['57','69','62','72'],c:0,explain:'Step 1: 12+15=27 given away. Step 2: 84-27=57 stamps left!',fix:'Add what was given total, then subtract from total.'},
+          {q:'A garden has 6 rows of 7 plants. 13 plants died. How many alive?',opts:['29','35','42','19'],c:0,explain:'Step 1: 6×7=42 plants. Step 2: 42-13=29 alive!',fix:'Multiply rows × plants. Subtract those that died.'},
+          {q:'Maria saved $45. She earns $18 more. She buys a $32 book. How much left?',opts:['$31','$41','$25','$50'],c:0,explain:'Step 1: $45+$18=$63. Step 2: $63-$32=$31. Maria has $31 left!',fix:'Earns = add. Buys = subtract.'}
         ]},
         { title:'Multiplication Basics', qs:[
           {q:'What is 6 × 7?',opts:['42','48','36','43'],c:0,explain:'6×7=42! You can think: 6×7 = 6×5 + 6×2 = 30+12 = 42. Or just memorize it!',fix:'Multiplication is repeated addition. 6×7 = 7+7+7+7+7+7 = 42. Practice your 6s: 6,12,18,24,30,36,42.'},
@@ -1923,7 +2044,26 @@ const QUESTIONS = {
           {q:'What is 12 × 4?',opts:['48','46','42','44'],c:0,explain:'12×4=48! Think: 10×4=40, then 2×4=8, add them: 40+8=48!',fix:'For 12× facts, break it into 10× + 2×. 12×4 = (10×4)+(2×4) = 40+8 = 48.'},
           {q:'Which equation matches: 3 boxes, 8 crayons each, how many crayons?',opts:['3+8=11','8-3=5','3×8=24','24÷3=8'],c:2,explain:'3 boxes × 8 crayons each = 3×8 = 24 crayons! Equal groups = multiplication.',fix:'"Each" is a key word for multiplication. 3 boxes with 8 EACH = 3×8.'},
           {q:'True or False: 6×4 = 4×6',opts:['True — commutative property','False','True sometimes','False — order matters'],c:0,explain:'TRUE! 6×4=24 and 4×6=24. The commutative property works for all multiplication!',fix:'Commutative property: a × b = b × a, always! This is always true for multiplication.'},
-          {q:'What multiplication fact is the same as 9+9+9+9+9?',opts:['9×4','5×9','9+5','9-5'],c:1,explain:'9+9+9+9+9 = 5 nines added together = 5×9 = 45!',fix:'Multiplication IS repeated addition. Count how many times a number is added — that is the factor.'}
+          {q:'What multiplication fact is the same as 9+9+9+9+9?',opts:['9×4','5×9','9+5','9-5'],c:1,explain:'9+9+9+9+9 = 5 nines added together = 5×9 = 45!',fix:'Multiplication IS repeated addition. Count how many times a number is added — that is the factor.'},
+          {q:'What is 3 × 4?',opts:['7','12','10','15'],c:1,explain:'3×4 = 12. Three groups of 4 = 4+4+4 = 12!',fix:'3 × 4 means 3 groups of 4. Add: 4+4+4=12.'},
+          {q:'What is 6 × 5?',opts:['11','25','30','35'],c:2,explain:'6×5 = 30. Six fives = 5+5+5+5+5+5 = 30!',fix:'5s are easy: 5, 10, 15, 20, 25, 30.'},
+          {q:'What is 7 × 8?',opts:['54','56','58','64'],c:1,explain:'7×8 = 56. This one is worth memorizing!',fix:'7×8=56. A common one to memorize.'},
+          {q:'How can you find 4 × 6?',opts:['Add 4+6','Add 6+6+6+6','Subtract 6 from 4','Multiply 4×4'],c:1,explain:'4×6 means 4 groups of 6. So add 6+6+6+6=24!',fix:'Multiplication = repeated addition of the same number.'},
+          {q:'What is 8 × 3?',opts:['24','21','27','11'],c:0,explain:'8×3=24. Or 3×8=24. Same answer!',fix:'8×3 = 3×8 = 24. Order does not matter.'},
+          {q:'What is 9 × 6?',opts:['54','45','64','56'],c:0,explain:'9×6 = 54. Trick: 10×6=60, then subtract 6 = 54!',fix:'9× trick: multiply by 10, then subtract one group.'},
+          {q:'A box has 5 rows of 4 cookies. How many cookies?',opts:['9','15','20','25'],c:2,explain:'5 rows × 4 cookies = 5×4 = 20 cookies!',fix:'Rows × items in each row = total. Use multiplication.'},
+          {q:'What is 6 × 6?',opts:['12','30','36','42'],c:2,explain:'6×6 = 36. A square number worth memorizing!',fix:'6×6 = 36. Practice this fact often.'},
+          {q:'Which has the SAME answer as 4 × 7?',opts:['7+4','7×4','4+4+4','7-4'],c:1,explain:'4×7 = 7×4. Both equal 28!',fix:'Multiplication is commutative — order does not matter.'},
+          {q:'What is 8 × 5?',opts:['30','40','45','50'],c:1,explain:'8×5 = 40. Eight 5s = 40!',fix:'5s pattern: 5, 10, 15, 20, 25, 30, 35, 40.'},
+          {q:'What is 7 × 7?',opts:['14','42','49','56'],c:2,explain:'7×7 = 49. A perfect square!',fix:'7×7=49. Memorize this square.'},
+          {q:'There are 8 boxes with 7 toys in each. How many toys?',opts:['56','63','15','64'],c:0,explain:'8 boxes × 7 toys = 8×7 = 56 toys!',fix:'"Each" = multiply. 8×7=56.'},
+          {q:'What is 12 × 3?',opts:['15','24','36','39'],c:2,explain:'12×3 = 36. Or count by 3s: 3,6,9,12... 12 times = 36!',fix:'12×3 = (10×3) + (2×3) = 30+6 = 36.'},
+          {q:'What is 6 × 9?',opts:['45','54','63','72'],c:1,explain:'6×9 = 54. Same as 9×6!',fix:'9× trick: 6×10=60, then subtract 6 = 54.'},
+          {q:'How many in 4 groups of 7?',opts:['11','21','28','35'],c:2,explain:'4 groups of 7 = 4×7 = 28!',fix:'Groups of = multiplication. 4×7=28.'},
+          {q:'What is 10 × 8?',opts:['18','80','108','88'],c:1,explain:'10×8 = 80. Tens are easy — just add a zero!',fix:'Multiplying by 10: just add a zero to the other number.'},
+          {q:'A pack has 6 rolls. There are 5 packs. How many rolls?',opts:['11','25','30','35'],c:2,explain:'5 packs × 6 rolls = 5×6 = 30 rolls!',fix:'Packs × items per pack = total. 5×6=30.'},
+          {q:'What is 9 × 9?',opts:['81','72','63','99'],c:0,explain:'9×9 = 81. Worth memorizing!',fix:'9×9=81. The biggest single-digit square.'},
+          {q:'Solve: 4 × 8',opts:['32','24','12','40'],c:0,explain:'4×8 = 32. Four 8s = 8+8+8+8 = 32!',fix:'4×8: count by 8s four times: 8, 16, 24, 32.'}
         ]}
       ]
     },
@@ -2058,7 +2198,26 @@ const QUESTIONS = {
           {q:'How many syllables in "elephant"?',opts:['2','3','4','5'],c:1,explain:'El-e-phant has 3 syllables: el-e-phant!',fix:'Clap each beat: el (clap) e (clap) phant (clap) = 3 syllables.'},
           {q:'Which word has the long "a" sound (like in "cake")?',opts:['cat','rain','dog','sit'],c:1,explain:'"Rain" has the long /a/ sound. The "ai" together sounds like the letter A name!',fix:'Long vowels say their own name. Long A sounds like the letter A.'},
           {q:'What is the LAST sound in "dog"?',opts:['/d/','/o/','/g/','/og/'],c:2,explain:'The last sound in "dog" is /g/!',fix:'Say the word slowly. The very last sound you hear is the ending sound.'},
-          {q:'Which word has 2 syllables?',opts:['pen','table','run','bat'],c:1,explain:'"Table" has 2 syllables: ta-ble!',fix:'Clap each beat. One-syllable words have only one beat.'}
+          {q:'Which word has 2 syllables?',opts:['pen','table','run','bat'],c:1,explain:'"Table" has 2 syllables: ta-ble!',fix:'Clap each beat. One-syllable words have only one beat.'},
+          {q:'How many sounds in "ship"?',opts:['2','3','4','5'],c:1,explain:'Ship has 3 sounds: /sh/ /i/ /p/. SH is one sound!',fix:'Stretch the word: sh-i-p. Three sounds.'},
+          {q:'What is the FIRST sound in "moon"?',opts:['/m/','/o/','/n/','/oo/'],c:0,explain:'The first sound in "moon" is /m/.',fix:'Listen to the very beginning of the word.'},
+          {q:'Which word starts with the SAME sound as "tree"?',opts:['cake','toy','dog','rabbit'],c:1,explain:'"Tree" and "toy" both start with /t/.',fix:'Match the very first sound of each word.'},
+          {q:'How many syllables in "dragon"?',opts:['1','2','3','4'],c:1,explain:'Dra-gon has 2 syllables.',fix:'Clap the beats: dra-gon. Two beats.'},
+          {q:'Which word RHYMES with "cat"?',opts:['dog','bat','sun','sit'],c:1,explain:'"Cat" and "bat" rhyme — they end with the same sound.',fix:'Rhyming words share the same ending sound.'},
+          {q:'What is the LAST sound in "fish"?',opts:['/f/','/i/','/sh/','/s/'],c:2,explain:'The last sound is /sh/. Two letters, one sound!',fix:'Listen to the very end of the word.'},
+          {q:'How many syllables in "pizza"?',opts:['1','2','3','4'],c:1,explain:'Piz-za has 2 syllables.',fix:'Clap each beat: piz (clap) za (clap) = 2.'},
+          {q:'Which word has the long I sound?',opts:['big','bike','bit','bin'],c:1,explain:'"Bike" has the long I sound — like the letter I name!',fix:'Long I says its own name. Bike, kite, ride.'},
+          {q:'What sound does "ch" make?',opts:['/k/','/sh/','/ch/ as in chair','/h/'],c:2,explain:'"Ch" makes the /ch/ sound, like in chair, cheese, chin.',fix:'CH is two letters that make one sound: /ch/.'},
+          {q:'How many syllables in "happy"?',opts:['1','2','3','4'],c:1,explain:'Hap-py has 2 syllables.',fix:'Clap each beat: hap-py. Two beats.'},
+          {q:'Which word starts with /b/?',opts:['cat','ball','dog','egg'],c:1,explain:'"Ball" starts with /b/.',fix:'Listen for the very first sound.'},
+          {q:'How many sounds in "stop"?',opts:['2','3','4','5'],c:2,explain:'Stop has 4 sounds: /s/ /t/ /o/ /p/.',fix:'Stretch the word: s-t-o-p. Four sounds.'},
+          {q:'Which word rhymes with "tree"?',opts:['dog','bee','cat','sun'],c:1,explain:'"Tree" and "bee" rhyme — same ending sound /ee/.',fix:'Rhyming words end with the same sound.'},
+          {q:'What is the middle sound in "hat"?',opts:['/h/','/a/','/t/','/h/ /a/'],c:1,explain:'/h/ /a/ /t/ — the middle sound is /a/.',fix:'Stretch the word and find the sound in the middle.'},
+          {q:'How many syllables in "monkey"?',opts:['1','2','3','4'],c:1,explain:'Mon-key has 2 syllables.',fix:'Clap each beat: mon-key. Two beats.'},
+          {q:'Which sound does "th" make?',opts:['/t/','/h/','/th/ as in this','/d/'],c:2,explain:'"Th" makes the /th/ sound — like in this, that, the.',fix:'TH is two letters making one sound: /th/.'},
+          {q:'What letter makes the /m/ sound?',opts:['n','m','b','p'],c:1,explain:'The letter M makes the /m/ sound.',fix:'Each letter has its own sound. M = /m/.'},
+          {q:'How many syllables in "dinosaur"?',opts:['2','3','4','5'],c:1,explain:'Di-no-saur has 3 syllables.',fix:'Clap the beats: di-no-saur. Three beats.'},
+          {q:'Which word has the long A sound?',opts:['cat','cake','can','cap'],c:1,explain:'"Cake" has the long A sound — like the letter A name.',fix:'Long A says its own name: cake, lake, make.'}
         ]},
         { title:'Word Building', qs:[
           {q:'What word do these sounds make: /c/ /a/ /t/?',opts:['cup','cat','can','cap'],c:1,explain:'Blend the sounds: /c/ + /a/ + /t/ = CAT!',fix:'Blending means putting sounds together smoothly. Slide them: ccc-aaa-ttt = cat.'},
@@ -2070,7 +2229,26 @@ const QUESTIONS = {
           {q:'What word do you get if you change "cat" to start with /m/?',opts:['cat','mat','sat','rat'],c:1,explain:'Change /c/ to /m/: cat → mat!',fix:'Keep "at" the same. Just change the first sound.'},
           {q:'Sound out: /b/ /e/ /d/. What word?',opts:['bad','bid','bed','bud'],c:2,explain:'/b/ + /e/ + /d/ = BED!',fix:'Blend smoothly: b-e-d. Try the short E sound.'},
           {q:'Which word has the /sh/ sound?',opts:['sun','ship','soup','sock'],c:1,explain:'"Ship" has the /sh/ sound at the start! S+H together makes one sound.',fix:'/sh/ is the sound you make to tell someone to be quiet — like "shhh".'},
-          {q:'What is the middle sound in "pig"?',opts:['/p/','/i/','/g/','/ig/'],c:1,explain:'Pig: /p/ /i/ /g/. The middle sound is /i/!',fix:'Stretch the word slowly. The sound between first and last is the middle.'}
+          {q:'What is the middle sound in "pig"?',opts:['/p/','/i/','/g/','/ig/'],c:1,explain:'Pig: /p/ /i/ /g/. The middle sound is /i/!',fix:'Stretch the word slowly. The sound between first and last is the middle.'},
+          {q:'Blend: /m/ /a/ /p/. What word?',opts:['mop','map','mud','met'],c:1,explain:'/m/ + /a/ + /p/ = MAP!',fix:'Slide the sounds together: m-a-p = map.'},
+          {q:'Change "sun" to start with /r/. What word?',opts:['sit','run','rim','sup'],c:1,explain:'Replace /s/ with /r/: sun → run!',fix:'Keep the ending. Just change the first sound.'},
+          {q:'Build: /j/ /u/ /m/ /p/. What word?',opts:['jam','jump','just','jar'],c:1,explain:'/j/ + /u/ + /m/ + /p/ = JUMP!',fix:'Blend each sound smoothly together.'},
+          {q:'Take /s/ off "sled". What is left?',opts:['sled','led','sed','red'],c:1,explain:'Remove /s/ from sled = led.',fix:'Drop the first sound. What remains?'},
+          {q:'What word ends with the same sound as "hop"?',opts:['cat','cup','top','hot'],c:2,explain:'"Hop" and "top" both end with /p/.',fix:'Match the ending sound.'},
+          {q:'Blend: /b/ /o/ /x/. What word?',opts:['bus','box','big','bet'],c:1,explain:'/b/ + /o/ + /x/ = BOX!',fix:'Sound out: b-o-x. That spells box.'},
+          {q:'Change "cat" to start with /h/. What word?',opts:['cap','hat','cab','hot'],c:1,explain:'Cat → hat. Just change /c/ to /h/!',fix:'Same ending. New beginning sound.'},
+          {q:'Sound out: /s/ /t/ /o/ /p/. What word?',opts:['stop','step','spot','soup'],c:0,explain:'/s/ + /t/ + /o/ + /p/ = STOP!',fix:'Blend all four sounds together.'},
+          {q:'What word do these sounds make: /b/ /e/ /d/?',opts:['bed','bad','bid','bud'],c:0,explain:'/b/ + /e/ + /d/ = BED!',fix:'Three sounds blend into the word bed.'},
+          {q:'Change the LAST sound of "cat" to /n/. What word?',opts:['cat','can','cot','cap'],c:1,explain:'Cat → can. Just changed the /t/ to /n/!',fix:'Keep beginning and middle. Change just the last sound.'},
+          {q:'Which word has the /sh/ sound at the START?',opts:['fish','ship','wash','rush'],c:1,explain:'"Ship" starts with /sh/.',fix:'Listen to the BEGINNING. /sh/ = ship.'},
+          {q:'Build: /f/ /a/ /s/ /t/. What word?',opts:['fast','feet','fish','fit'],c:0,explain:'/f/ + /a/ + /s/ + /t/ = FAST!',fix:'Four sounds blended = fast.'},
+          {q:'What rhymes with "rain" AND starts with /b/?',opts:['main','brain','bran','rib'],c:1,explain:'Rain rhyme + /b/ start = brain!',fix:'Use both clues: ending sound + starting sound.'},
+          {q:'Take the /c/ off "clap". What is left?',opts:['cap','lap','clip','clap'],c:1,explain:'Remove /c/ from clap = lap.',fix:'Drop the very first sound. What is left?'},
+          {q:'Blend: /sh/ /o/ /p/. What word?',opts:['ship','shop','sap','soap'],c:1,explain:'/sh/ + /o/ + /p/ = SHOP!',fix:'/sh/ is one sound made by two letters.'},
+          {q:'Change "big" to start with /w/. What word?',opts:['bag','wig','beg','win'],c:1,explain:'Big → wig. Replace /b/ with /w/.',fix:'Same ending sounds. New first sound.'},
+          {q:'What is the middle sound in "dog"?',opts:['/d/','/o/','/g/','/og/'],c:1,explain:'/d/ /o/ /g/. The middle sound is /o/.',fix:'Stretch the word. Middle is between first and last.'},
+          {q:'Build: /k/ /i/ /d/. What word?',opts:['cat','kid','kit','keep'],c:1,explain:'/k/ + /i/ + /d/ = KID!',fix:'Three sounds blended = kid.'},
+          {q:'What word rhymes with "ball"?',opts:['bell','tall','bill','bull'],c:1,explain:'"Ball" and "tall" rhyme — they end with the same sound.',fix:'Rhyming words end the same way.'}
         ]}
       ]
     },
@@ -2140,7 +2318,26 @@ const QUESTIONS = {
           {q:'KEYWORD: <b>SHARE EQUALLY</b>\n\n12 cookies. 4 friends. <b>Share equally</b>. How many each?',opts:['8','3','16','4'],c:1,explain:'<b>Share equally</b> = DIVIDE. 12 ÷ 4 = 3 cookies each!',fix:'"Share equally" or "split into groups" = DIVIDE.'},
           {q:'KEYWORD: <b>FEWER</b>\n\nLisa has 11 books. Tom has 4 <b>fewer</b>. How many does Tom have?',opts:['15','7','14','11'],c:1,explain:'<b>Fewer</b> means SUBTRACT. 11 - 4 = 7 books!',fix:'"Fewer than" = subtract. Tom has 4 less than Lisa.'},
           {q:'KEYWORD: <b>EACH</b>\n\nThere are 3 plates. <b>Each</b> plate has 6 cookies. Total cookies?',opts:['9','18','12','15'],c:1,explain:'<b>Each</b> = MULTIPLY. 3 × 6 = 18 cookies!',fix:'Equal groups always means multiply. 3 plates × 6 each = 18.'},
-          {q:'TWO STEPS:\n\nTerry had 20 marbles. He gave 5 away. Then he got 7 more. How many now?',opts:['18','22','12','32'],c:1,explain:'Step 1: 20 - 5 = 15 (gave away). Step 2: 15 + 7 = 22 (got more). Answer: 22!',fix:'Two-step: do the FIRST action, then use that answer for the SECOND action.'}
+          {q:'TWO STEPS:\n\nTerry had 20 marbles. He gave 5 away. Then he got 7 more. How many now?',opts:['18','22','12','32'],c:1,explain:'Step 1: 20 - 5 = 15 (gave away). Step 2: 15 + 7 = 22 (got more). Answer: 22!',fix:'Two-step: do the FIRST action, then use that answer for the SECOND action.'},
+          {q:'KEYWORD: <b>TOTAL</b>\n\nMia has 9 cats. Sam has 6 cats. How many <b>total</b>?',opts:['3','15','12','18'],c:1,explain:'<b>Total</b> means ADD. 9 + 6 = 15 cats.',fix:'"Total" = add the two numbers.'},
+          {q:'KEYWORD: <b>LEFT</b>\n\nA jar had 18 cookies. 7 were eaten. How many <b>left</b>?',opts:['11','25','10','12'],c:0,explain:'<b>Left</b> means SUBTRACT. 18 - 7 = 11 cookies.',fix:'"Left" = subtract what is gone.'},
+          {q:'KEYWORD: <b>EACH</b>\n\nThere are 3 boxes. <b>Each</b> has 5 toys. How many toys?',opts:['8','15','12','18'],c:1,explain:'<b>Each</b> = multiply. 3 × 5 = 15 toys.',fix:'"Each" with equal groups = multiply.'},
+          {q:'KEYWORD: <b>MORE</b>\n\nLisa has 14 books. Tom has 9. How many <b>more</b> does Lisa have?',opts:['5','23','6','3'],c:0,explain:'<b>More</b> = subtract. 14 - 9 = 5 more.',fix:'"How many more" = bigger - smaller.'},
+          {q:'KEYWORD: <b>ALTOGETHER</b>\n\n12 red balls + 9 blue balls. How many <b>altogether</b>?',opts:['3','21','22','19'],c:1,explain:'<b>Altogether</b> = ADD. 12 + 9 = 21 balls.',fix:'"Altogether" = add to find the total.'},
+          {q:'KEYWORD: <b>SHARE EQUALLY</b>\n\n15 candies. 5 friends. <b>Share equally</b>. How many each?',opts:['10','3','5','7'],c:1,explain:'<b>Share equally</b> = divide. 15 ÷ 5 = 3 each.',fix:'"Share equally" = divide total by number of groups.'},
+          {q:'KEYWORD: <b>FEWER</b>\n\nLeo has 16 stickers. Sam has 5 <b>fewer</b>. How many does Sam have?',opts:['21','11','5','9'],c:1,explain:'<b>Fewer</b> = subtract. 16 - 5 = 11 stickers.',fix:'"Fewer" means less than. Subtract.'},
+          {q:'KEYWORD: <b>EACH</b>\n\n4 plates. 6 cookies <b>each</b>. Total cookies?',opts:['10','24','18','30'],c:1,explain:'<b>Each</b> = multiply. 4 × 6 = 24 cookies.',fix:'Plates × cookies each = total. Multiply.'},
+          {q:'KEYWORD: <b>IN ALL</b>\n\nAnna has 13 stickers. She gets 7 more. How many <b>in all</b>?',opts:['6','20','21','19'],c:1,explain:'<b>In all</b> = add. 13 + 7 = 20 stickers.',fix:'"In all" = total. Add the numbers.'},
+          {q:'KEYWORD: <b>LEFT</b>\n\n25 apples. 12 are eaten. How many <b>left</b>?',opts:['37','13','14','12'],c:1,explain:'<b>Left</b> = subtract. 25 - 12 = 13 apples.',fix:'"Left" = remaining. Subtract what is gone.'},
+          {q:'TWO STEPS:\n\n6 cookies. Sam gets 4 more. Then eats 3. How many cookies now?',opts:['7','13','5','10'],c:0,explain:'Step 1: 6 + 4 = 10. Step 2: 10 - 3 = 7. Answer: 7!',fix:'Two-step: do step 1, use answer for step 2.'},
+          {q:'KEYWORD: <b>EACH</b>\n\n2 bags. 8 candies <b>each</b>. Total?',opts:['10','16','12','18'],c:1,explain:'<b>Each</b> = multiply. 2 × 8 = 16 candies.',fix:'Equal groups = multiplication.'},
+          {q:'KEYWORD: <b>MORE</b>\n\nJoe has 18 cards. Ana has 11. How many <b>more</b> does Joe have?',opts:['7','29','5','8'],c:0,explain:'<b>More</b> = subtract. 18 - 11 = 7 more cards.',fix:'"How many more" = subtract.'},
+          {q:'TWO STEPS:\n\nThere are 12 birds. 5 fly away, then 4 more come. How many now?',opts:['11','13','3','21'],c:0,explain:'Step 1: 12 - 5 = 7. Step 2: 7 + 4 = 11 birds!',fix:'Fly away = subtract. Come = add.'},
+          {q:'KEYWORD: <b>TOGETHER</b>\n\nPaul has 15 pencils. Max has 8. How many do they have <b>together</b>?',opts:['7','22','23','25'],c:2,explain:'<b>Together</b> = add. 15 + 8 = 23 pencils.',fix:'"Together" = combine. Add.'},
+          {q:'KEYWORD: <b>SHARE EQUALLY</b>\n\n20 cupcakes. 4 kids. <b>Share equally</b>. Each kid gets?',opts:['16','5','24','4'],c:1,explain:'<b>Share equally</b> = divide. 20 ÷ 4 = 5 each.',fix:'Total ÷ number of groups = each.'},
+          {q:'KEYWORD: <b>LEFT</b>\n\nA box has 30 stickers. 18 are used. How many <b>left</b>?',opts:['12','48','22','8'],c:0,explain:'<b>Left</b> = subtract. 30 - 18 = 12 stickers.',fix:'"Left" = subtract used from total.'},
+          {q:'KEYWORD: <b>EACH</b>\n\n5 buses. 9 kids <b>each</b>. Total kids?',opts:['14','45','40','35'],c:1,explain:'<b>Each</b> = multiply. 5 × 9 = 45 kids.',fix:'Buses × kids each = total. Multiply.'},
+          {q:'TWO STEPS:\n\nA garden has 10 flowers. 3 wilted, then 5 new ones grew. How many now?',opts:['12','8','18','13'],c:0,explain:'Step 1: 10 - 3 = 7. Step 2: 7 + 5 = 12 flowers!',fix:'Wilted = subtract. New ones = add.'}
         ]}
       ]
     },
@@ -2788,7 +2985,15 @@ function renderQuestion(){
     return;
   }
   const q=qs[currentQ];
-  const counterText = reviewMode ? `REVIEW ${currentQ+1} / ${qs.length}` : `${currentQ+1} / ${qs.length}`;
+  let counterText;
+  if(masteryMode){
+    const totalToMaster = masteryMastered.length + reviewQueue.length;
+    counterText = `🔒 MASTERY: ${masteryMastered.length} / ${totalToMaster} MASTERED`;
+  } else if(reviewMode){
+    counterText = `REVIEW ${currentQ+1} / ${qs.length}`;
+  } else {
+    counterText = `${currentQ+1} / ${qs.length}`;
+  }
   document.getElementById('q-counter').textContent=counterText;
   document.getElementById('prog-track').style.width=((currentQ)/qs.length*100)+'%';
   const fullText = q.q.replace(/\\n/g, ' ').replace(/"/g, '') + '. Option A: ' + q.opts[0] + '. Option B: ' + q.opts[1] + '. Option C: ' + q.opts[2] + '. Option D: ' + q.opts[3];
@@ -2802,7 +3007,7 @@ function renderQuestion(){
   document.getElementById('q-area').innerHTML=`
     <div class="q-card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
-        <div class="q-tag">◆ ${reviewMode?'REVIEW':'QUESTION'} ${currentQ+1}</div>
+        <div class="q-tag">◆ ${masteryMode?'🔒 MASTERY':(reviewMode?'REVIEW':'QUESTION')} ${currentQ+1}</div>
         <div style="display:flex;gap:6px;">
           ${!reviewMode ? '<button class="hint-btn" id="hint-btn" onclick="useHint()">💡 HINT (-5 XP)</button>' : ''}
           ${readButton}
@@ -2953,10 +3158,11 @@ function checkAnswer(idx){
       // Only log hits if they did NOT use a hint
       if(!hintUsedThisQuestion) logConceptHit(currentUser, conceptTag);
     }
+    if(masteryMode){ masteryLastWasCorrect = true; masteryAttempts++; }
     const feedbackText = ('Correct! ' + q.explain).replace(/"/g, '');
     fb.className='feedback correct-fb show';
     fb.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;">
-      <div class="fb-title correct">◆ ${reviewMode?'NICE! YOU GOT IT':(hintUsedThisQuestion?'CORRECT • +5 XP':'CORRECT • +10 XP')}</div>
+      <div class="fb-title correct">◆ ${masteryMode?'MASTERED! ✓':(reviewMode?'NICE! YOU GOT IT':(hintUsedThisQuestion?'CORRECT • +5 XP':'CORRECT • +10 XP'))}</div>
       <button class="read-btn-sm" onclick="readFeedback()">🔊</button>
       </div><div class="fb-text">${q.explain}</div>`;
     currentFeedbackText = feedbackText;
@@ -2981,10 +3187,11 @@ function checkAnswer(idx){
         concept: conceptTag
       });
     }
+    if(masteryMode){ masteryLastWasCorrect = false; masteryAttempts++; }
     const feedbackText = ('Not quite. ' + q.explain + ' How to fix it: ' + q.fix).replace(/"/g, '');
     fb.className='feedback wrong-fb show';
     fb.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;">
-      <div class="fb-title wrong">◆ NOT QUITE</div>
+      <div class="fb-title wrong">◆ ${masteryMode?'TRY AGAIN — IT WILL COME BACK':'NOT QUITE'}</div>
       <button class="read-btn-sm" onclick="readFeedback()">🔊</button>
       </div>
       <div class="fb-text">${q.explain}</div>
@@ -3001,11 +3208,73 @@ function checkAnswer(idx){
 }
 
 function retryQuestion(){retrying=true;renderQuestion();retrying=false;}
-function nextQuestion(){currentQ++;renderQuestion();}
+function nextQuestion(){
+  if(masteryMode){
+    handleMasteryNext();
+  } else {
+    currentQ++;
+    renderQuestion();
+  }
+}
 
-function retryQuestion(){retrying=true;renderQuestion();retrying=false;}
-function nextQuestion(){currentQ++;renderQuestion();}
+function handleMasteryNext(){
+  // Check if last answer was correct or wrong
+  // We need to track: was this question answered correctly THIS time?
+  const justAnswered = reviewQueue[currentQ];
+  if(masteryLastWasCorrect){
+    // Move to mastered list
+    masteryMastered.push(justAnswered);
+    // Remove from queue
+    reviewQueue.splice(currentQ, 1);
+  } else {
+    // Wrong - move to end of queue so they see it again later
+    const item = reviewQueue.splice(currentQ, 1)[0];
+    reviewQueue.push(item);
+  }
+  // Check if mastery complete
+  if(reviewQueue.length === 0){
+    showMasteryComplete();
+    return;
+  }
+  // Don't advance currentQ - we removed the current item, so currentQ now points to next
+  // But if currentQ is past end, wrap to 0
+  if(currentQ >= reviewQueue.length){
+    currentQ = 0;
+  }
+  renderQuestion();
+}
+
+function showMasteryComplete(){
+  // Big bonus XP for mastery completion
+  const bonusXP = 50;
+  addXP(currentUser, bonusXP);
+  awardBadge(currentUser, 'mastery_complete');
+  document.getElementById('q-area').innerHTML=`
+    <div class="result-card">
+      <div class="result-emoji">🔓</div>
+      <div class="result-title">MASTERY UNLOCKED</div>
+      <div class="result-sub">YOU MASTERED EVERY QUESTION</div>
+      <div style="font-size:18px;color:var(--neon-green);margin:20px 0;">+${bonusXP} BONUS XP</div>
+      <div style="font-size:14px;color:var(--text);margin-bottom:14px;">
+        You mastered <strong style="color:var(--neon-green);">${masteryMastered.length} questions</strong> in <strong>${masteryAttempts}</strong> total attempts!
+      </div>
+      <p style="color:var(--text-dim);margin:14px 0;font-size:13px;">
+        That's how learning works — you stick with it until you got it.
+      </p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
+        <button class="btn btn-primary" onclick="finalizeResults()">CONTINUE ▶</button>
+      </div>
+    </div>`;
+  // Reset mastery state
+  masteryMode = false;
+  reviewMode = false;
+}
 function goChildHome(){
+  if(masteryMode){
+    if(!confirm('🔒 MASTERY MODE LOCKED IN\n\nYou have not mastered all the questions yet. Are you sure you want to leave?\n\nYour progress will be lost.')) return;
+    masteryMode = false;
+    reviewMode = false;
+  }
   stopSpeech();
   if(speedMathTimer){ clearInterval(speedMathTimer); speedMathTimer = null; }
   showScreen('child-home');renderMissions();renderBadges();
@@ -3051,13 +3320,17 @@ function showInitialResults(){
       ${hasMistakes ? `
         <p style="color:var(--text-dim);margin-bottom:14px;font-size:14px;">
           You got <strong style="color:var(--neon-green);">${score} right</strong> and <strong style="color:var(--neon-red);">${wrongAnswersLog.length} wrong</strong>.<br>
-          Let's review the ones you missed!
+          Pick how you want to fix them:
         </p>
         ${mistakeList}
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
-          <button class="btn btn-primary" onclick="startReviewMode()">REVIEW MISTAKES ▶</button>
+          <button class="btn btn-primary" onclick="startMasteryMode()" title="Locked in - keep going until all correct">🔒 MASTERY MODE</button>
+          <button class="btn btn-cyan" onclick="startReviewMode()" title="One pass through your mistakes">REVIEW ONCE</button>
           <button class="btn btn-ghost" onclick="skipReview()">SKIP</button>
         </div>
+        <p style="color:var(--text-dim);margin-top:12px;font-size:11px;font-style:italic;">
+          Mastery mode keeps cycling until every wrong question is correct. Bonus XP for finishing!
+        </p>
       ` : `
         <p style="color:var(--neon-green);margin-bottom:14px;font-weight:700;">🎉 Perfect! No mistakes to review!</p>
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
@@ -3069,10 +3342,22 @@ function showInitialResults(){
 
 function startReviewMode(){
   reviewMode = true;
+  masteryMode = false;
   // Reset answer index shuffling for review so it's fresh
   reviewQueue = wrongAnswersLog.map(w => shuffleQuestionOptions(w.question));
   currentQ = 0;
   currentReviewIdx = 0;
+  renderQuestion();
+}
+
+function startMasteryMode(){
+  masteryMode = true;
+  reviewMode = true; // mastery uses review mechanics
+  masteryQueue = wrongAnswersLog.map(w => shuffleQuestionOptions(w.question));
+  masteryMastered = [];
+  masteryAttempts = 0;
+  reviewQueue = masteryQueue.slice(); // start with all wrong questions
+  currentQ = 0;
   renderQuestion();
 }
 
