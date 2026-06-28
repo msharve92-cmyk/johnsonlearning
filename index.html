@@ -991,7 +991,10 @@ function renderSessionAllocation(){
   panel.innerHTML=`
     <div class="session-header">
       <div class="session-header-title">Allocate Funds</div>
-      <div class="session-header-sub">Adjust each envelope. Every dollar must be assigned.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
+        <div class="session-header-sub">Adjust each envelope. Every dollar must be assigned.</div>
+        <button class="btn btn-sm" onclick="clearAllEnvelopes()" style="flex-shrink:0;margin-left:10px;color:var(--danger);border-color:rgba(196,112,112,.3);">🗑 Clear All</button>
+      </div>
       <div class="session-balance-row">
         <div>
           <div class="session-balance-label">Remaining to assign</div>
@@ -1015,7 +1018,6 @@ function renderSessionAllocation(){
           :`${fmt(remaining)} still needs to be assigned`}
       </div>
       <button class="btn btn-primary" style="width:100%;padding:12px;font-size:14px;font-weight:600;opacity:${done?1:0.4};" ${done?'':'disabled'} onclick="confirmSession()">Confirm & Apply Session</button>
-      <button class="btn" style="width:100%;margin-top:8px;" onclick="clearAllEnvelopes()">🗑 Clear All to $0</button>
       <button class="btn" style="width:100%;margin-top:8px;" onclick="cancelSession()">Cancel</button>
     </div>`;
 }
